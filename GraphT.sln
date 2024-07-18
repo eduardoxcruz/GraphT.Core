@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.WebAPI", "GraphT.Web
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Unit Tests", "5. Unit Tests", "{91E66628-F973-45A9-B247-1B88599BB8D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.Model.Tests", "GraphT.Model.Tests\GraphT.Model.Tests.csproj", "{2606DB1D-0888-40A8-A151-5C2C85893E7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{5F2A1EF2-72F8-4644-8FC9-3641219ECCF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F2A1EF2-72F8-4644-8FC9-3641219ECCF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F2A1EF2-72F8-4644-8FC9-3641219ECCF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2606DB1D-0888-40A8-A151-5C2C85893E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2606DB1D-0888-40A8-A151-5C2C85893E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2606DB1D-0888-40A8-A151-5C2C85893E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2606DB1D-0888-40A8-A151-5C2C85893E7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +95,7 @@ Global
 		{79700CE8-310F-4E21-B8D9-35552E639826} = {54EE4546-A7C6-44DF-AD99-AE51B177E94A}
 		{2789D0EA-29BE-4D37-817C-A03F84E4DDE4} = {F4D3ACD6-4AD7-4EED-ABE2-C0F85422C859}
 		{5F2A1EF2-72F8-4644-8FC9-3641219ECCF3} = {2789D0EA-29BE-4D37-817C-A03F84E4DDE4}
+		{2606DB1D-0888-40A8-A151-5C2C85893E7A} = {91E66628-F973-45A9-B247-1B88599BB8D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB7701C-9BFC-46E8-B6C7-59EA107DAB92}
