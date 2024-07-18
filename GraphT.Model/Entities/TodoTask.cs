@@ -2,12 +2,12 @@
 
 public class TodoTask
 {
-	public string Id { get; private set; }
+	public Guid Id { get; private set; }
 	public string Name { get; set; }
 
 	protected TodoTask(string name)
 	{
-		Id = Guid.NewGuid().ToString();
+		Id = Guid.NewGuid();
 		Name = name;
 	}
 }
