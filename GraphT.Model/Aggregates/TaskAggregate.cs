@@ -67,4 +67,9 @@ public class TaskAggregate : TodoTask
 			_ => Relevance.Superfluous
 		};
 	}
+	
+	public void AddUpstream(TodoTask upstream)
+	{
+		_upstreams.Add(upstream);
+	}
 }
