@@ -137,4 +137,9 @@ public class TaskAggregate : TodoTask
 	{
 		_timeInfo.LimitDate = limitDate;
 	}
+
+	public void SetPriority(ValueObjects.Priority priority)
+	{
+		_priority = priority;
+	}
 }
