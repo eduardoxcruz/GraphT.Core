@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SeedWork\SeedWork.csproj" />
-      <ProjectReference Include="..\GraphT.DTOs\GraphT.DTOs.csproj" />
     </ItemGroup>
 
 </Project>
