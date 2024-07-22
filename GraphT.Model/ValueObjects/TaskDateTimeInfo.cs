@@ -3,7 +3,7 @@
 public struct TaskDateTimeInfo
 {
 	public DateTime CreationDateTime { get; private set; }
-	public DateTime? StartDate { get; set; }
+	public DateTime? StartDateTime { get; set; }
 	public DateTime? FinishDate { get; set; }
 	public DateTime? LimitDate { get; set; }
 	public readonly string TimeSpend => GetTimeSpend();
@@ -45,21 +45,21 @@ public struct TaskDateTimeInfo
 
 	private readonly string GetTimeSpend()
 	{
-		if (!StartDate.HasValue)
+		if (!StartDateTime.HasValue)
 		{
 			return "⏰0 month(s) - 0 day(s) - 0 hours - 0 minutes";
 		}
 
 		DateTime finishDate = FinishDate ?? DateTime.Now;
-		TimeSpan duration = finishDate - StartDate.Value;
-		int months = (finishDate.Year - StartDate.Value.Year) * 12 + finishDate.Month - StartDate.Value.Month;
+		TimeSpan duration = finishDate - StartDateTime.Value;
+		int months = (finishDate.Year - StartDateTime.Value.Year) * 12 + finishDate.Month - StartDateTime.Value.Month;
 		
-		if (finishDate.Day < StartDate.Value.Day)
+		if (finishDate.Day < StartDateTime.Value.Day)
 		{
 			months--;
 		}
 		
-		int days = (finishDate - StartDate.Value.AddMonths(months)).Days;
+		int days = (finishDate - StartDateTime.Value.AddMonths(months)).Days;
 		int hours = duration.Hours;
 		int minutes = duration.Minutes;
 		string emoji = duration.TotalHours > 1 ? "⏰" : "⚡️";
