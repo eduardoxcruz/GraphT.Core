@@ -148,4 +148,9 @@ public class TaskAggregate : TodoTask
 	{
 		_complexity = complexity;
 	}
+
+	public void SetStatus(Status status)
+	{
+		_status = status;
+	}
 }
