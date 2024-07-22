@@ -121,6 +121,13 @@ public class TaskAggregate : TodoTask
 
 		if (upstreams.Count == 0) throw new ArgumentException("Upstreams collection cannot be empty");
 	}
+
+	public void ClearUpstreams()
+	{
+		if (_upstreams.Count == 1) return;
+		
+		_upstreams.Clear();
+	}
 	
 	public void AddDownstream(TodoTask downstream)
 	{
