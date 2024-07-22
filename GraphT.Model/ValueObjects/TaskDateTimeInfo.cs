@@ -4,7 +4,7 @@ public struct TaskDateTimeInfo
 {
 	public DateTime CreationDateTime { get; private set; }
 	public DateTime? StartDateTime { get; set; }
-	public DateTime? FinishDate { get; set; }
+	public DateTime? FinishDateTime { get; set; }
 	public DateTime? LimitDate { get; set; }
 	public readonly string TimeSpend => GetTimeSpend();
 	public readonly string Punctuality => GetPunctuality();
@@ -20,13 +20,13 @@ public struct TaskDateTimeInfo
 
 		if (!LimitDate.HasValue) return "⚠ No Target";
 
-		if (FinishDate.HasValue)
+		if (FinishDateTime.HasValue)
 		{
-			if ((FinishDate.Value.Date - LimitDate.Value.Date).TotalDays == 0) return "✔️ On Time!";
+			if ((FinishDateTime.Value.Date - LimitDate.Value.Date).TotalDays == 0) return "✔️ On Time!";
 			
-			int daysDifference = Math.Abs((LimitDate.Value.Date - FinishDate.Value.Date).Days);
+			int daysDifference = Math.Abs((LimitDate.Value.Date - FinishDateTime.Value.Date).Days);
 			
-			return FinishDate.Value.Date > LimitDate.Value.Date ? 
+			return FinishDateTime.Value.Date > LimitDate.Value.Date ? 
 						$"🚨 Late {daysDifference} day(s)!" : 
 						$"⭐ Early {daysDifference} day(s)!";
 		}
@@ -50,7 +50,7 @@ public struct TaskDateTimeInfo
 			return "⏰0 month(s) - 0 day(s) - 0 hours - 0 minutes";
 		}
 
-		DateTime finishDate = FinishDate ?? DateTime.Now;
+		DateTime finishDate = FinishDateTime ?? DateTime.Now;
 		TimeSpan duration = finishDate - StartDateTime.Value;
 		int months = (finishDate.Year - StartDateTime.Value.Year) * 12 + finishDate.Month - StartDateTime.Value.Month;
 		
