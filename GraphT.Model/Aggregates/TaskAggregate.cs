@@ -130,4 +130,9 @@ public class TaskAggregate : TodoTask
 	{
 		_timeInfo.FinishDate = finishDate;
 	}
+
+	public void SetLimitDate(DateTime limitDate)
+	{
+		_timeInfo.LimitDate = limitDate;
+	}
 }
