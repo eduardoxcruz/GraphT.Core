@@ -84,6 +84,11 @@ public class TaskAggregate : TodoTask
 		_upstreams.UnionWith(upstreams);
 	}
 	
+	public void RemoveUpstreams(HashSet<TodoTask> upstreams)
+	{
+		_upstreams.ExceptWith(upstreams);
+	}
+	
 	public void ReplaceUpstreams(HashSet<TodoTask> newUpstreams)
 	{
 		_upstreams.Clear();
