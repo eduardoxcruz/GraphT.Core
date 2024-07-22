@@ -13,7 +13,7 @@ public class TaskAggregate : TodoTask
 	private Complexity _complexity;
 	private Relevance _relevance;
 	private Status _status;
-	private TimeInfo _timeInfo;
+	private TaskDateTimeInfo _dateTimeInfo;
 	private HashSet<TodoTask> _upstreams = null!;
 	private HashSet<TodoTask> _downstreams = null!;
 	public bool IsFun
@@ -39,7 +39,7 @@ public class TaskAggregate : TodoTask
 	public string Priority => _priority.FormatedName();
 	public string Relevance => _relevance.FormatedName();
 	public string Status => _status.FormatedName();
-	public TimeInfo TimeInfo => _timeInfo;
+	public TaskDateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 
@@ -54,7 +54,7 @@ public class TaskAggregate : TodoTask
 	{
 		_isFun = isFun;
 		_isProductive = isProductive;
-		_timeInfo = new TimeInfo();
+		_dateTimeInfo = new TaskDateTimeInfo();
 		_upstreams = [];
 		_downstreams = [];
 		_complexity = complexity;
@@ -174,27 +174,27 @@ public class TaskAggregate : TodoTask
 
 	public void SetStartDate(DateTime startDate)
 	{
-		if (_timeInfo.FinishDate is not null && startDate > _timeInfo.FinishDate)
+		if (_dateTimeInfo.FinishDate is not null && startDate > _dateTimeInfo.FinishDate)
 		{
 			throw new ArgumentException("Start date cannot be after of finish date");
 		}
 		
-		_timeInfo.StartDate = startDate;
+		_dateTimeInfo.StartDate = startDate;
 	}
 
 	public void SetFinishDate(DateTime finishDate)
 	{
-		if (_timeInfo.StartDate is not null && finishDate < _timeInfo.StartDate)
+		if (_dateTimeInfo.StartDate is not null && finishDate < _dateTimeInfo.StartDate)
 		{
 			throw new ArgumentException("Finish date cannot be before start date");
 		}
 
-		_timeInfo.FinishDate = finishDate;
+		_dateTimeInfo.FinishDate = finishDate;
 	}
 
 	public void SetLimitDate(DateTime limitDate)
 	{
-		_timeInfo.LimitDate = limitDate;
+		_dateTimeInfo.LimitDate = limitDate;
 	}
 
 	public void SetPriority(ValueObjects.Priority priority)

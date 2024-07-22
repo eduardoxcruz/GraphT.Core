@@ -1,6 +1,6 @@
 ﻿namespace GraphT.Model.ValueObjects;
 
-public struct TimeInfo
+public struct TaskDateTimeInfo
 {
 	public DateTime CreationTime { get; private set; }
 	public DateTime? StartDate { get; set; }
@@ -9,7 +9,7 @@ public struct TimeInfo
 	public readonly string TimeSpend => GetTimeSpend();
 	public readonly string Punctuality => GetPunctuality();
 
-	public TimeInfo()
+	public TaskDateTimeInfo()
 	{
 		CreationTime = DateTime.Now;
 	}
