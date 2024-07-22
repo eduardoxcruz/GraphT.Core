@@ -168,6 +168,9 @@ public class TaskAggregate : TodoTask
 		if (taskCollection is null) throw new ArgumentException("Task collection cannot be null");
 
 		if (taskCollection.Count == 0) throw new ArgumentException("Task collection cannot be empty");
+
+		if (taskCollection.Any(task => task.Id.Equals(Guid.Empty)))
+			throw new ArgumentException("Task collection cannot contain tasks with empty Id");
 	}
 
 	public void SetStartDate(DateTimeOffset startDate)
