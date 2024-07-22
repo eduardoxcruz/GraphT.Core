@@ -8,6 +8,7 @@ public class TaskAggregate : TodoTask
 	private bool _isFun;
 	private bool _isProductive;
 	private Priority _priority;
+	private Complexity _complexity;
 	private TimeInfo _timeInfo;
 	private HashSet<TodoTask> _upstreams = null!;
 	private HashSet<TodoTask> _downstreams = null!;
@@ -30,7 +31,7 @@ public class TaskAggregate : TodoTask
 		}
 	}
 	public float Progress { get; set; }
-	public Complexity Complexity { get; set; }
+	public string Complexity => _complexity.FormatedName();
 	public string Priority => _priority.FormatedName();
 	public Status Status { get; set; }
 	public Relevance Relevance { get; private set; }
@@ -43,7 +44,7 @@ public class TaskAggregate : TodoTask
 	protected TaskAggregate(string name, 
 							bool isFun, 
 							bool isProductive, 
-							Complexity complexity = Complexity.Indefinite, 
+							Complexity complexity = ValueObjects.Complexity.Indefinite, 
 							Priority priority = ValueObjects.Priority.MentalClutter, 
 							Status status = Status.Backlog) : base(name)
 	{
@@ -52,7 +53,7 @@ public class TaskAggregate : TodoTask
 		_timeInfo = new TimeInfo();
 		_upstreams = [];
 		_downstreams = [];
-		Complexity = complexity;
+		_complexity = complexity;
 		_priority = priority;
 		Status = status;
 		UpdateRelevance();
