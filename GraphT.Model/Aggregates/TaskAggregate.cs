@@ -74,6 +74,11 @@ public class TaskAggregate : TodoTask
 		_upstreams.Add(upstream);
 	}
 
+	public void RemoveUpstream(TodoTask upstream)
+	{
+		_upstreams.RemoveWhere(todoTask => todoTask.Id.Equals(upstream.Id));
+	}
+	
 	public void AddUpstreams(HashSet<TodoTask> upstreams)
 	{
 		_upstreams.UnionWith(upstreams);
@@ -93,6 +98,11 @@ public class TaskAggregate : TodoTask
 	public void AddDownstreams(HashSet<TodoTask> downstreams)
 	{
 		_downstreams.UnionWith(downstreams);
+	}
+
+	public void RemoveDownstream(TodoTask downstream)
+	{
+		_downstreams.RemoveWhere(todoTask => todoTask.Id.Equals(downstream.Id));
 	}
 
 	public void ReplaceDownstreams(HashSet<TodoTask> newDownstreams)
