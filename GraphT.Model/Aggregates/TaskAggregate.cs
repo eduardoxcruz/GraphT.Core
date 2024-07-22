@@ -95,27 +95,27 @@ public class TaskAggregate : TodoTask
 	
 	public void AddUpstreams(HashSet<TodoTask> upstreams)
 	{
-		ValidateUpstreams(upstreams);
+		ValidateTaskCollection(upstreams);
 		
 		_upstreams.UnionWith(upstreams);
 	}
 	
 	public void RemoveUpstreams(HashSet<TodoTask> upstreams)
 	{
-		ValidateUpstreams(upstreams);
+		ValidateTaskCollection(upstreams);
 		
 		_upstreams.ExceptWith(upstreams);
 	}
 	
 	public void ReplaceUpstreams(HashSet<TodoTask> newUpstreams)
 	{
-		ValidateUpstreams(newUpstreams);
+		ValidateTaskCollection(newUpstreams);
 		
 		_upstreams.Clear();
 		_upstreams = newUpstreams;
 	}
 
-	private void ValidateUpstreams(HashSet<TodoTask> upstreams)
+	private void ValidateTaskCollection(HashSet<TodoTask> upstreams)
 	{
 		if (upstreams is null) throw new ArgumentException("Upstreams collection cannot be null");
 
