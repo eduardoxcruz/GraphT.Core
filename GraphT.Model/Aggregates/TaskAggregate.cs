@@ -172,7 +172,7 @@ public class TaskAggregate : TodoTask
 		if (taskCollection.Count == 0) throw new ArgumentException("Task collection cannot be empty");
 	}
 
-	public void SetStartDate(DateTime startDate)
+	public void SetStartDate(DateTimeOffset startDate)
 	{
 		if (_dateTimeInfo.FinishDateTime is not null && startDate > _dateTimeInfo.FinishDateTime)
 		{
@@ -182,7 +182,7 @@ public class TaskAggregate : TodoTask
 		_dateTimeInfo.StartDateTime = startDate;
 	}
 
-	public void SetFinishDate(DateTime finishDate)
+	public void SetFinishDate(DateTimeOffset finishDate)
 	{
 		if (_dateTimeInfo.StartDateTime is not null && finishDate < _dateTimeInfo.StartDateTime)
 		{
@@ -192,7 +192,7 @@ public class TaskAggregate : TodoTask
 		_dateTimeInfo.FinishDateTime = finishDate;
 	}
 
-	public void SetLimitDate(DateTime limitDate)
+	public void SetLimitDate(DateTimeOffset limitDate)
 	{
 		_dateTimeInfo.LimitDateTime = limitDate;
 	}

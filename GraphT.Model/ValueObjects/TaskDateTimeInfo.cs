@@ -2,21 +2,21 @@
 
 public struct TaskDateTimeInfo
 {
-	public DateTime CreationDateTime { get; private set; }
-	public DateTime? StartDateTime { get; set; }
-	public DateTime? FinishDateTime { get; set; }
-	public DateTime? LimitDateTime { get; set; }
+	public DateTimeOffset CreationDateTime { get; private set; }
+	public DateTimeOffset? StartDateTime { get; set; }
+	public DateTimeOffset? FinishDateTime { get; set; }
+	public DateTimeOffset? LimitDateTime { get; set; }
 	public readonly string TimeSpend => GetTimeSpend();
 	public readonly string Punctuality => GetPunctuality();
 
 	public TaskDateTimeInfo()
 	{
-		CreationDateTime = DateTime.Now;
+		CreationDateTime = DateTimeOffset.Now;
 	}
 
 	private readonly string GetPunctuality()
 	{
-		DateTime now = DateTime.Now;
+		DateTimeOffset now = DateTimeOffset.Now;
 
 		if (!LimitDateTime.HasValue) return "⚠ No Target";
 
@@ -50,7 +50,7 @@ public struct TaskDateTimeInfo
 			return "⏰0 month(s) - 0 day(s) - 0 hours - 0 minutes";
 		}
 
-		DateTime finishDate = FinishDateTime ?? DateTime.Now;
+		DateTimeOffset finishDate = FinishDateTime ?? DateTimeOffset.Now;
 		TimeSpan duration = finishDate - StartDateTime.Value;
 		int months = (finishDate.Year - StartDateTime.Value.Year) * 12 + finishDate.Month - StartDateTime.Value.Month;
 		
