@@ -7,6 +7,7 @@ public class TaskAggregate : TodoTask
 {
 	private bool _isFun;
 	private bool _isProductive;
+	private TimeInfo _timeInfo;
 	private readonly HashSet<TaskAggregate> _upstreams = null!;
 	private readonly HashSet<TaskAggregate> _downstreams = null!;
 	public bool IsFun
@@ -32,6 +33,7 @@ public class TaskAggregate : TodoTask
 	public Priority Priority { get; set; }
 	public Status Status { get; set; }
 	public Relevance Relevance { get; private set; }
+	public TimeInfo TimeInfo => _timeInfo;
 	public IReadOnlySet<TaskAggregate> Upstreams => _upstreams;
 	public IReadOnlySet<TaskAggregate> Downstreams => _downstreams;
 
@@ -46,6 +48,7 @@ public class TaskAggregate : TodoTask
 	{
 		_isFun = isFun;
 		_isProductive = isProductive;
+		_timeInfo = new TimeInfo();
 		_upstreams = [];
 		_downstreams = [];
 		Complexity = complexity;
