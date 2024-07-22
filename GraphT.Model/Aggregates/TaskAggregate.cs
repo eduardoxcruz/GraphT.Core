@@ -72,4 +72,9 @@ public class TaskAggregate : TodoTask
 	{
 		_upstreams.Add(upstream);
 	}
+
+	public void AddUpstreams(HashSet<TodoTask> upstreams)
+	{
+		_upstreams.UnionWith(upstreams);
+	}
 }
