@@ -88,25 +88,20 @@ public class TaskAggregate : TodoTask
 		_upstreams.RemoveWhere(todoTask => todoTask.Id.Equals(upstream.Id));
 	}
 
-	private void ValidateTodoTask(TodoTask upstream)
-	{
-		if (upstream.Id.Equals(Guid.Empty)) throw new ArgumentException("Upstream id cannot be empty");
-	}
-	
 	public void AddUpstreams(HashSet<TodoTask> upstreams)
 	{
 		ValidateTaskCollection(upstreams);
 		
 		_upstreams.UnionWith(upstreams);
 	}
-	
+
 	public void RemoveUpstreams(HashSet<TodoTask> upstreams)
 	{
 		ValidateTaskCollection(upstreams);
 		
 		_upstreams.ExceptWith(upstreams);
 	}
-	
+
 	public void ReplaceUpstreams(HashSet<TodoTask> newUpstreams)
 	{
 		ValidateTaskCollection(newUpstreams);
@@ -115,39 +110,52 @@ public class TaskAggregate : TodoTask
 		_upstreams = newUpstreams;
 	}
 
-	private void ValidateTaskCollection(HashSet<TodoTask> upstreams)
-	{
-		if (upstreams is null) throw new ArgumentException("Upstreams collection cannot be null");
-
-		if (upstreams.Count == 0) throw new ArgumentException("Upstreams collection cannot be empty");
-	}
-
 	public void ClearUpstreams()
 	{
 		if (_upstreams.Count == 1) return;
 		
 		_upstreams.Clear();
 	}
-	
+
 	public void AddDownstream(TodoTask downstream)
 	{
+		ValidateTodoTask(downstream);
+		
 		_downstreams.Add(downstream);
 	}
 
 	public void AddDownstreams(HashSet<TodoTask> downstreams)
 	{
+		ValidateTaskCollection(downstreams);
+		
 		_downstreams.UnionWith(downstreams);
 	}
 
 	public void RemoveDownstreams(HashSet<TodoTask> downstreams)
 	{
+		ValidateTaskCollection(downstreams);
+
 		_downstreams.ExceptWith(downstreams);
 	}
 
 	public void ReplaceDownstreams(HashSet<TodoTask> newDownstreams)
 	{
+		ValidateTaskCollection(newDownstreams);
+		
 		_downstreams.Clear();
 		_downstreams = newDownstreams;
+	}
+
+	private void ValidateTodoTask(TodoTask todoTask)
+	{
+		if (todoTask.Id.Equals(Guid.Empty)) throw new ArgumentException("Task id cannot be empty");
+	}
+
+	private void ValidateTaskCollection(HashSet<TodoTask> taskCollection)
+	{
+		if (taskCollection is null) throw new ArgumentException("Task collection cannot be null");
+
+		if (taskCollection.Count == 0) throw new ArgumentException("Task collection cannot be empty");
 	}
 
 	public void SetStartDate(DateTime startDate)
