@@ -184,6 +184,11 @@ public class TaskAggregate : TodoTask
 
 	public void SetFinishDate(DateTime finishDate)
 	{
+		if (_timeInfo.StartDate is not null && finishDate < _timeInfo.StartDate)
+		{
+			throw new ArgumentException("Finish date cannot be before start date");
+		}
+
 		_timeInfo.FinishDate = finishDate;
 	}
 
