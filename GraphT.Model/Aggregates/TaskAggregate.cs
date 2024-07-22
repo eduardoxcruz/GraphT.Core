@@ -125,4 +125,9 @@ public class TaskAggregate : TodoTask
 	{
 		_timeInfo.StartDate = startDate;
 	}
+
+	public void SetFinishDate(DateTime finishDate)
+	{
+		_timeInfo.FinishDate = finishDate;
+	}
 }
