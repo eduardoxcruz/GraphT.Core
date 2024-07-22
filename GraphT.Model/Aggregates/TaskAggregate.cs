@@ -123,6 +123,13 @@ public class TaskAggregate : TodoTask
 		
 		_downstreams.Add(downstream);
 	}
+	
+	public void RemoveDownstream(TodoTask downstream)
+	{
+		ValidateTodoTask(downstream);
+		
+		_downstreams.RemoveWhere(todoTask => todoTask.Id.Equals(downstream.Id));
+	}
 
 	public void AddDownstreams(HashSet<TodoTask> downstreams)
 	{
