@@ -96,7 +96,7 @@ public class TaskAggregate : TodoTask
 
 	public void ReplaceDownstreams(HashSet<TodoTask> newDownstreams)
 	{
-		_upstreams.Clear();
-		_upstreams = newDownstreams;
+		_downstreams.Clear();
+		_downstreams = newDownstreams;
 	}
 }
