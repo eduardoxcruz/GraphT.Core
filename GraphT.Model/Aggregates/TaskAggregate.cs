@@ -9,6 +9,7 @@ public class TaskAggregate : TodoTask
 	private bool _isProductive;
 	private Priority _priority;
 	private Complexity _complexity;
+	private Relevance _relevance;
 	private TimeInfo _timeInfo;
 	private HashSet<TodoTask> _upstreams = null!;
 	private HashSet<TodoTask> _downstreams = null!;
@@ -33,8 +34,8 @@ public class TaskAggregate : TodoTask
 	public float Progress { get; set; }
 	public string Complexity => _complexity.FormatedName();
 	public string Priority => _priority.FormatedName();
+	public string Relevance => _relevance.FormatedName();
 	public Status Status { get; set; }
-	public Relevance Relevance { get; private set; }
 	public TimeInfo TimeInfo => _timeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
@@ -61,12 +62,12 @@ public class TaskAggregate : TodoTask
 
 	private void UpdateRelevance()
 	{
-		this.Relevance = IsFun switch
+		this._relevance = IsFun switch
 		{
-			true when IsProductive => Relevance.Purposeful,
-			false when IsProductive => Relevance.Necessary,
-			true when !IsProductive => Relevance.Entertaining,
-			_ => Relevance.Superfluous
+			true when IsProductive => ValueObjects.Relevance.Purposeful,
+			false when IsProductive => ValueObjects.Relevance.Necessary,
+			true when !IsProductive => ValueObjects.Relevance.Entertaining,
+			_ => ValueObjects.Relevance.Superfluous
 		};
 	}
 	
