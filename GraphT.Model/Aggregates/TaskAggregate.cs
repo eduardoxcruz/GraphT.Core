@@ -120,4 +120,9 @@ public class TaskAggregate : TodoTask
 		_downstreams.Clear();
 		_downstreams = newDownstreams;
 	}
+
+	public void SetStartDate(DateTime startDate)
+	{
+		_timeInfo.StartDate = startDate;
+	}
 }
