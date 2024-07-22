@@ -83,4 +83,9 @@ public class TaskAggregate : TodoTask
 		_upstreams.Clear();
 		_upstreams = newUpstreams;
 	}
+
+	public void AddDownstream(TodoTask downstream)
+	{
+		_downstreams.Add(downstream);
+	}
 }
