@@ -153,6 +153,13 @@ public class TaskAggregate : TodoTask
 		_downstreams = newDownstreams;
 	}
 
+	public void ClearDownstreams()
+	{
+		if (_downstreams.Count == 0) return;
+		
+		_downstreams.Clear();
+	}
+	
 	private void ValidateTodoTask(TodoTask todoTask)
 	{
 		if (todoTask.Id.Equals(Guid.Empty)) throw new ArgumentException("Task id cannot be empty");
