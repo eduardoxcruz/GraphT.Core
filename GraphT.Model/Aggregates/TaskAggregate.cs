@@ -57,25 +57,6 @@ public class TaskAggregate : TodoTask
 		UpdateRelevance();
 	}
 
-	private float GetProgress()
-	{
-		int totalTasks = _downstreams.Count;
-		int backlogTasks = _downstreams.Count(task => task.Status is Status.Backlog);
-		int completedOrDroppedTasks = _downstreams.Count(task => task.Status is Status.Dropped or Status.Completed);
-
-		if (backlogTasks == totalTasks)
-		{
-			return 0;
-		}
-
-		if (completedOrDroppedTasks >= totalTasks)
-		{
-			return 100;
-		}
-
-		return (completedOrDroppedTasks * 100f) / totalTasks;
-	}
-
 	private void UpdateRelevance()
 	{
 		this.Relevance = IsFun switch
