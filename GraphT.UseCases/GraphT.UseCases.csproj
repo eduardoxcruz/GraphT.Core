@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SeedWork\SeedWork.csproj" />
+      <ProjectReference Include="..\GraphT.Model\GraphT.Model.csproj" />
     </ItemGroup>
 
 </Project>
