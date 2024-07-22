@@ -142,4 +142,9 @@ public class TaskAggregate : TodoTask
 	{
 		_priority = priority;
 	}
+
+	public void SetComplexity(Complexity complexity)
+	{
+		_complexity = complexity;
+	}
 }
