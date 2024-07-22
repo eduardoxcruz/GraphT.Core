@@ -110,6 +110,11 @@ public class TaskAggregate : TodoTask
 		_downstreams.RemoveWhere(todoTask => todoTask.Id.Equals(downstream.Id));
 	}
 
+	public void RemoveDownstreams(HashSet<TodoTask> downstreams)
+	{
+		_downstreams.ExceptWith(downstreams);
+	}
+
 	public void ReplaceDownstreams(HashSet<TodoTask> newDownstreams)
 	{
 		_downstreams.Clear();
