@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-using GraphT.Model.Entities;
+﻿using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Aggregates;
@@ -13,7 +11,7 @@ public class TaskAggregate : TodoTask
 	private Complexity _complexity;
 	private Relevance _relevance;
 	private Status _status;
-	private TaskDateTimeInfo _dateTimeInfo;
+	private DateTimeInfo _dateTimeInfo;
 	private HashSet<TodoTask> _upstreams = null!;
 	private HashSet<TodoTask> _downstreams = null!;
 	public bool IsFun
@@ -39,7 +37,7 @@ public class TaskAggregate : TodoTask
 	public string Priority => _priority.FormatedName();
 	public string Relevance => _relevance.FormatedName();
 	public string Status => _status.FormatedName();
-	public TaskDateTimeInfo DateTimeInfo => _dateTimeInfo;
+	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 
@@ -54,7 +52,7 @@ public class TaskAggregate : TodoTask
 	{
 		_isFun = isFun;
 		_isProductive = isProductive;
-		_dateTimeInfo = new TaskDateTimeInfo();
+		_dateTimeInfo = new DateTimeInfo();
 		_upstreams = [];
 		_downstreams = [];
 		_complexity = complexity;
