@@ -6,15 +6,15 @@ public struct TimeInfo
 	public DateTime? StartDate { get; set; }
 	public DateTime? FinishDate { get; set; }
 	public DateTime? LimitDate { get; set; }
-	public string TimeSpend => GetTimeSpend();
-	public string Punctuality => GetPunctuality();
+	public readonly string TimeSpend => GetTimeSpend();
+	public readonly string Punctuality => GetPunctuality();
 
 	public TimeInfo()
 	{
 		CreationTime = DateTime.Now;
 	}
 
-	private string GetPunctuality()
+	private readonly string GetPunctuality()
 	{
 		DateTime now = DateTime.Now;
 
@@ -43,7 +43,7 @@ public struct TimeInfo
 		return $"⏱ {daysToGo} day(s) to go!";
 	}
 
-	private string GetTimeSpend()
+	private readonly string GetTimeSpend()
 	{
 		if (!StartDate.HasValue)
 		{
