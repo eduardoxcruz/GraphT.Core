@@ -2,7 +2,7 @@
 
 public struct TaskDateTimeInfo
 {
-	public DateTime CreationTime { get; private set; }
+	public DateTime CreationDateTime { get; private set; }
 	public DateTime? StartDate { get; set; }
 	public DateTime? FinishDate { get; set; }
 	public DateTime? LimitDate { get; set; }
@@ -11,7 +11,7 @@ public struct TaskDateTimeInfo
 
 	public TaskDateTimeInfo()
 	{
-		CreationTime = DateTime.Now;
+		CreationDateTime = DateTime.Now;
 	}
 
 	private readonly string GetPunctuality()
