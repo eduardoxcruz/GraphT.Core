@@ -8,8 +8,8 @@ public class TaskAggregate : TodoTask
 	private bool _isFun;
 	private bool _isProductive;
 	private TimeInfo _timeInfo;
-	private readonly HashSet<TodoTask> _upstreams = null!;
-	private readonly HashSet<TodoTask> _downstreams = null!;
+	private HashSet<TodoTask> _upstreams = null!;
+	private HashSet<TodoTask> _downstreams = null!;
 	public bool IsFun
 	{
 		get => _isFun;
