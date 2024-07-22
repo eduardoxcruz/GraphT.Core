@@ -28,7 +28,7 @@ public class TaskAggregate : TodoTask
 			UpdateRelevance();
 		}
 	}
-	public float Progress => GetProgress();
+	public float Progress { get; set; }
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
 	public Status Status { get; set; }
