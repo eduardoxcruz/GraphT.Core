@@ -24,4 +24,9 @@
       <ProjectReference Include="..\GraphT.Model\GraphT.Model.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Aggregates\" />
+      <Folder Include="ValueObjects\" />
+    </ItemGroup>
+
 </Project>
