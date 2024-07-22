@@ -76,12 +76,21 @@ public class TaskAggregate : TodoTask
 	
 	public void AddUpstream(TodoTask upstream)
 	{
+		ValidateUpstream(upstream);
+		
 		_upstreams.Add(upstream);
 	}
 
 	public void RemoveUpstream(TodoTask upstream)
 	{
+		ValidateUpstream(upstream);
+		
 		_upstreams.RemoveWhere(todoTask => todoTask.Id.Equals(upstream.Id));
+	}
+
+	private void ValidateUpstream(TodoTask upstream)
+	{
+		if (upstream.Id.Equals(Guid.Empty)) throw new ArgumentException("Upstream id cannot be empty");
 	}
 	
 	public void AddUpstreams(HashSet<TodoTask> upstreams)
