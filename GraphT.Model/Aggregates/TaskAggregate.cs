@@ -1,4 +1,6 @@
-﻿using GraphT.Model.Entities;
+﻿using FluentValidation;
+
+using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Aggregates;
@@ -40,12 +42,17 @@ public class TaskAggregate : TodoTask
 	public TimeInfo TimeInfo => _timeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
+	private IValidator<TodoTask> _upstreamValidator;
 
-	private TaskAggregate() : base(String.Empty) { }
+	private TaskAggregate(IValidator<TodoTask> upstreamValidator) : base(String.Empty)
+	{
+		_upstreamValidator = upstreamValidator;
+	}
 
-	protected TaskAggregate(string name, 
+	public TaskAggregate(string name, 
 							bool isFun, 
 							bool isProductive, 
+							IValidator<TodoTask> upstreamValidator,
 							Complexity complexity = ValueObjects.Complexity.Indefinite, 
 							Priority priority = ValueObjects.Priority.MentalClutter, 
 							Status status = ValueObjects.Status.Backlog) : base(name)
@@ -59,6 +66,8 @@ public class TaskAggregate : TodoTask
 		_priority = priority;
 		_status = status;
 		UpdateRelevance();
+
+		_upstreamValidator = upstreamValidator;
 	}
 
 	private void UpdateRelevance()
@@ -74,11 +83,15 @@ public class TaskAggregate : TodoTask
 	
 	public void AddUpstream(TodoTask upstream)
 	{
+		_upstreamValidator.ValidateAndThrow(upstream);
+		
 		_upstreams.Add(upstream);
 	}
 
 	public void RemoveUpstream(TodoTask upstream)
 	{
+		_upstreamValidator.ValidateAndThrow(upstream);
+		
 		_upstreams.RemoveWhere(todoTask => todoTask.Id.Equals(upstream.Id));
 	}
 	
