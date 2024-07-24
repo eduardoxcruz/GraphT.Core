@@ -44,8 +44,8 @@ public class TaskAggregate : TodoTask
 	private TaskAggregate() : base(String.Empty) { }
 
 	public TaskAggregate(string name, 
-							bool isFun, 
-							bool isProductive,
+							bool isFun = false, 
+							bool isProductive = false,
 							Complexity complexity = ValueObjects.Complexity.Indefinite, 
 							Priority priority = ValueObjects.Priority.MentalClutter, 
 							Status status = ValueObjects.Status.Backlog) : base(name)
