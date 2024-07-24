@@ -15,7 +15,7 @@ public class DateTimeInfoTests
 	[Fact]
 	public void Punctuality_ReturnsOnTimeWhenFinishedOnLimitDate()
 	{
-		DateTimeOffset limitDate = DateTimeOffset.Now.Date;
+		DateTimeOffset limitDate = DateTimeOffset.Now;
 		DateTimeInfo sameDate = new() { LimitDateTime = limitDate, FinishDateTime = limitDate };
 		DateTimeInfo beforeLimit = new() { LimitDateTime = limitDate, FinishDateTime = limitDate.AddSeconds(-1) };
 		
