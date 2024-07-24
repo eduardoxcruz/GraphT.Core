@@ -22,13 +22,13 @@ public struct DateTimeInfo
 
 		if (FinishDateTime.HasValue)
 		{
-			if ((FinishDateTime.Value.Date - LimitDateTime.Value.Date).TotalDays == 0) return "\u2705 On Time!";
+			if ((FinishDateTime.Value.Date - LimitDateTime.Value.Date).TotalDays <= 0) return "\u2705 On Time!";
 			
 			int daysDifference = Math.Abs((LimitDateTime.Value.Date - FinishDateTime.Value.Date).Days);
 			
 			return FinishDateTime.Value.Date > LimitDateTime.Value.Date ? 
-						$"\ud83d\udea8 Late {daysDifference} day(s)!" : 
-						$"\u2b50 Early {daysDifference} day(s)!";
+				$"\ud83d\udea8 Late {daysDifference} day(s)!" : 
+				$"\u2b50 Early {daysDifference} day(s)!";
 		}
 		
 		if ((LimitDateTime.Value.Date - now.Date).TotalDays == 0) return "\u26a0 Finish Today!";
