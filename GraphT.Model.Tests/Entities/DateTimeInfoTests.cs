@@ -95,6 +95,6 @@ public class DateTimeInfoTests
 			FinishDateTime = DateTimeOffset.Now
 		};
 
-		Assert.StartsWith($"\u26a1 month(s) - 0 day(s) - 0 hours - 59 minutes", dateTimeInfo.TimeSpend);
+		Assert.StartsWith($"\u26a1 0 month(s) - 0 day(s) - 0 hours - 59 minutes", dateTimeInfo.TimeSpend);
 	}
 }
