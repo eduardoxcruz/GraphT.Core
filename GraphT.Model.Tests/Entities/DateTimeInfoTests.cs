@@ -82,7 +82,6 @@ public class DateTimeInfoTests
 			FinishDateTime = DateTimeOffset.Now
 		};
 
-		// Assert
 		Assert.Equal("\u23f0 1 month(s) - 5 day(s) - 3 hours - 30 minutes", dateTimeInfo.TimeSpend);
 	}
 
