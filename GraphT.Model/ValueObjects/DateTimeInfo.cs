@@ -22,7 +22,7 @@ public struct DateTimeInfo
 
 		if (FinishDateTime.HasValue)
 		{
-			if ((FinishDateTime.Value.Date - LimitDateTime.Value.Date).TotalDays <= 0) return "\u2705 On Time!";
+			if ((FinishDateTime.Value.Date - LimitDateTime.Value.Date).TotalDays == 0) return "\u2705 On Time!";
 			
 			int daysDifference = Math.Abs((LimitDateTime.Value.Date - FinishDateTime.Value.Date).Days);
 			
