@@ -7,5 +7,5 @@ public interface ITaskReadableRepository
 {
 	public ValueTask<TaskAggregate> GetTaskAsync(Guid taskId);
 	public ValueTask<HashSet<TodoTask>> GetUpstreamsAsync(Guid taskId);
-	public HashSet<TodoTask> GetDownstreams(Guid taskId);
+	public ValueTask<HashSet<TodoTask>> GetDownstreamsAsync(Guid taskId);
 }
