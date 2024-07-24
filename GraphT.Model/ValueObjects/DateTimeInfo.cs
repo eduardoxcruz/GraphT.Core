@@ -64,6 +64,6 @@ public struct DateTimeInfo
 		int minutes = duration.Minutes;
 		string emoji = duration.TotalHours > 1 ? "\u23f0" : "\u26a1";
 
-		return $"{emoji}{months} month(s) - {days} day(s) - {hours} hours - {minutes} minutes";
+		return $"{emoji} {months} month(s) - {days} day(s) - {hours} hours - {minutes} minutes";
 	}
 }
