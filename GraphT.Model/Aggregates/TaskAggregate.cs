@@ -42,9 +42,9 @@ public class TaskAggregate : TodoTask
 	public TaskAggregate(string name, 
 							bool isFun = false, 
 							bool isProductive = false,
-							Complexity complexity = ValueObjects.Complexity.Indefinite, 
-							Priority priority = ValueObjects.Priority.MentalClutter, 
-							Status status = ValueObjects.Status.Backlog) : base(name, status)
+							Complexity complexity = Complexity.Indefinite, 
+							Priority priority = Priority.MentalClutter, 
+							Status status = Status.Backlog) : base(name, status)
 	{
 		_isFun = isFun;
 		_isProductive = isProductive;
