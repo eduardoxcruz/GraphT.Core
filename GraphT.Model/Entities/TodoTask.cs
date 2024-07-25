@@ -1,9 +1,12 @@
-﻿namespace GraphT.Model.Entities;
+﻿using GraphT.Model.ValueObjects;
+
+namespace GraphT.Model.Entities;
 
 public class TodoTask
 {
 	public Guid Id { get; private set; }
 	public string Name { get; set; }
+	public Status Status { get; set; }
 
 	private TodoTask()
 	{
@@ -11,9 +14,10 @@ public class TodoTask
 		Name = string.Empty;
 	}
 	
-	public TodoTask(string name)
+	public TodoTask(string name, Status status = Status.Backlog)
 	{
 		Id = Guid.NewGuid();
 		Name = name;
+		Status = status;
 	}
 }
