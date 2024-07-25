@@ -29,9 +29,9 @@ public class TaskAggregate : TodoTask
 			UpdateRelevance();
 		}
 	}
-	public float Progress { get; set; }
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
+	public float Progress => GetProgress();
 	public Relevance Relevance => _relevance;
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
@@ -191,5 +191,29 @@ public class TaskAggregate : TodoTask
 	public void SetLimitDate(DateTimeOffset limitDate)
 	{
 		_dateTimeInfo.LimitDateTime = limitDate;
+	}
+	
+	private float GetProgress()
+	{
+		int totalDownstreams = _downstreams.Count;
+		int backlogTasks = _downstreams.Count(task => task.Status is Status.Backlog);
+		int completedOrDroppedTasks = _downstreams.Count(task => task.Status is Status.Dropped or Status.Completed);
+		int currentTask = 1;
+		float isFinished = 100f;
+		float isUnfinished = 0f;
+
+		switch (totalDownstreams)
+		{
+			case 0 when (Status is not Status.Completed):
+				return isUnfinished;
+			case 0 when (Status is Status.Completed):
+				return isFinished;
+		}
+
+		if (completedOrDroppedTasks >= totalDownstreams) return isFinished;
+		
+		if (backlogTasks == totalDownstreams) return isUnfinished;
+
+		return (completedOrDroppedTasks * isFinished) / (totalDownstreams + currentTask);
 	}
 }
