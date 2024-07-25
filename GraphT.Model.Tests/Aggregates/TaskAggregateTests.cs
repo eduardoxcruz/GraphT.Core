@@ -15,10 +15,10 @@ public class TaskAggregateTests
 		Assert.Equal(taskName, task.Name);
 		Assert.False(task.IsFun);
 		Assert.False(task.IsProductive);
-		Assert.Equal(Complexity.Indefinite.FormatedName(), task.Complexity);
-		Assert.Equal(Priority.MentalClutter.FormatedName(), task.Priority);
-		Assert.Equal(Status.Backlog.FormatedName(), task.Status);
-		Assert.Equal(Relevance.Superfluous.FormatedName(), task.Relevance);
+		Assert.Equal(Complexity.Indefinite, task.Complexity);
+		Assert.Equal(Priority.MentalClutter, task.Priority);
+		Assert.Equal(Status.Backlog, task.Status);
+		Assert.Equal(Relevance.Superfluous, task.Relevance);
 	}
 
 	[Fact]
@@ -29,10 +29,10 @@ public class TaskAggregateTests
 		TaskAggregate taskNecessary = new("Task Necessary", false, true);
 		TaskAggregate taskPurposeful = new("TaskPurposeful", true, true);
 		
-		Assert.Equal(taskSuperfluous.Relevance, Relevance.Superfluous.FormatedName());
-		Assert.Equal(taskEntertaining.Relevance, Relevance.Entertaining.FormatedName());
-		Assert.Equal(taskNecessary.Relevance, Relevance.Necessary.FormatedName());
-		Assert.Equal(taskPurposeful.Relevance, Relevance.Purposeful.FormatedName());
+		Assert.Equal(Relevance.Superfluous, taskSuperfluous.Relevance);
+		Assert.Equal(Relevance.Entertaining, taskEntertaining.Relevance);
+		Assert.Equal(Relevance.Necessary, taskNecessary.Relevance);
+		Assert.Equal(Relevance.Purposeful, taskPurposeful.Relevance);
 	}
 	
 	[Fact]
@@ -311,9 +311,9 @@ public class TaskAggregateTests
 	{
 		TaskAggregate task = new("Test Task");
 		
-		task.SetPriority(Priority.DoItNow);
+		task.Priority = Priority.DoItNow;
 
-		Assert.Equal(Priority.DoItNow.FormatedName(), task.Priority);
+		Assert.Equal(Priority.DoItNow, task.Priority);
 	}
 
 	[Fact]
@@ -321,9 +321,9 @@ public class TaskAggregateTests
 	{
 		TaskAggregate task = new("Test Task");
 		
-		task.SetComplexity(Complexity.Indefinite);
+		task.Complexity = Complexity.Indefinite;
 
-		Assert.Equal(Complexity.Indefinite.FormatedName(), task.Complexity);
+		Assert.Equal(Complexity.Indefinite, task.Complexity);
 	}
 
 	[Fact]
@@ -331,8 +331,8 @@ public class TaskAggregateTests
 	{
 		TaskAggregate task = new("Test Task");
 		
-		task.SetStatus(Status.Completed);
+		task.Status = Status.Completed;
 
-		Assert.Equal(Status.Completed.FormatedName(), task.Status);
+		Assert.Equal(Status.Completed, task.Status);
 	}
 }

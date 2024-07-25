@@ -7,10 +7,7 @@ public class TaskAggregate : TodoTask
 {
 	private bool _isFun;
 	private bool _isProductive;
-	private Priority _priority;
-	private Complexity _complexity;
 	private Relevance _relevance;
-	private Status _status;
 	private DateTimeInfo _dateTimeInfo;
 	private HashSet<TodoTask> _upstreams = null!;
 	private HashSet<TodoTask> _downstreams = null!;
@@ -33,10 +30,10 @@ public class TaskAggregate : TodoTask
 		}
 	}
 	public float Progress { get; set; }
-	public string Complexity => _complexity.FormatedName();
-	public string Priority => _priority.FormatedName();
-	public string Relevance => _relevance.FormatedName();
-	public string Status => _status.FormatedName();
+	public Complexity Complexity { get; set; }
+	public Priority Priority { get; set; }
+	public Status Status { get; set; }
+	public Relevance Relevance => _relevance;
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
@@ -55,9 +52,9 @@ public class TaskAggregate : TodoTask
 		_dateTimeInfo = new DateTimeInfo();
 		_upstreams = [];
 		_downstreams = [];
-		_complexity = complexity;
-		_priority = priority;
-		_status = status;
+		Complexity = complexity;
+		Priority = priority;
+		Status = status;
 		UpdateRelevance();
 	}
 
@@ -196,20 +193,5 @@ public class TaskAggregate : TodoTask
 	public void SetLimitDate(DateTimeOffset limitDate)
 	{
 		_dateTimeInfo.LimitDateTime = limitDate;
-	}
-
-	public void SetPriority(Priority priority)
-	{
-		_priority = priority;
-	}
-
-	public void SetComplexity(Complexity complexity)
-	{
-		_complexity = complexity;
-	}
-
-	public void SetStatus(Status status)
-	{
-		_status = status;
 	}
 }
