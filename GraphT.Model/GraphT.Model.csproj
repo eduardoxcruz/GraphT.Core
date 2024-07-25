@@ -7,12 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Aggregates\" />
-      <Folder Include="Entities\" />
       <Folder Include="Factories\" />
-      <Folder Include="Repositories\" />
-      <Folder Include="Services\" />
-      <Folder Include="ValueObjects\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SeedWork\SeedWork.csproj" />
     </ItemGroup>
 
 </Project>
