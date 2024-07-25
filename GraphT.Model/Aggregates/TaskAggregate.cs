@@ -198,9 +198,9 @@ public class TaskAggregate : TodoTask
 		int totalDownstreams = _downstreams.Count;
 		int backlogTasks = _downstreams.Count(task => task.Status is Status.Backlog);
 		int completedOrDroppedTasks = _downstreams.Count(task => task.Status is Status.Dropped or Status.Completed);
-		int currentTask = 1;
-		float isFinished = 100f;
-		float isUnfinished = 0f;
+		const int currentTask = 1;
+		const float isFinished = 100f;
+		const float isUnfinished = 0f;
 
 		switch (totalDownstreams)
 		{
