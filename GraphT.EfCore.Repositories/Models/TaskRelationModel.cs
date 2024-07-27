@@ -1,4 +1,4 @@
-﻿using GraphT.Model.Entities;
+﻿using GraphT.Model.Aggregates;
 
 namespace GraphT.EfCore.Repositories.Models;
 
@@ -7,6 +7,6 @@ public class TaskRelationModel
 	public Guid UpstreamTaskId { get; set; }
 	public Guid DownstreamTaskId { get; set; }
 
-	public TodoTask UpstreamTask { get; set; }
-	public TodoTask DownstreamTask { get; set; }
+	public TaskAggregate UpstreamTask { get; set; }
+	public TaskAggregate DownstreamTask { get; set; }
 }
