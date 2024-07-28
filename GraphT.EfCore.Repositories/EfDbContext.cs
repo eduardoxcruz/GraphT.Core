@@ -1,4 +1,5 @@
 ﻿using GraphT.EfCore.Repositories.EntityTypeConfigurations;
+using GraphT.EfCore.Repositories.Models;
 using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
 
@@ -11,6 +12,7 @@ public partial class EfDbContext : DbContext
 {
 	public DbSet<TodoTask> TodoTasks { get; set; }
 	public DbSet<TaskAggregate> TaskAggregates { get; set; }
+	public DbSet<TodoTaskStream> TaskStreams { get; set; }
 	
 	public EfDbContext(DbContextOptions<EfDbContext> options) : base(options) { }
 
@@ -18,6 +20,7 @@ public partial class EfDbContext : DbContext
 	{
 		new TodoTaskEntityTypeConfiguration().Configure(modelBuilder.Entity<TodoTask>());
 		new TaskAggregateEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskAggregate>());
+		new TodoTaskStreamsEntityTypeConfiguration().Configure(modelBuilder.Entity<TodoTaskStream>());
 		OnModelCreatingPartial(modelBuilder);
 	}
 
