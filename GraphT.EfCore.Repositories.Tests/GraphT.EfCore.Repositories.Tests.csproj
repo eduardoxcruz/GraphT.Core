@@ -20,4 +20,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GraphT.EfCore.Repositories\GraphT.EfCore.Repositories.csproj" />
+    </ItemGroup>
+
 </Project>
