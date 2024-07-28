@@ -13,3 +13,14 @@ public partial class EfDbContext : DbContext
 
 	partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
+
+public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<EfDbContext>
+{
+	public EfDbContext CreateDbContext(string[] args)
+	{
+		
+		DbContextOptionsBuilder<EfDbContext> builder = new();
+		builder.UseSqlServer("Server=localhost;Database=Testing;User Id=sa;Password=DevPassword123_;Encrypt=False");
+		return new EfDbContext(builder.Options);
+	}
+}
