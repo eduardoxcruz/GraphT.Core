@@ -15,10 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="EntityTypeConfigurations\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\GraphT.Model\GraphT.Model.csproj" />
     </ItemGroup>
 
