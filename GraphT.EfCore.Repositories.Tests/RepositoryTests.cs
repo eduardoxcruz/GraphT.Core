@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Entities;
+using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
 namespace GraphT.EfCore.Repositories.Tests;

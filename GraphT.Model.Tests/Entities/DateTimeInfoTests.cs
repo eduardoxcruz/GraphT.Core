@@ -18,7 +18,7 @@ public class DateTimeInfoTests
 		DateTimeOffset limitDate = DateTimeOffset.Now;
 		DateTimeInfo sameDate = new() { LimitDateTime = limitDate, FinishDateTime = limitDate };
 		DateTimeInfo beforeLimit = new() { LimitDateTime = limitDate, FinishDateTime = limitDate.AddSeconds(-1) };
-		
+
 		Assert.Equal("\u2705 On Time!", sameDate.Punctuality);
 		Assert.Equal("\u2705 On Time!", beforeLimit.Punctuality);
 	}
@@ -64,36 +64,59 @@ public class DateTimeInfoTests
 
 		Assert.Equal("\u23f1 4 day(s) to go!", dateTimeInfo.Punctuality);
 	}
-	
+
 	[Fact]
-	public void TimeSpend_ReturnsZeroWhenStartDateTimeNotSet()
+	public void UpdateTimeSpend_ZeroTimeSpan_SetsCorrectTimeSpend()
 	{
 		DateTimeInfo dateTimeInfo = new();
+		TimeSpan timeSpan = TimeSpan.Zero;
 
-		Assert.Equal("\u23f0 0 month(s) - 0 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
+		dateTimeInfo.UpdateTimeSpend(timeSpan);
+
+		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
 	}
 
 	[Fact]
-	public void TimeSpend_CalculatesCorrectDuration()
+	public void UpdateTimeSpend_OneDay_SetsCorrectTimeSpend()
 	{
-		DateTimeInfo dateTimeInfo = new()
-		{
-			StartDateTime = DateTimeOffset.Now.AddMonths(-1).AddDays(-5).AddHours(-3).AddMinutes(-30),
-			FinishDateTime = DateTimeOffset.Now
-		};
+		DateTimeInfo dateTimeInfo = new();
+		TimeSpan timeSpan = TimeSpan.FromDays(1);
 
-		Assert.Equal("\u23f0 1 month(s) - 5 day(s) - 3 hours - 30 minutes", dateTimeInfo.TimeSpend);
+		dateTimeInfo.UpdateTimeSpend(timeSpan);
+
+		Assert.Equal("\u23f0 1 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
 	}
 
 	[Fact]
-	public void TimeSpend_UsesLightningEmojiForShortDurations()
+	public void UpdateTimeSpend_ThirtyOneDays_SetsCorrectTimeSpend()
 	{
-		DateTimeInfo dateTimeInfo = new()
-		{
-			StartDateTime = DateTimeOffset.Now.AddMinutes(-59), 
-			FinishDateTime = DateTimeOffset.Now
-		};
+		DateTimeInfo dateTimeInfo = new DateTimeInfo();
+		TimeSpan timeSpan = TimeSpan.FromDays(31);
 
-		Assert.StartsWith($"\u26a1 0 month(s) - 0 day(s) - 0 hours - 59 minutes", dateTimeInfo.TimeSpend);
+		dateTimeInfo.UpdateTimeSpend(timeSpan);
+
+		Assert.Equal("\u23f0 31 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
+	}
+
+	[Fact]
+	public void UpdateTimeSpend_TwoDaysAndThreeHours_SetsCorrectTimeSpend()
+	{
+		DateTimeInfo dateTimeInfo = new();
+		TimeSpan timeSpan = TimeSpan.FromDays(2) + TimeSpan.FromHours(3);
+
+		dateTimeInfo.UpdateTimeSpend(timeSpan);
+
+		Assert.Equal("\u23f0 2 day(s) - 3 hours - 0 minutes", dateTimeInfo.TimeSpend);
+	}
+
+	[Fact]
+	public void UpdateTimeSpend_LessThanOneHour_SetsCorrectTimeSpend()
+	{
+		DateTimeInfo dateTimeInfo = new();
+		TimeSpan timeSpan = TimeSpan.FromMinutes(30);
+
+		dateTimeInfo.UpdateTimeSpend(timeSpan);
+
+		Assert.Equal("\u26a1 0 day(s) - 0 hours - 30 minutes", dateTimeInfo.TimeSpend);
 	}
 }
