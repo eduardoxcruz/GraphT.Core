@@ -2,6 +2,7 @@
 
 public enum Status
 {
+	Created = -1,
 	Backlog = 0,
 	ReadyToStart = 1,
 	InProgress = 2,
@@ -21,7 +22,8 @@ public static class StatusExtensions
 			Status.InProgress => "\u25b6 In Progress",
 			Status.Paused => "\u23f8 Paused",
 			Status.Dropped => "\ud83d\uddd1 Dropped",
-			_ => "\u2705 Completed"
+			Status.Completed => "\u2705 Completed",
+			_ => "\u270c Created"
 		};
 
 		return formatedName;
