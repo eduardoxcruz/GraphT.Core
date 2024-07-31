@@ -5,20 +5,17 @@ using SeedWork;
 
 namespace GraphT.Model.Services;
 
-public class TimeSpendCalculator
+public static class TimeSpendCalculatorService
 {
-	private readonly IUnitOfWork _unitOfWork;
-
-	public TimeSpendCalculator(IUnitOfWork unitOfWork)
-	{
-		_unitOfWork = unitOfWork;
-	}
-
-	public async ValueTask<TimeSpan?> GetTimeSpend(Guid taskId, Status newStatus, DateTimeOffset newDateTime)
+	public static async ValueTask<TimeSpan?> GetTimeSpend(
+		Guid taskId, 
+		Status newStatus, 
+		DateTimeOffset newDateTime, 
+		IUnitOfWork unitOfWork)
 	{
 		if (newStatus is Status.Created or Status.Backlog or Status.ReadyToStart or Status.InProgress) return null;
 		
-		TaskLog? lastLog = (await _unitOfWork.Repository<TaskLog>().FindAsync(new LastTaskLogSpecification(taskId)))
+		TaskLog? lastLog = (await unitOfWork.Repository<TaskLog>().FindAsync(new LastTaskLogSpecification(taskId)))
 			.FirstOrDefault();
 
 		if (lastLog is null) return null;
