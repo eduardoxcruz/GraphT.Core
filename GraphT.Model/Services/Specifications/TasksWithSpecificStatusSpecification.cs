@@ -3,7 +3,7 @@ using GraphT.Model.ValueObjects;
 
 using SeedWork;
 
-namespace GraphT.EfCore.Repositories.Tests;
+namespace GraphT.Model.Services.Specifications;
 
 public sealed class TasksWithSpecificStatusSpecification : BaseSpecification<TodoTask>
 {
