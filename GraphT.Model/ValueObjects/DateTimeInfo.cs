@@ -6,12 +6,13 @@ public struct DateTimeInfo
 	public DateTimeOffset? StartDateTime { get; set; }
 	public DateTimeOffset? FinishDateTime { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }
-	public readonly string TimeSpend => GetTimeSpend();
+	public string TimeSpend { get; set; }
 	public readonly string Punctuality => GetPunctuality();
 
 	public DateTimeInfo()
 	{
 		CreationDateTime = DateTimeOffset.Now;
+		TimeSpend = $"\u23f0 0 month(s) - 0 day(s) - 0 hours - 0 minutes";
 	}
 
 	private readonly string GetPunctuality()
