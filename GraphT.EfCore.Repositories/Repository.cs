@@ -13,7 +13,7 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 		return await context.Set<TEntity>().FindAsync(id);
 	}
 
-	public async ValueTask<IEnumerable<TEntity>> Find(ISpecification<TEntity>? specification = null)
+	public async ValueTask<IEnumerable<TEntity>> FindAsync(ISpecification<TEntity>? specification = null)
 	{
 		return await ApplySpecification(specification);
 	}
