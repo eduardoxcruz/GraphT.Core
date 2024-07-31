@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.Model.Tests", "Graph
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore.Repositories", "GraphT.EfCore.Repositories\GraphT.EfCore.Repositories.csproj", "{2C1A3413-54E8-416E-9980-52554F8DF2BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore.Repositories.Tests", "GraphT.EfCore.Repositories.Tests\GraphT.EfCore.Repositories.Tests.csproj", "{9DCF1977-F571-4F58-899A-67FBAE4D560B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{2C1A3413-54E8-416E-9980-52554F8DF2BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C1A3413-54E8-416E-9980-52554F8DF2BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C1A3413-54E8-416E-9980-52554F8DF2BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCF1977-F571-4F58-899A-67FBAE4D560B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCF1977-F571-4F58-899A-67FBAE4D560B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCF1977-F571-4F58-899A-67FBAE4D560B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCF1977-F571-4F58-899A-67FBAE4D560B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +102,7 @@ Global
 		{2606DB1D-0888-40A8-A151-5C2C85893E7A} = {91E66628-F973-45A9-B247-1B88599BB8D2}
 		{8F09B943-322F-4B81-8002-9C1E4E14D47A} = {175AD219-3647-4CFA-82D8-A1A48DE3CB81}
 		{2C1A3413-54E8-416E-9980-52554F8DF2BC} = {79700CE8-310F-4E21-B8D9-35552E639826}
+		{9DCF1977-F571-4F58-899A-67FBAE4D560B} = {91E66628-F973-45A9-B247-1B88599BB8D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB7701C-9BFC-46E8-B6C7-59EA107DAB92}

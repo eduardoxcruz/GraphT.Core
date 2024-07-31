@@ -4,5 +4,5 @@ public interface IUnitOfWork
 {
 	IRepository<TEntity> Repository<TEntity>() where TEntity : class;
 	
-	ValueTask<int> SaveChanges();
+	ValueTask<int> SaveChangesAsync();
 }
