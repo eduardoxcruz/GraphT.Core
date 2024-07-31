@@ -6,15 +6,27 @@ public struct DateTimeInfo
 	public DateTimeOffset? StartDateTime { get; set; }
 	public DateTimeOffset? FinishDateTime { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }
-	public string TimeSpend { get; set; }
+	public string TimeSpend { get; private set; }
 	public readonly string Punctuality => GetPunctuality();
 
 	public DateTimeInfo()
 	{
 		CreationDateTime = DateTimeOffset.Now;
-		TimeSpend = $"\u23f0 0 month(s) - 0 day(s) - 0 hours - 0 minutes";
+		TimeSpend = $"\u23f0 0 day(s) - 0 hours - 0 minutes";
 	}
 
+	public void UpdateTimeSpend(TimeSpan timeSpend)
+	{
+		if (timeSpend.Ticks < 1)
+		{
+			TimeSpend = $"\u23f0 0 day(s) - 0 hours - 0 minutes";
+			return;
+		}
+		
+		string emoji = timeSpend.TotalHours > 1 ? "\u23f0" : "\u26a1";
+		TimeSpend = $"{emoji} {timeSpend.Days} day(s) - {timeSpend.Hours} hours - {timeSpend.Minutes} minutes";
+	}
+	
 	private readonly string GetPunctuality()
 	{
 		DateTimeOffset now = DateTimeOffset.Now;
@@ -42,29 +54,5 @@ public struct DateTimeInfo
 		
 		int daysToGo = (LimitDateTime.Value.Date - now.Date).Days + 1;
 		return $"\u23f1 {daysToGo} day(s) to go!";
-	}
-
-	private readonly string GetTimeSpend()
-	{
-		if (!StartDateTime.HasValue)
-		{
-			return "\u23f0 0 month(s) - 0 day(s) - 0 hours - 0 minutes";
-		}
-
-		DateTimeOffset finishDate = FinishDateTime ?? DateTimeOffset.Now;
-		TimeSpan duration = finishDate - StartDateTime.Value;
-		int months = (finishDate.Year - StartDateTime.Value.Year) * 12 + finishDate.Month - StartDateTime.Value.Month;
-		
-		if (finishDate.Day < StartDateTime.Value.Day)
-		{
-			months--;
-		}
-		
-		int days = (finishDate - StartDateTime.Value.AddMonths(months)).Days;
-		int hours = duration.Hours;
-		int minutes = duration.Minutes;
-		string emoji = duration.TotalHours > 1 ? "\u23f0" : "\u26a1";
-
-		return $"{emoji} {months} month(s) - {days} day(s) - {hours} hours - {minutes} minutes";
 	}
 }
