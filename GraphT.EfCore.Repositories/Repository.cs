@@ -8,7 +8,7 @@ namespace GraphT.EfCore.Repositories;
 
 public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where TEntity : class
 {
-	public async ValueTask<TEntity?> FindByIdAsync(params object?[]? id)
+	public async ValueTask<TEntity?> FindByIdAsync(object id)
 	{
 		return await context.Set<TEntity>().FindAsync(id);
 	}
