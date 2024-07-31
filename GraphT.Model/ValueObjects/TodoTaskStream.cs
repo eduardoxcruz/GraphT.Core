@@ -1,6 +1,6 @@
 ﻿using GraphT.Model.Entities;
 
-namespace GraphT.EfCore.Repositories.Models;
+namespace GraphT.Model.ValueObjects;
 
 public class TodoTaskStream
 {

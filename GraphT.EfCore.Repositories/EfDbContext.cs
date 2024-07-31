@@ -1,5 +1,4 @@
 ﻿using GraphT.EfCore.Repositories.EntityTypeConfigurations;
-using GraphT.EfCore.Repositories.Models;
 using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;

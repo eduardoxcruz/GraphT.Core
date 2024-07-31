@@ -1,4 +1,4 @@
-﻿using GraphT.EfCore.Repositories.Models;
+﻿using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
