@@ -4,7 +4,7 @@ namespace SeedWork;
 
 public interface IRepository<TEntity> where TEntity : class
 {
-	ValueTask<TEntity?> FindByIdAsync(int id);
+	ValueTask<TEntity?> FindByIdAsync(params object?[]? id);
 	ValueTask<IEnumerable<TEntity>> Find(ISpecification<TEntity>? specification = null);
 	ValueTask AddAsync(TEntity entity);
 	ValueTask AddRangeAsync(IEnumerable<TEntity> entities);
