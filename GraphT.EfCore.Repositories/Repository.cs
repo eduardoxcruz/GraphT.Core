@@ -47,6 +47,12 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 		return ValueTask.CompletedTask;
 	}
 
+	public ValueTask UpdateRangeAsync(IEnumerable<TEntity> entities)
+	{
+		context.Set<TEntity>().UpdateRange(entities);
+		return ValueTask.CompletedTask;
+	}
+
 	public async ValueTask<bool> ContainsAsync(ISpecification<TEntity>? specification = null)
 	{
 		return await CountAsync(specification) > 0;
