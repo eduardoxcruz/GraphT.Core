@@ -2,15 +2,14 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GraphT.Controllers
+namespace GraphT.Controllers;
+
+public static class DependencyContainer
 {
-    public static class DependencyContainer
-    {
-        public static IServiceCollection AddGraphTControllers(this IServiceCollection services)
-        {
-	        services.AddScoped<IGetFinishedTasksController, GetFinishedTasksController>();
-	        services.AddScoped<IGetUnfinishedTasksController, GetUnfinishedTasksController>();
-            return services;
-        }
-    }
+	public static IServiceCollection AddGraphTControllers(this IServiceCollection services)
+	{
+		services.AddScoped<IGetFinishedTasksController, GetFinishedTasksController>();
+		services.AddScoped<IGetUnfinishedTasksController, GetUnfinishedTasksController>();
+		return services;
+	}
 }
