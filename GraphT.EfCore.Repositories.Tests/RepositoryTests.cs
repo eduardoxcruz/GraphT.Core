@@ -1,6 +1,7 @@
 ﻿using GraphT.Model.Entities;
-using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
+
+using SeedWork;
 
 namespace GraphT.EfCore.Repositories.Tests;
 
@@ -28,23 +29,36 @@ public class RepositoryTests : TestBase
 	}
 
 	[Fact]
-	public async Task Find_WithSpecification_ReturnsCorrectEntities()
+	public async Task Find_WithSpecification_ReturnsPagedList()
 	{
 		Status expectedStatus = Status.InProgress;
 		List<TodoTask> tasks = new()
 		{
 			new TodoTask("Task 1"), 
 			new TodoTask("Task 2", expectedStatus), 
-			new TodoTask("Task 3", expectedStatus)
+			new TodoTask("Task 3", expectedStatus),
+			new TodoTask("Task 4"), 
+			new TodoTask("Task 5", expectedStatus), 
+			new TodoTask("Task 6", expectedStatus),
+			new TodoTask("Task 7"), 
+			new TodoTask("Task 8", expectedStatus), 
+			new TodoTask("Task 9", expectedStatus)
 		};
-		TasksWithSpecificStatusSpecification spec = new(expectedStatus);
+		TasksWithSpecificStatusSpecification spec = new(expectedStatus, 2, 2);
 		
 		await _context.TodoTasks.AddRangeAsync(tasks);
 		await _context.SaveChangesAsync();
-		List<TodoTask> results = (await _repository.FindAsync(spec)).ToList();
+		PagedList<TodoTask> results = await _repository.FindAsync(spec);
 		
-		Assert.Equal(2, results.Count());
+		Assert.NotNull(results);
+		Assert.NotEmpty(results);
 		Assert.All(results, todoTask => Assert.Equal(expectedStatus, todoTask.Status));
+		Assert.Equal(2, results.Count);
+		Assert.Equal(6, results.TotalCount);
+		Assert.Equal(2, results.CurrentPage);
+		Assert.Equal(3, results.TotalPages);
+		Assert.True(results.HasNext);
+		Assert.True(results.HasPrevious);
 	}
 	
 	[Fact]
@@ -61,9 +75,9 @@ public class RepositoryTests : TestBase
 		
 		await _context.TodoTasks.AddRangeAsync(tasks);
 		await _context.SaveChangesAsync();
-		List<TodoTask> results = (await _repository.FindAsync()).ToList();
+		PagedList<TodoTask> results = await _repository.FindAsync();
 		
-		Assert.Equal(5, results.Count());
+		Assert.Equal(5, results.Count);
 	}
 
 	[Fact]
