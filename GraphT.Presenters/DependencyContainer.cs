@@ -1,7 +1,4 @@
-﻿using GraphT.Presenters.GetFinishedOrUnfinishedTasks;
-using GraphT.UseCases.GetFinishedAndUnfinishedTasks;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphT.Presenters
 {
@@ -9,8 +6,8 @@ namespace GraphT.Presenters
     {
         public static IServiceCollection AddGraphTPresenters(this IServiceCollection services)
         {
-	        services.AddScoped<IGetFinishedTasksOutputPort, GetFinishedTasksPresenter>();
-	        services.AddScoped<IGetUnfinishedTasksOutputPort, GetUnfinishedTasksPresenter>();
+	        services.AddScoped<UseCases.GetFinishedTasks.IOutputPort, GetFinishedTasks.Presenter>();
+	        services.AddScoped<UseCases.GetUnfinishedTasks.IOutputPort, GetUnfinishedTasks.Presenter>();
             return services;
         }
     }
