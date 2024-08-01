@@ -1,11 +1,11 @@
 ﻿using GraphT.UseCases;
-using GraphT.UseCases.GetFinishedAndUnfinishedTasks;
+using GraphT.UseCases.GetFinishedTasks;
 
 using SeedWork;
 
-namespace GraphT.Presenters.GetFinishedOrUnfinishedTasks;
+namespace GraphT.Presenters.GetFinishedTasks;
 
-public class GetFinishedTasksPresenter : IPresenter<OnlyTodoTaskPagedListDto>, IGetFinishedTasksOutputPort
+public class Presenter : IPresenter<OnlyTodoTaskPagedListDto>, IOutputPort
 {
 	public OnlyTodoTaskPagedListDto Content { get; private set; }
 	
