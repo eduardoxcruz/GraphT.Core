@@ -1,5 +1,5 @@
 ﻿using GraphT.UseCases;
-using GraphT.UseCases.GetFinishedAndUnfinishedTasks;
+using GraphT.UseCases.GetFinishedTasks;
 
 using SeedWork;
 
@@ -9,10 +9,10 @@ public interface IGetFinishedTasksController : IControllerTOutTIn<OnlyTodoTaskPa
 
 public class GetFinishedTasksController : IGetFinishedTasksController
 {
-	private readonly IGetFinishedTasksInputPort _inputPort;
-	private readonly IGetFinishedTasksOutputPort _outputPort;
+	private readonly IInputPort _inputPort;
+	private readonly IOutputPort _outputPort;
 
-	public GetFinishedTasksController(IGetFinishedTasksInputPort inputPort, IGetFinishedTasksOutputPort outputPort)
+	public GetFinishedTasksController(IInputPort inputPort, IOutputPort outputPort)
 	{
 		_inputPort = inputPort;
 		_outputPort = outputPort;
