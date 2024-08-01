@@ -13,9 +13,21 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 		return await context.Set<TEntity>().FindAsync(id);
 	}
 
-	public async ValueTask<IEnumerable<TEntity>> FindAsync(ISpecification<TEntity>? specification = null)
+	public async ValueTask<PagedList<TEntity>> FindAsync(ISpecification<TEntity>? specification = null)
 	{
-		return await ApplySpecification(specification);
+		IQueryable<TEntity> query = await ApplySpecification(specification);
+		int count = await query.CountAsync();
+		
+		if (specification?.IsPagingEnabled == true)
+		{
+			query = query
+				.Skip((specification.PageNumber - 1) * specification.PageSize)
+				.Take(specification.PageSize);
+		}
+
+		List<TEntity> items = await query.ToListAsync();
+		
+		return new PagedList<TEntity>(items, count, specification?.PageNumber ?? 1, specification?.PageSize ?? count);
 	}
 
 	public async ValueTask AddAsync(TEntity entity)
