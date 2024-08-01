@@ -37,10 +37,15 @@ public abstract class BaseSpecification<T> : ISpecification<T>
 		IncludeStrings.Add(includeString);
 	}
 
-	protected virtual void ApplyPaging(int skip, int take)
+	protected virtual void ApplyPaging(int pageNumber, int pageSize)
 	{
-		Skip = skip;
-		Take = take;
+		if (pageNumber <= 0 || pageSize <= 0)
+		{
+			return;
+		}
+
+		PageNumber = pageNumber;
+		PageSize = pageSize;
 		IsPagingEnabled = true;
 	}
 
