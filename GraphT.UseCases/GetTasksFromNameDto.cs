@@ -1,6 +1,6 @@
 ﻿using SeedWork;
 
-namespace GraphT.UseCases.GetFinishedAndUnfinishedTasks;
+namespace GraphT.UseCases;
 
 public class GetTasksFromNameDto
 {
