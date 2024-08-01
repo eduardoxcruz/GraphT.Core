@@ -1,14 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GraphT.Presenters.GetFinishedTasks;
+using GraphT.UseCases.GetFinishedTasks;
 
-namespace GraphT.Presenters
+using Microsoft.Extensions.DependencyInjection;
+
+namespace GraphT.Presenters;
+
+public static class DependencyContainer
 {
-    public static class DependencyContainer
-    {
-        public static IServiceCollection AddGraphTPresenters(this IServiceCollection services)
-        {
-	        services.AddScoped<UseCases.GetFinishedTasks.IOutputPort, GetFinishedTasks.Presenter>();
-	        services.AddScoped<UseCases.GetUnfinishedTasks.IOutputPort, GetUnfinishedTasks.Presenter>();
-            return services;
-        }
-    }
+	public static IServiceCollection AddGraphTPresenters(this IServiceCollection services)
+	{
+		services.AddScoped<IOutputPort, Presenter>();
+		services.AddScoped<UseCases.GetUnfinishedTasks.IOutputPort, GetUnfinishedTasks.Presenter>();
+		return services;
+	}
 }
