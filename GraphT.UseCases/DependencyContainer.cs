@@ -1,6 +1,4 @@
-﻿using GraphT.UseCases.GetFinishedAndUnfinishedTasks;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphT.UseCases
 {
@@ -8,8 +6,8 @@ namespace GraphT.UseCases
     {
         public static IServiceCollection AddGraphTUseCases(this IServiceCollection services)
         {
-	        services.AddScoped<IGetFinishedTasksInputPort, GetFinishedTasks>();
-	        services.AddScoped<IGetUnfinishedTasksInputPort, GetUnfinishedTasks>();
+	        services.AddScoped<GetFinishedTasks.IInputPort, GetFinishedTasks.UseCase>();
+	        services.AddScoped<GetUnfinishedTasks.IInputPort, GetUnfinishedTasks.UseCase>();
             return services;
         }
     }
