@@ -4,8 +4,8 @@ namespace SeedWork;
 
 public interface ISpecification<T>
 {
-	int Take { get; }
-	int Skip { get; }
+	int PageNumber { get; }
+	int PageSize { get; }
 	bool IsPagingEnabled { get; }
 	List<string> IncludeStrings { get; }
 	List<Expression<Func<T, object>>> Includes { get; }

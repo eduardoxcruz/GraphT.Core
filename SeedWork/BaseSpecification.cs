@@ -4,8 +4,8 @@ namespace SeedWork;
 
 public abstract class BaseSpecification<T> : ISpecification<T>
 {
-	public int Take { get; private set; }
-	public int Skip { get; private set; }
+	public int PageNumber { get; private set; }
+	public int PageSize { get; private set; }
 	public bool IsPagingEnabled { get; private set; } = false;
 	public List<string> IncludeStrings { get; }
 	public List<Expression<Func<T, object>>> Includes { get; }
