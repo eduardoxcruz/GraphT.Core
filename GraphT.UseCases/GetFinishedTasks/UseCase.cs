@@ -3,18 +3,18 @@ using GraphT.Model.Services.Specifications;
 
 using SeedWork;
 
-namespace GraphT.UseCases.GetFinishedAndUnfinishedTasks;
+namespace GraphT.UseCases.GetFinishedTasks;
 
-public interface IGetFinishedTasksInputPort : IPort<GetTasksFromNameDto> { }
+public interface IInputPort : IPort<GetTasksFromNameDto> { }
 
-public interface IGetFinishedTasksOutputPort : IPort<OnlyTodoTaskPagedListDto> { }
+public interface IOutputPort : IPort<OnlyTodoTaskPagedListDto> { }
 
-internal class GetFinishedTasks : IGetFinishedTasksInputPort
+internal class UseCase : IInputPort
 {
-	private readonly IGetFinishedTasksOutputPort _outputPort;
+	private readonly IOutputPort _outputPort;
 	private readonly IUnitOfWork _unitOfWork;
 
-	public GetFinishedTasks(IGetFinishedTasksOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
 	{
 		_outputPort = outputPort;
 		_unitOfWork = unitOfWork;
