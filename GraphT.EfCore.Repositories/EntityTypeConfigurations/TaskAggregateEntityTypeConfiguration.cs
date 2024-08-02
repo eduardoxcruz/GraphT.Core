@@ -10,7 +10,7 @@ public class TaskAggregateEntityTypeConfiguration : IEntityTypeConfiguration<Tas
 	public void Configure(EntityTypeBuilder<TaskAggregate> builder)
 	{
 		builder.HasIndex(taskAggregate => taskAggregate.Id);
-		builder.Property(taskAggregate => taskAggregate.Id).HasColumnName("Id").HasColumnOrder(0);
+		builder.Property(taskAggregate => taskAggregate.Id).HasColumnOrder(0);
 		builder.Property(taskAggregate => taskAggregate.Name).HasColumnOrder(1);
 		builder.Property(taskAggregate => taskAggregate.IsFun).HasColumnOrder(2);
 		builder.Property(taskAggregate => taskAggregate.IsProductive).HasColumnOrder(3);
