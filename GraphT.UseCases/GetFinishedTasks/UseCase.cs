@@ -7,7 +7,7 @@ namespace GraphT.UseCases.GetFinishedTasks;
 
 public interface IInputPort : IPort<GetTasksFromNameDto> { }
 
-public interface IOutputPort : IPort<OnlyTodoTaskPagedListDto> { }
+public interface IOutputPort : IPort<TaskIdAndNamePagedListDto> { }
 
 internal class UseCase : IInputPort
 {
@@ -23,8 +23,13 @@ internal class UseCase : IInputPort
 	public async ValueTask Handle(GetTasksFromNameDto dto)
 	{
 		FinishedTasksSpecification specification = new(dto.TaskName, dto.PagingParams);
-		PagedList<TaskAggregate> tasks = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
-		OnlyTodoTaskPagedListDto onlyTodoTaskPagedListDto = new(tasks);
-		await _outputPort.Handle(onlyTodoTaskPagedListDto);
+		PagedList<TaskAggregate> tasksFromDb = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
+		PagedList<TaskIdAndName> tasks = new(
+			tasksFromDb.Select(TaskIdAndName.MapFrom).ToList(), 
+			tasksFromDb.TotalCount, 
+			tasksFromDb.CurrentPage,
+			tasksFromDb.PageSize);
+		TaskIdAndNamePagedListDto outDto = new(tasks);
+		await _outputPort.Handle(outDto);
 	}
 }
