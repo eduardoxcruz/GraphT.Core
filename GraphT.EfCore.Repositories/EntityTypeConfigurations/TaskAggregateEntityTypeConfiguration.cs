@@ -18,15 +18,15 @@ public class TaskAggregateEntityTypeConfiguration : IEntityTypeConfiguration<Tas
 		builder.Property(taskAggregate => taskAggregate.Complexity).HasColumnOrder(5);
 		builder.Property(taskAggregate => taskAggregate.Priority).HasColumnOrder(6);
 		builder.Property(taskAggregate => taskAggregate.Relevance).HasColumnOrder(7);
-		builder.Property(taskAggregate => taskAggregate.DateTimeInfo.CreationDateTime).HasColumnOrder(8);
-		builder.Property(taskAggregate => taskAggregate.DateTimeInfo.StartDateTime).HasColumnOrder(9);
-		builder.Property(taskAggregate => taskAggregate.DateTimeInfo.FinishDateTime).HasColumnOrder(10);
-		builder.Property(taskAggregate => taskAggregate.DateTimeInfo.LimitDateTime).HasColumnOrder(11);
-		builder.Property(taskAggregate => taskAggregate.DateTimeInfo.TimeSpend).HasColumnOrder(12);
-		builder.Property(taskAggregate => taskAggregate.DateTimeInfo.Punctuality).HasColumnOrder(13);
-		
-		builder.HasMany(ta => ta.Upstreams).WithMany();
-		builder.HasMany(ta => ta.Downstreams).WithMany();
+		builder.ComplexProperty(taskAggregate => taskAggregate.DateTimeInfo);
+
+		builder
+			.HasMany(ta => ta.Upstreams)
+			.WithMany(ta => ta.Downstreams)
+			.UsingEntity("TaskStreams",
+				right => right.HasOne(typeof(TaskAggregate)).WithMany().HasForeignKey("UpstreamId").HasPrincipalKey(nameof(TaskAggregate.Id)),
+				left => left.HasOne(typeof(TaskAggregate)).WithMany().HasForeignKey("DownstreamId").HasPrincipalKey(nameof(TaskAggregate.Id)),
+				join => join.HasKey("UpstreamId", "DownstreamId"));
 		
 		builder.Ignore(taskAggregate => taskAggregate.Progress);
 	}
