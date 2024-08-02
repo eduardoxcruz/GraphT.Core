@@ -18,9 +18,10 @@ public class TaskAggregateEntityTypeConfiguration : IEntityTypeConfiguration<Tas
 		builder.Property(taskAggregate => taskAggregate.Complexity).HasColumnOrder(5);
 		builder.Property(taskAggregate => taskAggregate.Priority).HasColumnOrder(6);
 		builder.Property(taskAggregate => taskAggregate.Relevance).HasColumnOrder(7);
-
-		builder.Ignore(taskAggregate => taskAggregate.Upstreams);
-		builder.Ignore(taskAggregate => taskAggregate.Downstreams);
+		
+		builder.HasMany(ta => ta.Upstreams).WithMany();
+		builder.HasMany(ta => ta.Downstreams).WithMany();
+		
 		builder.Ignore(taskAggregate => taskAggregate.Progress);
 		builder.Ignore(taskAggregate => taskAggregate.DateTimeInfo);
 	}
