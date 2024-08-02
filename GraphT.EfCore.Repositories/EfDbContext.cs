@@ -1,6 +1,5 @@
 ﻿using GraphT.EfCore.Repositories.EntityTypeConfigurations;
 using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,6 @@ namespace GraphT.EfCore.Repositories;
 public partial class EfDbContext : DbContext
 {
 	public DbSet<TaskAggregate> TaskAggregates { get; set; }
-	public DbSet<TodoTaskStream> TaskStreams { get; set; }
 	public DbSet<TaskLog> TaskLogs { get; set; }
 	
 	public EfDbContext(DbContextOptions<EfDbContext> options) : base(options) { }
@@ -19,7 +17,6 @@ public partial class EfDbContext : DbContext
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		new TaskAggregateEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskAggregate>());
-		new TodoTaskStreamsEntityTypeConfiguration().Configure(modelBuilder.Entity<TodoTaskStream>());
 		new TaskLogEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskLog>());
 		OnModelCreatingPartial(modelBuilder);
 	}

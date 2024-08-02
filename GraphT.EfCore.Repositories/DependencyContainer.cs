@@ -1,5 +1,4 @@
 using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,6 @@ public static class DependencyContainer
 			options.UseSqlServer(configuration.GetConnectionString(connectionString)));
 		services.AddScoped<IRepository<TaskAggregate>, Repository<TaskAggregate>>();
 		services.AddScoped<IRepository<TaskLog>, Repository<TaskLog>>();
-		services.AddScoped<IRepository<TodoTaskStream>, Repository<TodoTaskStream>>();
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 		return services;
