@@ -5,11 +5,11 @@ using SeedWork;
 
 namespace GraphT.Presenters.GetUnfinishedTasks;
 
-public class Presenter : IPresenter<OnlyTodoTaskPagedListDto>, IOutputPort
+public class Presenter : IPresenter<TaskIdAndNamePagedListDto>, IOutputPort
 {
-	public OnlyTodoTaskPagedListDto Content { get; private set; }
+	public TaskIdAndNamePagedListDto Content { get; private set; }
 	
-	public ValueTask Handle(OnlyTodoTaskPagedListDto dto)
+	public ValueTask Handle(TaskIdAndNamePagedListDto dto)
 	{
 		Content = dto;
 		return ValueTask.CompletedTask;
