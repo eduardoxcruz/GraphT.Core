@@ -1,11 +1,11 @@
-﻿using GraphT.Model.Entities;
+﻿using GraphT.Model.Aggregates;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
 
 namespace GraphT.Model.Services.Specifications;
 
-public sealed class FinishedTasksSpecification : BaseSpecification<TodoTask>
+public sealed class FinishedTasksSpecification : BaseSpecification<TaskAggregate>
 {
 	public FinishedTasksSpecification(string? name, PagingParams pagingParams) : 
 		base(task => 
