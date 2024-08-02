@@ -29,6 +29,5 @@ public class TaskAggregateEntityTypeConfiguration : IEntityTypeConfiguration<Tas
 		builder.HasMany(ta => ta.Downstreams).WithMany();
 		
 		builder.Ignore(taskAggregate => taskAggregate.Progress);
-		builder.Ignore(taskAggregate => taskAggregate.DateTimeInfo);
 	}
 }
