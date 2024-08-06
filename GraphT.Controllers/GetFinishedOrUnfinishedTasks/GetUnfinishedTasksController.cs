@@ -5,7 +5,7 @@ using SeedWork;
 
 namespace GraphT.Controllers.GetFinishedOrUnfinishedTasks;
 
-public interface IGetUnfinishedTasksController : IControllerTOutTIn<OnlyTodoTaskPagedListDto, GetTasksFromNameDto> {}
+public interface IGetUnfinishedTasksController : IControllerTOutTIn<TaskIdAndNamePagedListDto, GetTasksFromNameDto> {}
 
 public class GetUnfinishedTasksController : IGetUnfinishedTasksController
 {
@@ -18,9 +18,9 @@ public class GetUnfinishedTasksController : IGetUnfinishedTasksController
 		_outputPort = outputPort;
 	}
     
-	public async ValueTask<OnlyTodoTaskPagedListDto> RunUseCase(GetTasksFromNameDto inputDto)
+	public async ValueTask<TaskIdAndNamePagedListDto> RunUseCase(GetTasksFromNameDto inputDto)
 	{
 		await _inputPort.Handle(inputDto);
-		return ((IPresenter<OnlyTodoTaskPagedListDto>)_outputPort).Content;
+		return ((IPresenter<TaskIdAndNamePagedListDto>)_outputPort).Content;
 	}
 }

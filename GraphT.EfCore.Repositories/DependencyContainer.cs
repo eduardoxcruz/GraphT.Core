@@ -1,5 +1,4 @@
 using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +18,8 @@ public static class DependencyContainer
 	{
 		services.AddDbContext<EfDbContext>(options =>
 			options.UseSqlServer(configuration.GetConnectionString(connectionString)));
-		services.AddScoped<IRepository<TodoTask>, Repository<TodoTask>>();
 		services.AddScoped<IRepository<TaskAggregate>, Repository<TaskAggregate>>();
 		services.AddScoped<IRepository<TaskLog>, Repository<TaskLog>>();
-		services.AddScoped<IRepository<TodoTaskStream>, Repository<TodoTaskStream>>();
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 		return services;

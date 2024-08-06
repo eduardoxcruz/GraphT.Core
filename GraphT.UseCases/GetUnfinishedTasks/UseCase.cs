@@ -1,4 +1,4 @@
-﻿using GraphT.Model.Entities;
+﻿using GraphT.Model.Aggregates;
 using GraphT.Model.Services.Specifications;
 
 using SeedWork;
@@ -7,7 +7,7 @@ namespace GraphT.UseCases.GetUnfinishedTasks;
 
 public interface IInputPort : IPort<GetTasksFromNameDto> { }
 
-public interface IOutputPort : IPort<OnlyTodoTaskPagedListDto> { }
+public interface IOutputPort : IPort<TaskIdAndNamePagedListDto> { }
 
 internal class UseCase : IInputPort
 {
@@ -23,8 +23,13 @@ internal class UseCase : IInputPort
 	public async ValueTask Handle(GetTasksFromNameDto dto)
 	{
 		UnfinishedTasksSpecification specification = new(dto.TaskName, dto.PagingParams);
-		PagedList<TodoTask> tasks = await _unitOfWork.Repository<TodoTask>().FindAsync(specification);
-		OnlyTodoTaskPagedListDto onlyTodoTaskPagedListDto = new(tasks);
-		await _outputPort.Handle(onlyTodoTaskPagedListDto);
+		PagedList<TaskAggregate> tasksFromDb = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
+		PagedList<TaskIdAndName> tasks = new(
+			tasksFromDb.Select(TaskIdAndName.MapFrom).ToList(), 
+			tasksFromDb.TotalCount, 
+			tasksFromDb.CurrentPage,
+			tasksFromDb.PageSize);
+		TaskIdAndNamePagedListDto outDto = new(tasks);
+		await _outputPort.Handle(outDto);
 	}
 }

@@ -1,5 +1,3 @@
-using GraphT.IoC;
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +5,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGraphTServices();
+//builder.Services.AddGraphTServices();
 
 WebApplication app = builder.Build();
 

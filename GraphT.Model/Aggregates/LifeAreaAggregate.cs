@@ -4,11 +4,11 @@ namespace GraphT.Model.Aggregates;
 
 public class LifeAreaAggregate : LifeArea
 {
-	private HashSet<TodoTask> _tasks;
-	public IReadOnlySet<TodoTask> Tasks => _tasks;
+	private HashSet<TaskAggregate> _tasks;
+	public IReadOnlySet<TaskAggregate> Tasks => _tasks;
 
 	private LifeAreaAggregate(string name) : base(name)
 	{
-		_tasks = new HashSet<TodoTask>();
+		_tasks = new HashSet<TaskAggregate>();
 	}
 }

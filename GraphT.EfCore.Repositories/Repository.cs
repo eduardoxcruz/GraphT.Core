@@ -25,7 +25,7 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 				.Take(specification.PageSize);
 		}
 
-		List<TEntity> items = await query.ToListAsync();
+		List<TEntity> items = await query.AsNoTracking().ToListAsync();
 		
 		return new PagedList<TEntity>(items, count, specification?.PageNumber ?? 1, specification?.PageSize ?? count);
 	}
