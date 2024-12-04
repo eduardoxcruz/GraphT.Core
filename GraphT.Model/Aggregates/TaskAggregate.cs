@@ -13,6 +13,7 @@ public class TaskAggregate
 	private DateTimeInfo _dateTimeInfo;
 	private HashSet<TaskAggregate> _upstreams = null!;
 	private HashSet<TaskAggregate> _downstreams = null!;
+	private HashSet<LifeAreaAggregate> _lifeAreas = null!;
 	public bool IsFun
 	{
 		get => _isFun;
@@ -38,6 +39,7 @@ public class TaskAggregate
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TaskAggregate> Upstreams => _upstreams;
 	public IReadOnlySet<TaskAggregate> Downstreams => _downstreams;
+	public IReadOnlySet<LifeAreaAggregate> LifeAreas => _lifeAreas;
 
 	private TaskAggregate(){ }
 
@@ -57,6 +59,7 @@ public class TaskAggregate
 		_dateTimeInfo = new DateTimeInfo();
 		_upstreams = [];
 		_downstreams = [];
+		_lifeAreas = [];
 		Complexity = complexity;
 		Priority = priority;
 		UpdateRelevance();
@@ -66,10 +69,10 @@ public class TaskAggregate
 	{
 		this._relevance = IsFun switch
 		{
-			true when IsProductive => ValueObjects.Relevance.Purposeful,
-			false when IsProductive => ValueObjects.Relevance.Necessary,
-			true when !IsProductive => ValueObjects.Relevance.Entertaining,
-			_ => ValueObjects.Relevance.Superfluous
+			true when IsProductive => Relevance.Purposeful,
+			false when IsProductive => Relevance.Necessary,
+			true when !IsProductive => Relevance.Entertaining,
+			_ => Relevance.Superfluous
 		};
 	}
 	
@@ -173,7 +176,65 @@ public class TaskAggregate
 		if (taskCollection.Any(task => task.Id.Equals(Guid.Empty)))
 			throw new ArgumentException("Task collection cannot contain tasks with empty Id");
 	}
+	
+	public void AddLifeArea(LifeAreaAggregate lifeArea)
+	{
+		ValidateLifeArea(lifeArea);
+		
+		_lifeAreas.Add(lifeArea);
+	}
+	
+	public void RemoveLifeArea(LifeAreaAggregate lifeArea)
+	{
+		ValidateLifeArea(lifeArea);
+		
+		_lifeAreas.RemoveWhere(lifeAreaAggregate => lifeAreaAggregate.Id.Equals(lifeArea.Id));
+	}
 
+	public void AddLifeAreas(HashSet<LifeAreaAggregate> lifeAreas)
+	{
+		ValidateLifeAreaCollection(lifeAreas);
+		
+		_lifeAreas.UnionWith(lifeAreas);
+	}
+
+	public void RemoveLifeAreas(HashSet<LifeAreaAggregate> lifeAreas)
+	{
+		ValidateLifeAreaCollection(lifeAreas);
+
+		_lifeAreas.ExceptWith(lifeAreas);
+	}
+
+	public void ReplaceLifeAreas(HashSet<LifeAreaAggregate> newLifeAreas)
+	{
+		ValidateLifeAreaCollection(newLifeAreas);
+		
+		_lifeAreas.Clear();
+		_lifeAreas = newLifeAreas;
+	}
+
+	public void ClearLifeAreas()
+	{
+		if (_lifeAreas.Count == 0) return;
+		
+		_lifeAreas.Clear();
+	}
+	
+	private void ValidateLifeArea(LifeAreaAggregate lifeArea)
+	{
+		if (lifeArea.Id.Equals(Guid.Empty)) throw new ArgumentException("Life Area id cannot be empty");
+	}
+
+	private void ValidateLifeAreaCollection(HashSet<LifeAreaAggregate> lifeAreaCollection)
+	{
+		if (lifeAreaCollection is null) throw new ArgumentException("Life Area collection cannot be null");
+
+		if (lifeAreaCollection.Count == 0) throw new ArgumentException("Life Area collection cannot be empty");
+
+		if (lifeAreaCollection.Any(lifeAreaAggregate => lifeAreaAggregate.Id.Equals(Guid.Empty)))
+			throw new ArgumentException("Life Area collection cannot contain life areas with empty Id");
+	}
+	
 	public void SetStartDate(DateTimeOffset startDate)
 	{
 		if (_dateTimeInfo.FinishDateTime is not null && startDate > _dateTimeInfo.FinishDateTime)
