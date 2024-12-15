@@ -1,4 +1,10 @@
+using GraphT.Model.Services;
+using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
+
+using NSubstitute;
+
+using SeedWork;
 
 namespace GraphT.Model.Tests.Entities;
 
@@ -66,57 +72,132 @@ public class DateTimeInfoTests
 	}
 
 	[Fact]
-	public void UpdateTimeSpend_ZeroTimeSpan_SetsCorrectTimeSpend()
+	public async Task GetTimeSpendString_WhenStatusIsNotCompletable_ReturnsZeroTimeSpend()
 	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.Zero;
+		// Arrange
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+		Guid taskId = Guid.NewGuid();
+		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
 
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
+		// Pruebas con estados que no calculan tiempo
+		Status[] nonCalculableStatuses = new[]
+		{
+			Status.Created, Status.Backlog, Status.ReadyToStart, Status.InProgress
+		};
 
-		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
+		foreach (Status status in nonCalculableStatuses)
+		{
+			// Act
+			string result =
+				await TimeSpendCalculatorService.GetTimeSpendString(taskId, status, newDateTime, unitOfWork);
+
+			// Assert
+			Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
+		}
 	}
 
 	[Fact]
-	public void UpdateTimeSpend_OneDay_SetsCorrectTimeSpend()
+	public async Task GetTimeSpendString_WhenNoLastLogExists_ReturnsZeroTimeSpend()
 	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.FromDays(1);
+		// Arrange
+		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
+		Guid taskId = Guid.NewGuid();
+		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
+		Status newStatus = Status.Completed;
 
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
+		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
+		repository.FindAsync(Arg.Any<LastTaskLogSpecification>())
+			.Returns(new PagedList<TaskLog>(new List<TaskLog>(), 0, 1, 1));
 
-		Assert.Equal("\u23f0 1 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
+		unitOfWork.Repository<TaskLog>().Returns(repository);
+
+		// Act
+		string result = await TimeSpendCalculatorService.GetTimeSpendString(taskId, newStatus, newDateTime, unitOfWork);
+
+		// Assert
+		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
 	}
 
 	[Fact]
-	public void UpdateTimeSpend_ThirtyOneDays_SetsCorrectTimeSpend()
+	public async Task GetTimeSpendString_WhenLastLogHasNonWorkingStatus_ReturnsZeroTimeSpend()
 	{
-		DateTimeInfo dateTimeInfo = new DateTimeInfo();
-		TimeSpan timeSpan = TimeSpan.FromDays(31);
+		// Arrange
+		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
+		Guid taskId = Guid.NewGuid();
+		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
+		Status newStatus = Status.Completed;
 
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
+		Status[] nonWorkingStatuses = new[] { Status.Paused, Status.Dropped, Status.Completed };
 
-		Assert.Equal("\u23f0 31 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
+		foreach (Status lastLogStatus in nonWorkingStatuses)
+		{
+			TaskLog lastLog = new(taskId, DateTimeOffset.UtcNow.AddDays(-1), lastLogStatus);
+			IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
+			repository.FindAsync(Arg.Any<LastTaskLogSpecification>())
+				.Returns(new PagedList<TaskLog>(new List<TaskLog> { lastLog }, 1, 1, 1));
+
+			unitOfWork.Repository<TaskLog>().Returns(repository);
+
+			// Act
+			string result =
+				await TimeSpendCalculatorService.GetTimeSpendString(taskId, newStatus, newDateTime, unitOfWork);
+
+			// Assert
+			Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
+		}
+	}
+
+	[Theory]
+	[InlineData(1, 0, 0, "\u23f0 1 day(s) - 0 hours - 0 minutes")]
+	[InlineData(31, 0, 0, "\u23f0 31 day(s) - 0 hours - 0 minutes")]
+	[InlineData(2, 3, 0, "\u23f0 2 day(s) - 3 hours - 0 minutes")]
+	[InlineData(0, 0, 30, "\u26a1 0 day(s) - 0 hours - 30 minutes")]
+	public async Task GetTimeSpendString_CalculatesTimeSpendCorrectly(int days, int hours, int minutes,
+		string expectedResult)
+	{
+		// Arrange
+		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
+		Guid taskId = Guid.NewGuid();
+		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
+		DateTimeOffset lastLogDateTime =
+			newDateTime.Subtract(TimeSpan.FromDays(days) + TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes));
+		TaskLog lastLog = new(taskId, lastLogDateTime, Status.InProgress);
+
+		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
+		repository.FindAsync(Arg.Any<LastTaskLogSpecification>())
+			.Returns(new PagedList<TaskLog>(new List<TaskLog> { lastLog }, 1, 1, 1));
+
+		unitOfWork.Repository<TaskLog>().Returns(repository);
+
+		// Act
+		string result =
+			await TimeSpendCalculatorService.GetTimeSpendString(taskId, Status.Completed, newDateTime, unitOfWork);
+
+		// Assert
+		Assert.Equal(expectedResult, result);
 	}
 
 	[Fact]
-	public void UpdateTimeSpend_TwoDaysAndThreeHours_SetsCorrectTimeSpend()
+	public async Task GetTimeSpendString_WhenTimeSpanIsZero_ReturnsZeroTimeSpend()
 	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.FromDays(2) + TimeSpan.FromHours(3);
+		// Arrange
+		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
+		Guid taskId = Guid.NewGuid();
+		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
+		DateTimeOffset lastLogDateTime = newDateTime;
+		TaskLog lastLog = new(taskId, lastLogDateTime, Status.InProgress);
 
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
+		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
+		repository.FindAsync(Arg.Any<LastTaskLogSpecification>())
+			.Returns(new PagedList<TaskLog>(new List<TaskLog> { lastLog }, 1, 1, 1));
 
-		Assert.Equal("\u23f0 2 day(s) - 3 hours - 0 minutes", dateTimeInfo.TimeSpend);
-	}
+		unitOfWork.Repository<TaskLog>().Returns(repository);
 
-	[Fact]
-	public void UpdateTimeSpend_LessThanOneHour_SetsCorrectTimeSpend()
-	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.FromMinutes(30);
+		// Act
+		string result =
+			await TimeSpendCalculatorService.GetTimeSpendString(taskId, Status.Completed, newDateTime, unitOfWork);
 
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
-
-		Assert.Equal("\u26a1 0 day(s) - 0 hours - 30 minutes", dateTimeInfo.TimeSpend);
+		// Assert
+		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
 	}
 }
