@@ -2,13 +2,13 @@
 
 public enum Status
 {
-	Created = -1,
-	Backlog = 0,
-	ReadyToStart = 1,
-	InProgress = 2,
-	Paused = 3,
-	Dropped = 4,
-	Completed = 5
+	Created = 0,
+	Backlog = 1,
+	ReadyToStart = 2,
+	InProgress = 3,
+	Paused = 4,
+	Dropped = 5,
+	Completed = 6
 }
 
 public static class StatusExtensions
