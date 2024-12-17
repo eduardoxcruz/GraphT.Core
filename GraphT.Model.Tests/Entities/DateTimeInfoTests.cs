@@ -88,11 +88,11 @@ public class DateTimeInfoTests
 		foreach (Status status in nonCalculableStatuses)
 		{
 			// Act
-			string result =
-				await TimeSpendCalculatorService.GetTimeSpendString(taskId, status, newDateTime, unitOfWork);
+			(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, status, newDateTime, unitOfWork);
 
 			// Assert
-			Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
+			Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result.Item1);
+			Assert.Equal(TimeSpan.Zero, result.Item2);
 		}
 	}
 
@@ -112,10 +112,11 @@ public class DateTimeInfoTests
 		unitOfWork.Repository<TaskLog>().Returns(repository);
 
 		// Act
-		string result = await TimeSpendCalculatorService.GetTimeSpendString(taskId, newStatus, newDateTime, unitOfWork);
+		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, newStatus, newDateTime, unitOfWork);
 
 		// Assert
-		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
+		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result.Item1);
+		Assert.Equal(TimeSpan.Zero, result.Item2);
 	}
 
 	[Fact]
@@ -139,42 +140,47 @@ public class DateTimeInfoTests
 			unitOfWork.Repository<TaskLog>().Returns(repository);
 
 			// Act
-			string result =
-				await TimeSpendCalculatorService.GetTimeSpendString(taskId, newStatus, newDateTime, unitOfWork);
+			(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, newStatus, newDateTime, unitOfWork);
 
 			// Assert
-			Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
+			Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result.Item1);
+			Assert.Equal(TimeSpan.Zero, result.Item2);
 		}
 	}
 
-	[Theory]
-	[InlineData(1, 0, 0, "\u23f0 1 day(s) - 0 hours - 0 minutes")]
-	[InlineData(31, 0, 0, "\u23f0 31 day(s) - 0 hours - 0 minutes")]
-	[InlineData(2, 3, 0, "\u23f0 2 day(s) - 3 hours - 0 minutes")]
-	[InlineData(0, 0, 30, "\u26a1 0 day(s) - 0 hours - 30 minutes")]
-	public async Task GetTimeSpendString_CalculatesTimeSpendCorrectly(int days, int hours, int minutes,
-		string expectedResult)
+	[Fact]
+	public async Task GetTimeSpendString_CalculatesTimeSpendCorrectly()
 	{
 		// Arrange
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		Guid taskId = Guid.NewGuid();
-		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
-		DateTimeOffset lastLogDateTime =
-			newDateTime.Subtract(TimeSpan.FromDays(days) + TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes));
-		TaskLog lastLog = new(taskId, lastLogDateTime, Status.InProgress);
+		var testCases = new List<(int days, int hours, int minutes, string expectedResult, TimeSpan expectedTimeSpan)>
+		{
+			(1, 0, 0, "\u23f0 1 day(s) - 0 hours - 0 minutes", TimeSpan.FromDays(1)),
+			(31, 0, 0, "\u23f0 31 day(s) - 0 hours - 0 minutes", TimeSpan.FromDays(31)),
+			(2, 3, 0, "\u23f0 2 day(s) - 3 hours - 0 minutes", TimeSpan.FromDays(2) + TimeSpan.FromHours(3)),
+			(0, 0, 30, "\u26a1 0 day(s) - 0 hours - 30 minutes", TimeSpan.FromMinutes(30))
+		};
 
-		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
-		repository.FindAsync(Arg.Any<LastTaskLogSpecification>())
-			.Returns(new PagedList<TaskLog>(new List<TaskLog> { lastLog }, 1, 1, 1));
+		foreach (var testCase in testCases)
+		{
+			IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
+			Guid taskId = Guid.NewGuid();
+			DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
+			DateTimeOffset lastLogDateTime = newDateTime.Subtract(TimeSpan.FromDays(testCase.days) + TimeSpan.FromHours(testCase.hours) + TimeSpan.FromMinutes(testCase.minutes));
+			TaskLog lastLog = new(taskId, lastLogDateTime, Status.InProgress);
 
-		unitOfWork.Repository<TaskLog>().Returns(repository);
+			IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
+			repository.FindAsync(Arg.Any<LastTaskLogSpecification>())
+				.Returns(new PagedList<TaskLog>(new List<TaskLog> { lastLog }, 1, 1, 1));
 
-		// Act
-		string result =
-			await TimeSpendCalculatorService.GetTimeSpendString(taskId, Status.Completed, newDateTime, unitOfWork);
+			unitOfWork.Repository<TaskLog>().Returns(repository);
 
-		// Assert
-		Assert.Equal(expectedResult, result);
+			// Act
+			(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, Status.Completed, newDateTime, unitOfWork);
+
+			// Assert
+			Assert.Equal(testCase.expectedResult, result.Item1);
+			Assert.Equal(testCase.expectedTimeSpan, result.Item2);
+		}
 	}
 
 	[Fact]
@@ -194,10 +200,10 @@ public class DateTimeInfoTests
 		unitOfWork.Repository<TaskLog>().Returns(repository);
 
 		// Act
-		string result =
-			await TimeSpendCalculatorService.GetTimeSpendString(taskId, Status.Completed, newDateTime, unitOfWork);
+		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, Status.Completed, newDateTime, unitOfWork);
 
 		// Assert
-		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result);
+		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", result.Item1);
+		Assert.Equal(TimeSpan.Zero, result.Item2);
 	}
 }
