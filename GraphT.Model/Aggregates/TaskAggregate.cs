@@ -260,6 +260,11 @@ public class TaskAggregate
 		_dateTimeInfo.LimitDateTime = limitDate;
 	}
 	
+	public void SetTimeSpend(string timeSpend)
+	{
+		_dateTimeInfo.TimeSpend = timeSpend;
+	}
+	
 	private float GetProgress()
 	{
 		int totalDownstreams = _downstreams.Count;
