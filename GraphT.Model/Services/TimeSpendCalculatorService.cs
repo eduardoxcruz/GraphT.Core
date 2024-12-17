@@ -13,22 +13,21 @@ public static class TimeSpendCalculatorService
 		DateTimeOffset newDateTime, 
 		IUnitOfWork unitOfWork)
 	{
-		string zeroString = $"\u23f0 0 day(s) - 0 hours - 0 minutes";
-		
-		if (newStatus is Status.Created or Status.Backlog or Status.ReadyToStart or Status.InProgress) return (zeroString, TimeSpan.Zero);
-		
+		//Generic last log when none found
 		TaskLog? lastLog = (await unitOfWork.Repository<TaskLog>().FindAsync(new LastTaskLogSpecification(taskId)))
-			.FirstOrDefault();
+			.FirstOrDefault() ?? new TaskLog(Guid.Empty, newDateTime, Status.Created, TimeSpan.Zero);
+		TimeSpan timeSpend;
 		
-		if (lastLog is null) return (zeroString, TimeSpan.Zero);
+		if ((lastLog.Status is Status.InProgress) && (newStatus is not Status.InProgress))
+		{
+			timeSpend = lastLog.TimeSpentOnTask!.Value + (newDateTime - lastLog.DateTime);
+		}
+		else
+		{
+			timeSpend = lastLog.TimeSpentOnTask!.Value;
+		}
 		
-		if (lastLog.Status is Status.Paused or Status.Dropped or Status.Completed) return (zeroString, TimeSpan.Zero);
-		
-		TimeSpan timeSpend = newDateTime - lastLog.DateTime;
-		
-		if (timeSpend.Ticks < 1_000_000) return (zeroString, timeSpend);
-		
-		string emoji = timeSpend.TotalHours > 1 ? "\u23f0" : "\u26a1";
+		string emoji = timeSpend.TotalMinutes > 59 ? "\u23f0" : "\u26a1";
 		
 		return ($"{emoji} {timeSpend.Days} day(s) - {timeSpend.Hours} hours - {timeSpend.Minutes} minutes", timeSpend);
 	}
