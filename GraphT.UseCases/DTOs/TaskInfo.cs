@@ -2,7 +2,7 @@
 
 namespace GraphT.UseCases.DTOs;
 
-public class BasicTaskInfo
+public class TaskInfo
 {
 	public Guid? Id { get; set; }
 	public string? Name { get; set; }
