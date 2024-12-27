@@ -1,6 +1,6 @@
 using GraphT.Model.ValueObjects;
 
-namespace GraphT.Model.Tests.Entities;
+namespace GraphT.Model.Tests.ValueObjects;
 
 public class DateTimeInfoTests
 {
