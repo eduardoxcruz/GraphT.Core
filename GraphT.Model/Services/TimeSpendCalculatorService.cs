@@ -7,21 +7,26 @@ namespace GraphT.Model.Services;
 
 public static class TimeSpendCalculatorService
 {
-	public static async ValueTask<TimeSpan> GetTimeSpend(
+	public static async ValueTask<(string, TimeSpan)> GetTimeSpend(
 		Guid taskId, 
 		Status newStatus, 
 		DateTimeOffset newDateTime, 
 		IUnitOfWork unitOfWork)
 	{
-		if (newStatus is Status.Created or Status.Backlog or Status.ReadyToStart or Status.InProgress) return TimeSpan.Zero;
+		//Generic last log when none found
+		TaskLog? lastLog = (await unitOfWork
+			.Repository<TaskLog>()
+			.FindAsync(new LastTaskLogSpecification(taskId)))
+			.FirstOrDefault() ?? new TaskLog(Guid.Empty, newDateTime, Status.Created, TimeSpan.Zero);
+		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		
-		TaskLog? lastLog = (await unitOfWork.Repository<TaskLog>().FindAsync(new LastTaskLogSpecification(taskId)))
-			.FirstOrDefault();
-
-		if (lastLog is null) return TimeSpan.Zero;
+		if ((lastLog.Status is Status.InProgress) && (newStatus is not Status.InProgress))
+		{
+			timeSpend = lastLog.TimeSpentOnTask!.Value + (newDateTime - lastLog.DateTime);
+		}
 		
-		if (lastLog.Status is Status.Paused or Status.Dropped or Status.Completed) return TimeSpan.Zero;
+		string emoji = timeSpend.TotalMinutes > 59 ? "\u23f0" : "\u26a1";
 		
-		return newDateTime - lastLog.DateTime;
+		return ($"{emoji} {timeSpend.Days} day(s) - {timeSpend.Hours} hours - {timeSpend.Minutes} minutes", timeSpend);
 	}
 }

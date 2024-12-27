@@ -1,6 +1,6 @@
 using GraphT.Model.ValueObjects;
 
-namespace GraphT.Model.Tests.Entities;
+namespace GraphT.Model.Tests.ValueObjects;
 
 public class DateTimeInfoTests
 {
@@ -63,60 +63,5 @@ public class DateTimeInfoTests
 		DateTimeInfo dateTimeInfo = new() { LimitDateTime = DateTimeOffset.Now.AddDays(3) };
 
 		Assert.Equal("\u23f1 4 day(s) to go!", dateTimeInfo.Punctuality);
-	}
-
-	[Fact]
-	public void UpdateTimeSpend_ZeroTimeSpan_SetsCorrectTimeSpend()
-	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.Zero;
-
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
-
-		Assert.Equal("\u23f0 0 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
-	}
-
-	[Fact]
-	public void UpdateTimeSpend_OneDay_SetsCorrectTimeSpend()
-	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.FromDays(1);
-
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
-
-		Assert.Equal("\u23f0 1 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
-	}
-
-	[Fact]
-	public void UpdateTimeSpend_ThirtyOneDays_SetsCorrectTimeSpend()
-	{
-		DateTimeInfo dateTimeInfo = new DateTimeInfo();
-		TimeSpan timeSpan = TimeSpan.FromDays(31);
-
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
-
-		Assert.Equal("\u23f0 31 day(s) - 0 hours - 0 minutes", dateTimeInfo.TimeSpend);
-	}
-
-	[Fact]
-	public void UpdateTimeSpend_TwoDaysAndThreeHours_SetsCorrectTimeSpend()
-	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.FromDays(2) + TimeSpan.FromHours(3);
-
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
-
-		Assert.Equal("\u23f0 2 day(s) - 3 hours - 0 minutes", dateTimeInfo.TimeSpend);
-	}
-
-	[Fact]
-	public void UpdateTimeSpend_LessThanOneHour_SetsCorrectTimeSpend()
-	{
-		DateTimeInfo dateTimeInfo = new();
-		TimeSpan timeSpan = TimeSpan.FromMinutes(30);
-
-		dateTimeInfo.UpdateTimeSpend(timeSpan);
-
-		Assert.Equal("\u26a1 0 day(s) - 0 hours - 30 minutes", dateTimeInfo.TimeSpend);
 	}
 }

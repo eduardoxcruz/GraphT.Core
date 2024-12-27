@@ -11,6 +11,7 @@ public partial class EfDbContext : DbContext
 {
 	public DbSet<TaskAggregate> TaskAggregates { get; set; }
 	public DbSet<TaskLog> TaskLogs { get; set; }
+	public DbSet<LifeAreaAggregate> LifeAreas { get; set; }
 	
 	public EfDbContext(DbContextOptions<EfDbContext> options) : base(options) { }
 
@@ -18,6 +19,7 @@ public partial class EfDbContext : DbContext
 	{
 		new TaskAggregateEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskAggregate>());
 		new TaskLogEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskLog>());
+		new LifeAreaEntityTypeConfiguration().Configure(modelBuilder.Entity<LifeAreaAggregate>());
 		OnModelCreatingPartial(modelBuilder);
 	}
 

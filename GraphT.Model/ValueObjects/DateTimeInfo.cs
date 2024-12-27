@@ -6,7 +6,7 @@ public struct DateTimeInfo
 	public DateTimeOffset? StartDateTime { get; set; }
 	public DateTimeOffset? FinishDateTime { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }
-	public string TimeSpend { get; private set; }
+	public string TimeSpend { get; set; }
 	public readonly string Punctuality => GetPunctuality();
 
 	public DateTimeInfo()
@@ -15,18 +15,6 @@ public struct DateTimeInfo
 		TimeSpend = $"\u23f0 0 day(s) - 0 hours - 0 minutes";
 	}
 
-	public void UpdateTimeSpend(TimeSpan timeSpend)
-	{
-		if (timeSpend.Ticks < 1)
-		{
-			TimeSpend = $"\u23f0 0 day(s) - 0 hours - 0 minutes";
-			return;
-		}
-		
-		string emoji = timeSpend.TotalHours > 1 ? "\u23f0" : "\u26a1";
-		TimeSpend = $"{emoji} {timeSpend.Days} day(s) - {timeSpend.Hours} hours - {timeSpend.Minutes} minutes";
-	}
-	
 	private readonly string GetPunctuality()
 	{
 		DateTimeOffset now = DateTimeOffset.Now;
