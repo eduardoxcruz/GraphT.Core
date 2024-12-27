@@ -14,17 +14,15 @@ public static class TimeSpendCalculatorService
 		IUnitOfWork unitOfWork)
 	{
 		//Generic last log when none found
-		TaskLog? lastLog = (await unitOfWork.Repository<TaskLog>().FindAsync(new LastTaskLogSpecification(taskId)))
+		TaskLog? lastLog = (await unitOfWork
+			.Repository<TaskLog>()
+			.FindAsync(new LastTaskLogSpecification(taskId)))
 			.FirstOrDefault() ?? new TaskLog(Guid.Empty, newDateTime, Status.Created, TimeSpan.Zero);
-		TimeSpan timeSpend;
+		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		
 		if ((lastLog.Status is Status.InProgress) && (newStatus is not Status.InProgress))
 		{
 			timeSpend = lastLog.TimeSpentOnTask!.Value + (newDateTime - lastLog.DateTime);
-		}
-		else
-		{
-			timeSpend = lastLog.TimeSpentOnTask!.Value;
 		}
 		
 		string emoji = timeSpend.TotalMinutes > 59 ? "\u23f0" : "\u26a1";
