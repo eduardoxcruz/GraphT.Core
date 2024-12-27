@@ -48,10 +48,10 @@ public class TaskAggregate
 							bool isFun = false, 
 							bool isProductive = false,
 							Complexity complexity = Complexity.Indefinite, 
-							Priority priority = Priority.MentalClutter
-							)
+							Priority priority = Priority.MentalClutter,
+							Guid? id = null)
 	{
-		Id = Guid.NewGuid();
+		Id = id ?? Guid.NewGuid();
 		Name = name;
 		Status = status;
 		_isFun = isFun;
