@@ -2,7 +2,6 @@
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
-using GraphT.UseCases.DTOs;
 using GraphT.UseCases.UpdateTask;
 
 using NSubstitute;
@@ -20,7 +19,7 @@ public class UseCaseTests
 		IOutputPort? outputPort = Substitute.For<IOutputPort>();
 		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
 		UseCase useCase = new(outputPort, unitOfWork);
-		TaskInfo dto = new() { Id = null };
+		InputDto dto = new() { Id = null };
 
 		// Act & Assert
 		await Assert.ThrowsAsync<ArgumentException>(() => useCase.Handle(dto).AsTask());
@@ -39,7 +38,7 @@ public class UseCaseTests
 		repository.FindByIdAsync(taskId).Returns((TaskAggregate?)null);
 
 		UseCase useCase = new(outputPort, unitOfWork);
-		TaskInfo dto = new() { Id = taskId };
+		InputDto dto = new() { Id = taskId };
 
 		// Act & Assert
 		await Assert.ThrowsAsync<TaskNotFoundException>(() => useCase.Handle(dto).AsTask());
@@ -54,7 +53,7 @@ public class UseCaseTests
 		IRepository<TaskAggregate>? repository = Substitute.For<IRepository<TaskAggregate>>();
 		Guid taskId = Guid.NewGuid();
 		TaskAggregate existingTask = new("Old Name", id: taskId);
-		TaskInfo dto = new()
+		InputDto dto = new()
 		{
 			Id = taskId
 			, Name = "New Name"
@@ -101,7 +100,7 @@ public class UseCaseTests
 		Guid taskId = Guid.NewGuid();
 		DateTimeOffset currentTime = DateTimeOffset.UtcNow;
 		TaskAggregate existingTask = new("Test Task", id: taskId, status: initialStatus);
-		TaskInfo dto = new() { Id = taskId, Status = newStatus };
+		InputDto dto = new() { Id = taskId, Status = newStatus };
 		TimeSpan previousTimeSpent = TimeSpan.FromDays(expectedDays) + TimeSpan.FromHours(expectedHours) + TimeSpan.FromMinutes(expectedMinutes);
 		TaskLog lastLog = new(taskId, currentTime.AddHours(-2), initialStatus, previousTimeSpent);
 		PagedList<TaskLog> logList = new([ lastLog ], 1, 1, 1);
@@ -147,7 +146,7 @@ public class UseCaseTests
 		Guid taskId = Guid.NewGuid();
 		Status newStatus = Status.Completed;
 		TaskAggregate existingTask = new("New Task", id: taskId, status: Status.ReadyToStart);
-		TaskInfo dto = new() { Id = taskId, Status = newStatus };
+		InputDto dto = new() { Id = taskId, Status = newStatus };
 		string expectedTimeSpendString = "\u26a1 0 day(s) - 0 hours - 0 minutes";
 		
 		logRepository.FindAsync(Arg.Any<LastTaskLogSpecification>()).Returns(new PagedList<TaskLog>([], 0, 1, 1));
@@ -194,7 +193,7 @@ public class UseCaseTests
 		repository.FindByIdAsync(taskId).Returns(existingTask);
 
 		UseCase useCase = new(outputPort, unitOfWork);
-		TaskInfo dto = new()
+		InputDto dto = new()
 		{
 			Id = taskId, StartDateTime = startDate, FinishDateTime = finishDate, LimitDateTime = limitDate
 		};
@@ -231,7 +230,7 @@ public class UseCaseTests
 		repository.FindByIdAsync(taskId).Returns(existingTask);
 
 		UseCase useCase = new(outputPort, unitOfWork);
-		TaskInfo dto = new() { Id = taskId };
+		InputDto dto = new() { Id = taskId };
 
 		// Act
 		await useCase.Handle(dto);
