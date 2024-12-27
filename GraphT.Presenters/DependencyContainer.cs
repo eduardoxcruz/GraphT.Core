@@ -11,6 +11,7 @@ public static class DependencyContainer
 	{
 		services.AddScoped<IOutputPort, Presenter>();
 		services.AddScoped<UseCases.GetUnfinishedTasks.IOutputPort, GetUnfinishedTasks.Presenter>();
+		services.AddScoped<UseCases.UpdateTask.IOutputPort, UpdateTask.Presenter>();
 		return services;
 	}
 }
