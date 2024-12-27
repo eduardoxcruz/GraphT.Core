@@ -1,4 +1,5 @@
 ﻿using GraphT.Controllers.GetFinishedOrUnfinishedTasks;
+using GraphT.Controllers.UpdateTask;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,8 @@ public static class DependencyContainer
 	{
 		services.AddScoped<IGetFinishedTasksController, GetFinishedTasksController>();
 		services.AddScoped<IGetUnfinishedTasksController, GetUnfinishedTasksController>();
+		services.AddScoped<IUpdateTaskController, UpdateTaskController>();
+		
 		return services;
 	}
 }
