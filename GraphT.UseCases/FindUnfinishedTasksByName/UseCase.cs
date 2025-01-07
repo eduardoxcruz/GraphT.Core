@@ -3,7 +3,7 @@ using GraphT.Model.Services.Specifications;
 
 using SeedWork;
 
-namespace GraphT.UseCases.GetUnfinishedTasks;
+namespace GraphT.UseCases.FindUnfinishedTasksByName;
 
 public interface IInputPort : IPort<InputDto> { }
 
