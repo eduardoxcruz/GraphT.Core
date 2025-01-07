@@ -1,12 +1,12 @@
-using GraphT.UseCases.GetUnfinishedTasks;
+using GraphT.UseCases.FindUnfinishedTasksByName;
 
 using SeedWork;
 
-namespace GraphT.Controllers.GetUnfinishedTasks;
+namespace GraphT.Controllers.FindUnfinishedTasksByName;
 
-public interface IGetUnfinishedTasksController : IControllerTOutTIn<OutputDto, InputDto> {}
+public interface IFindUnfinishedTasksByNameController : IControllerTOutTIn<OutputDto, InputDto> {}
 
-public class Controller : IGetUnfinishedTasksController
+public class Controller : IFindUnfinishedTasksByNameController
 {
 	private readonly IInputPort _inputPort;
 	private readonly IOutputPort _outputPort;

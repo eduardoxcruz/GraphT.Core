@@ -1,8 +1,8 @@
-﻿using GraphT.UseCases.GetUnfinishedTasks;
+﻿using GraphT.UseCases.FindUnfinishedTasksByName;
 
 using SeedWork;
 
-namespace GraphT.Presenters.GetUnfinishedTasks;
+namespace GraphT.Presenters.FindUnfinishedTasksByName;
 
 public class Presenter : IPresenter<OutputDto>, IOutputPort
 {
