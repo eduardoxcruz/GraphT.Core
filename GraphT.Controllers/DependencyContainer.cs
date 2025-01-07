@@ -1,4 +1,5 @@
-﻿using GraphT.Controllers.GetFinishedTasks;
+﻿using GraphT.Controllers.AddNewTask;
+using GraphT.Controllers.GetFinishedTasks;
 using GraphT.Controllers.GetUnfinishedTasks;
 using GraphT.Controllers.UpdateTask;
 
@@ -13,6 +14,7 @@ public static class DependencyContainer
 		services.AddScoped<IGetFinishedTasksController, GetFinishedTasks.Controller>();
 		services.AddScoped<IGetUnfinishedTasksController, GetUnfinishedTasks.Controller>();
 		services.AddScoped<IUpdateTaskController, UpdateTask.Controller>();
+		services.AddScoped<IAddNewTaskController, AddNewTask.Controller>();
 		
 		return services;
 	}
