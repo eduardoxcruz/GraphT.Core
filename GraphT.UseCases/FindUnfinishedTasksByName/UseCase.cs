@@ -9,7 +9,7 @@ public interface IInputPort : IPort<InputDto> { }
 
 public interface IOutputPort : IPort<OutputDto> { }
 
-internal class UseCase : IInputPort
+public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
 	private readonly IUnitOfWork _unitOfWork;
