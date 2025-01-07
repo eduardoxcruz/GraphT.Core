@@ -14,7 +14,7 @@ public static class DependencyContainer
 	{
 		services.AddScoped<IGetFinishedTasksController, Controller>();
 		services.AddScoped<IGetUnfinishedTasksController, GetUnfinishedTasks.Controller>();
-		services.AddScoped<IUpdateTaskController, UpdateTaskController>();
+		services.AddScoped<IUpdateTaskController, UpdateTask.Controller>();
 		
 		return services;
 	}
