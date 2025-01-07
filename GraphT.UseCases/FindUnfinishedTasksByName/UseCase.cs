@@ -29,7 +29,7 @@ internal class UseCase : IInputPort
 			tasksFromDb.TotalCount, 
 			tasksFromDb.CurrentPage,
 			tasksFromDb.PageSize);
-		OutputDto outDto = new(tasks);
+		OutputDto outDto = new(){ Tasks = tasks };
 		await _outputPort.Handle(outDto);
 	}
 }
@@ -38,19 +38,9 @@ public class InputDto
 {
 	public PagingParams PagingParams { get; set; }
 	public string? TaskName { get; set; }
-
-	public InputDto()
-	{
-		PagingParams = new PagingParams();
-	}
 }
 
 public class OutputDto
 {
 	public PagedList<TaskIdAndName> Tasks { get; set; }
-
-	public OutputDto(PagedList<TaskIdAndName> tasks)
-	{
-		Tasks = tasks;
-	}
 }
