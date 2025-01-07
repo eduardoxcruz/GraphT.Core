@@ -44,24 +44,24 @@ public class TaskAggregate
 	private TaskAggregate(){ }
 
 	public TaskAggregate(string name, 
-							Status status = Status.Backlog,
-							bool isFun = false, 
-							bool isProductive = false,
-							Complexity complexity = Complexity.Indefinite, 
-							Priority priority = Priority.MentalClutter,
+							Status? status = null,
+							bool? isFun = null, 
+							bool? isProductive = null,
+							Complexity? complexity = null, 
+							Priority? priority = null,
 							Guid? id = null)
 	{
 		Id = id ?? Guid.NewGuid();
 		Name = name;
-		Status = status;
-		_isFun = isFun;
-		_isProductive = isProductive;
+		Status = status ?? Status.Backlog;
+		_isFun = isFun ?? false;
+		_isProductive = isProductive ?? false;
 		_dateTimeInfo = new DateTimeInfo();
+		Complexity = complexity ?? Complexity.Indefinite;
+		Priority = priority ?? Priority.MentalClutter;
 		_upstreams = [];
 		_downstreams = [];
 		_lifeAreas = [];
-		Complexity = complexity;
-		Priority = priority;
 		UpdateRelevance();
 	}
 
