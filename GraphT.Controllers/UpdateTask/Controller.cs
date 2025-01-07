@@ -6,11 +6,11 @@ namespace GraphT.Controllers.UpdateTask;
 
 public interface IUpdateTaskController : IControllerTIn<InputDto>;
 
-public class UpdateTaskController : IUpdateTaskController
+public class Controller : IUpdateTaskController
 {
 	private readonly IInputPort _inputPort;
 
-	UpdateTaskController(IInputPort inputPort)
+	Controller(IInputPort inputPort)
 	{
 		_inputPort = inputPort;
 	}
