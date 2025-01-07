@@ -39,13 +39,12 @@ public class UseCaseTests
 
         // Assert
         await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => 
-            t.Name == "Test Task" && 
-            t.IsFun == true && 
-            t.IsProductive == true && 
-            t.Complexity == Complexity.High && 
-            t.Priority == Priority.DoItNow
+            t.Name == input.Name && 
+            t.IsFun == input.IsFun && 
+            t.IsProductive == input.IsProductive && 
+            t.Complexity == input.Complexity && 
+            t.Priority == input.Priority
         ));
-
         await taskLogRepository.Received(2).AddAsync(Arg.Any<TaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
@@ -78,10 +77,10 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => 
-            t.Id == providedId &&
-            t.Name == "Test Task"
-        ));
+        await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => t.Id == input.Id && t.Name == input.Name));
+        await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
+        await unitOfWork.Received(1).SaveChangesAsync();
+        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id == input.Id));
     }
 
     [Fact]
@@ -115,11 +114,14 @@ public class UseCaseTests
 
         // Assert
         await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => 
-            t.Name == "Test Task"
+            t.Name == input.Name &&
+            t.DateTimeInfo.StartDateTime == input.StartDateTime &&
+            t.DateTimeInfo.FinishDateTime == input.FinishDateTime &&
+            t.DateTimeInfo.LimitDateTime == input.LimitDateTime
         ));
-        
         await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
+        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
     }
 
     [Fact]
