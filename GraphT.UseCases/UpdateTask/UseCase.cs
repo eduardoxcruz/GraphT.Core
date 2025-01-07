@@ -28,7 +28,7 @@ public class UseCase : IInputPort
 		
 		TaskAggregate? task = await _unitOfWork.Repository<TaskAggregate>().FindByIdAsync(dto.Id!);
 		
-		if (task is null) throw new TaskNotFoundException("Task not found", (Guid)dto.Id);
+		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id.Value);
 
 		task.Name = dto.Name ?? task.Name;
 		task.IsFun = dto.IsFun ?? task.IsFun;
@@ -39,8 +39,8 @@ public class UseCase : IInputPort
 		if (dto.Status is not null)
 		{
 			DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-			(string, TimeSpan) timeSpend = await TimeSpendCalculatorService.GetTimeSpend((Guid)dto.Id, (Status)dto.Status, dateTimeOffset, _unitOfWork);
-			task.Status = (Status)dto.Status;
+			(string, TimeSpan) timeSpend = await TimeSpendCalculatorService.GetTimeSpend(dto.Id.Value, dto.Status.Value, dateTimeOffset, _unitOfWork);
+			task.Status = dto.Status.Value;
 			task.SetTimeSpend(timeSpend.Item1);
 			TaskLog taskLog = new(task.Id, dateTimeOffset, task.Status, timeSpend.Item2);
 			
