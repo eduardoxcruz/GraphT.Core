@@ -11,5 +11,6 @@ public sealed class UnfinishedTasksSpecification : BaseSpecification<TaskAggrega
 		base(task => (task.Status != Status.Completed) && (name == null || task.Name.Contains(name)))
 	{
 		ApplyPaging(pagingParams.PageNumber, pagingParams.PageSize);
+		ApplyOrderByDescending(t => t.DateTimeInfo.CreationDateTime);
 	}
 }
