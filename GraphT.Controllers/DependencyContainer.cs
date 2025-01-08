@@ -1,4 +1,5 @@
 ﻿using GraphT.Controllers.AddNewTask;
+using GraphT.Controllers.FindTaskById;
 using GraphT.Controllers.UpdateTask;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ public static class DependencyContainer
 	{
 		services.AddScoped<IUpdateTaskController, UpdateTask.Controller>();
 		services.AddScoped<IAddNewTaskController, AddNewTask.Controller>();
+		services.AddScoped<IFindTaskByIdController, FindTaskById.Controller>();
 		
 		return services;
 	}
