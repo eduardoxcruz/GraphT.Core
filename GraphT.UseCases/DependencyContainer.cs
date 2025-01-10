@@ -12,6 +12,7 @@ public static class DependencyContainer
 		services.AddScoped<FindTaskById.IInputPort, FindTaskById.UseCase>();
 		services.AddScoped<FindReadyToStartTasks.IInputPort, FindReadyToStartTasks.UseCase>();
 		services.AddScoped<FindTaskDownstreamsById.IInputPort, FindTaskDownstreamsById.UseCase>();
+		services.AddScoped<FindTaskLifeAreasById.IInputPort, FindTaskLifeAreasById.UseCase>();
 		
 		return services;
 	}
