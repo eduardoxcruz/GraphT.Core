@@ -13,7 +13,7 @@ public class TaskAggregate
 	private DateTimeInfo _dateTimeInfo;
 	private HashSet<TaskAggregate> _upstreams = null!;
 	private HashSet<TaskAggregate> _downstreams = null!;
-	private HashSet<LifeAreaAggregate> _lifeAreas = null!;
+	private HashSet<LifeArea> _lifeAreas = null!;
 	public bool IsFun
 	{
 		get => _isFun;
@@ -39,7 +39,7 @@ public class TaskAggregate
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TaskAggregate> Upstreams => _upstreams;
 	public IReadOnlySet<TaskAggregate> Downstreams => _downstreams;
-	public IReadOnlySet<LifeAreaAggregate> LifeAreas => _lifeAreas;
+	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
 
 	private TaskAggregate(){ }
 
@@ -177,35 +177,35 @@ public class TaskAggregate
 			throw new ArgumentException("Task collection cannot contain tasks with empty Id");
 	}
 	
-	public void AddLifeArea(LifeAreaAggregate lifeArea)
+	public void AddLifeArea(LifeArea lifeArea)
 	{
 		ValidateLifeArea(lifeArea);
 		
 		_lifeAreas.Add(lifeArea);
 	}
 	
-	public void RemoveLifeArea(LifeAreaAggregate lifeArea)
+	public void RemoveLifeArea(LifeArea lifeArea)
 	{
 		ValidateLifeArea(lifeArea);
 		
 		_lifeAreas.RemoveWhere(lifeAreaAggregate => lifeAreaAggregate.Id.Equals(lifeArea.Id));
 	}
 
-	public void AddLifeAreas(HashSet<LifeAreaAggregate> lifeAreas)
+	public void AddLifeAreas(HashSet<LifeArea> lifeAreas)
 	{
 		ValidateLifeAreaCollection(lifeAreas);
 		
 		_lifeAreas.UnionWith(lifeAreas);
 	}
 
-	public void RemoveLifeAreas(HashSet<LifeAreaAggregate> lifeAreas)
+	public void RemoveLifeAreas(HashSet<LifeArea> lifeAreas)
 	{
 		ValidateLifeAreaCollection(lifeAreas);
 
 		_lifeAreas.ExceptWith(lifeAreas);
 	}
 
-	public void ReplaceLifeAreas(HashSet<LifeAreaAggregate> newLifeAreas)
+	public void ReplaceLifeAreas(HashSet<LifeArea> newLifeAreas)
 	{
 		ValidateLifeAreaCollection(newLifeAreas);
 		
@@ -220,12 +220,12 @@ public class TaskAggregate
 		_lifeAreas.Clear();
 	}
 	
-	private void ValidateLifeArea(LifeAreaAggregate lifeArea)
+	private void ValidateLifeArea(LifeArea lifeArea)
 	{
 		if (lifeArea.Id.Equals(Guid.Empty)) throw new ArgumentException("Life Area id cannot be empty");
 	}
 
-	private void ValidateLifeAreaCollection(HashSet<LifeAreaAggregate> lifeAreaCollection)
+	private void ValidateLifeAreaCollection(HashSet<LifeArea> lifeAreaCollection)
 	{
 		if (lifeAreaCollection is null) throw new ArgumentException("Life Area collection cannot be null");
 

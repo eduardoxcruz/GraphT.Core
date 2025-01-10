@@ -2,6 +2,7 @@
 using GraphT.Controllers.FindReadyToStartTasks;
 using GraphT.Controllers.FindTaskById;
 using GraphT.Controllers.FindTaskDownstreamsById;
+using GraphT.Controllers.FindTaskLifeAreasById;
 using GraphT.Controllers.UpdateTask;
 using GraphT.Controllers.FindTaskUpstreamsById;
 
@@ -19,6 +20,7 @@ public static class DependencyContainer
 		services.AddScoped<IFindTaskUpstreamsByIdController, FindTaskUpstreamsById.Controller>();
 		services.AddScoped<IFindReadyToStartTasksController, FindReadyToStartTasks.Controller>();
 		services.AddScoped<IFindTaskDownstreamsByIdController, FindTaskDownstreamsById.Controller>();
+		services.AddScoped<IFindTaskLifeAreasByIdController, FindTaskLifeAreasById.Controller>();
 
 		return services;
 	}
