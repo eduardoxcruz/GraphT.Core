@@ -13,17 +13,23 @@ public abstract class BaseSpecification<T> : ISpecification<T>
 	public Expression<Func<T, object>>? OrderBy { get; private set; }
 	public Expression<Func<T, object>>? OrderByDescending { get; private set; }
 	public Expression<Func<T, object>>? GroupBy { get; private set; }
+	public List<Expression<Func<T, object>>> ThenByExpressions { get; private set; }
+	public List<bool> ThenByDescendingFlags { get; private set; }
 
 	protected BaseSpecification()
 	{
 		IncludeStrings = new List<string>();
 		Includes = new List<Expression<Func<T, object>>>();
+		ThenByExpressions = new List<Expression<Func<T, object>>>();
+		ThenByDescendingFlags = new List<bool>();
 	}
 
 	protected BaseSpecification(Expression<Func<T, bool>> criteria)
 	{
 		IncludeStrings = new List<string>();
 		Includes = new List<Expression<Func<T, object>>>();
+		ThenByExpressions = new List<Expression<Func<T, object>>>();
+		ThenByDescendingFlags = new List<bool>();
 		Criteria = criteria;
 	}
 
@@ -63,4 +69,15 @@ public abstract class BaseSpecification<T> : ISpecification<T>
 	{
 		GroupBy = groupByExpression;
 	}
+
+	protected virtual void AddThenBy(Expression<Func<T, object>> thenByExpression)
+    {
+        ThenByExpressions.Add(thenByExpression);
+    }
+
+    protected virtual void AddThenByDescending(Expression<Func<T, object>> thenByExpression)
+    {
+        ThenByExpressions.Add(thenByExpression);
+        ThenByDescendingFlags.Add(true);
+    }
 }
