@@ -105,7 +105,7 @@ public class UseCaseTests
 		TaskLog lastLog = new(taskId, currentTime.AddHours(-2), initialStatus, previousTimeSpent);
 		PagedList<TaskLog> logList = new([ lastLog ], 1, 1, 1);
 		
-		logRepository.FindAsync(Arg.Any<LastTaskLogSpecification>()).Returns(logList);
+		logRepository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(logList);
 		taskRepository.FindByIdAsync(taskId).Returns(existingTask);
 		unitOfWork.Repository<TaskAggregate>().Returns(taskRepository);
 		unitOfWork.Repository<TaskLog>().Returns(logRepository);
@@ -149,7 +149,7 @@ public class UseCaseTests
 		InputDto dto = new() { Id = taskId, Status = newStatus };
 		string expectedTimeSpendString = "\u26a1 0 day(s) - 0 hours - 0 minutes";
 		
-		logRepository.FindAsync(Arg.Any<LastTaskLogSpecification>()).Returns(new PagedList<TaskLog>([], 0, 1, 1));
+		logRepository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>([], 0, 1, 1));
 		taskRepository.FindByIdAsync(taskId).Returns(existingTask);
 		unitOfWork.Repository<TaskAggregate>().Returns(taskRepository);
 		unitOfWork.Repository<TaskLog>().Returns(logRepository);
