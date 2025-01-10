@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Exceptions;
 using GraphT.Model.Services.Specifications;
 
 using SeedWork;
@@ -22,14 +23,18 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
+		TaskAggregate? task = await _unitOfWork.Repository<TaskAggregate>().FindByIdAsync(dto.Id);
+
+		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
+
 		FindUpstreamsByTaskIdSpecification specification = new(dto.Id, dto.PagingParams);
-		PagedList<TaskAggregate> entitiesFromDb = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
+		task = (await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification)).First();
 		PagedList<TaskIdAndName> upstreams = new(
-			entitiesFromDb.Select(TaskIdAndName.MapFrom).ToList(),
-			entitiesFromDb.TotalCount,
-			entitiesFromDb.CurrentPage,
-			entitiesFromDb.PageSize);
-		
+			task.Upstreams.Select(TaskIdAndName.MapFrom).ToList(),
+			task.Upstreams.Count,
+			dto.PagingParams.PageNumber,
+			dto.PagingParams.PageSize);
+
 		await _outputPort.Handle(new OutputDto() { Upstreams = upstreams });
 	}
 }
