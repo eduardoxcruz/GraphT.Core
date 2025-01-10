@@ -11,109 +11,97 @@ namespace GraphT.UseCases.Tests.FindTaskUpstreamsById;
 public class UseCaseTests
 {
 	[Fact]
-    public async Task Handle_ShouldCreateSpecificationWithCorrectParameters()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
-        
-        Guid taskId = Guid.NewGuid();
-        PagingParams pagingParams = new() { Page = 1, PageSize = 10 };
-        InputDto input = new() { Id = taskId, PagingParams = pagingParams };
-        
-        unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>()).Returns(new PagedList<TaskAggregate>(new List<TaskAggregate>(), 0, 1, 10));
-        
-        UseCase useCase = new UseCase(outputPort, unitOfWork);
+	public async Task Handle_WhenTaskHasUpstreams_ReturnsPagedListOfUpstreams()
+	{
+		// Arrange
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
 
-        // Act
-        await useCase.Handle(input);
+		Guid taskId = Guid.NewGuid();
+		List<TaskAggregate> upstreamTasks = new()
+		{
+			new TaskAggregate("Upstream 1"),
+			new TaskAggregate("Upstream 2")
+		};
+		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
+		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
+		PagedList<TaskAggregate> pagedUpstreams = new(upstreamTasks, 2, 1, 10);
 
-        // Assert
-        await repository.Received(1).FindAsync(
-            Arg.Is<FindUpstreamsByTaskIdSpecification>(spec => 
-                spec.TaskId == taskId && 
-                spec.PagingParams.Page == pagingParams.Page && 
-                spec.PagingParams.PageSize == pagingParams.PageSize
-            )
-        );
-    }
+		unitOfWork.Repository<TaskAggregate>().Returns(repository);
+		repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>()).Returns(pagedUpstreams);
 
-    [Fact]
-    public async Task Handle_WhenTasksExist_ShouldMapAndReturnCorrectly()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
-        
-        List<TaskAggregate> tasks = new()
-        {
-            new TaskAggregate() { Id = Guid.NewGuid(), Name = "Task 1" },
-            new TaskAggregate() { Id = Guid.NewGuid(), Name = "Task 2" }
-        };
-        
-        int totalCount = 10;
-        int currentPage = 1;
-        int pageSize = 2;
-        
-        PagedList<TaskAggregate> pagedTasks = new(tasks, totalCount, currentPage, pageSize);
-        
-        unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>())
-            .Returns(pagedTasks);
-        
-        UseCase useCase = new UseCase(outputPort, unitOfWork);
-        InputDto input = new() 
-        { 
-            Id = Guid.NewGuid(), 
-            PagingParams = new PagingParams { Page = currentPage, PageSize = pageSize } 
-        };
+		UseCase useCase = new(outputPort, unitOfWork);
 
-        // Act
-        await useCase.Handle(input);
+		// Act
+		await useCase.Handle(input);
 
-        // Assert
-        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
-            dto.Upstreams.Count == tasks.Count &&
-            dto.Upstreams.TotalCount == totalCount &&
-            dto.Upstreams.CurrentPage == currentPage &&
-            dto.Upstreams.PageSize == pageSize
-        ));
-    }
+		// Assert
+		await repository.Received(1).FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>());
+		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
+			dto.Upstreams.Count == 2 &&
+			dto.Upstreams.TotalCount == 2 &&
+			dto.Upstreams.CurrentPage == 1 &&
+			dto.Upstreams.PageSize == 10 &&
+			dto.Upstreams.Any(t => t.Id.Equals(upstreamTasks[0].Id)) &&
+			dto.Upstreams.Any(t => t.Id.Equals(upstreamTasks[1].Id))
+		));
+	}
 
-    [Fact]
-    public async Task Handle_WhenNoTasks_ShouldReturnEmptyPagedList()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
-        
-        List<TaskAggregate> emptyTasks = new();
-        PagedList<TaskAggregate> emptyPagedList = new(emptyTasks, 0, 1, 10);
-        
-        unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>())
-            .Returns(emptyPagedList);
-        
-        UseCase useCase = new UseCase(outputPort, unitOfWork);
-        InputDto input = new() 
-        { 
-            Id = Guid.NewGuid(), 
-            PagingParams = new PagingParams { Page = 1, PageSize = 10 } 
-        };
+	[Fact]
+	public async Task Handle_WhenTaskHasNoUpstreams_ReturnsEmptyPagedList()
+	{
+		// Arrange
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
 
-        // Act
-        await useCase.Handle(input);
+		Guid taskId = Guid.NewGuid();
+		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
+		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
+		PagedList<TaskAggregate> emptyPagedList = new(new List<TaskAggregate>(), 0, 1, 10);
 
-        // Assert
-        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
-            dto.Upstreams.Count == 0 &&
-            dto.Upstreams.TotalCount == 0 &&
-            dto.Upstreams.CurrentPage == 1 &&
-            dto.Upstreams.PageSize == 10
-        ));
-    }
+		unitOfWork.Repository<TaskAggregate>().Returns(repository);
+		repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>()).Returns(emptyPagedList);
+
+		UseCase useCase = new(outputPort, unitOfWork);
+
+		// Act
+		await useCase.Handle(input);
+
+		// Assert
+		await repository.Received(1).FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>());
+		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
+			dto.Upstreams.Count == 0 &&
+			dto.Upstreams.TotalCount == 0
+		));
+	}
+
+	[Fact]
+	public async Task Handle_ValidatesPagingParameters()
+	{
+		// Arrange
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+
+		Guid taskId = Guid.NewGuid();
+		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 5 };
+		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
+
+		unitOfWork.Repository<TaskAggregate>().Returns(repository);
+		repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>())
+			.Returns(new PagedList<TaskAggregate>(new List<TaskAggregate>(), 0, 2, 5));
+
+		UseCase useCase = new(outputPort, unitOfWork);
+
+		// Act
+		await useCase.Handle(input);
+
+		// Assert
+		await repository.Received(1).FindAsync(Arg.Is<FindUpstreamsByTaskIdSpecification>(spec =>
+			spec.PageNumber == pagingParams.PageNumber &&
+			spec.PageSize == pagingParams.PageSize
+		));
+	}
 }
