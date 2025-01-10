@@ -7,7 +7,7 @@ public class LifeAreaAggregate
 	private HashSet<TaskAggregate> _tasks;
 	public IReadOnlySet<TaskAggregate> Tasks => _tasks;
 
-	private LifeAreaAggregate(string name)
+	public LifeAreaAggregate(string name)
 	{
 		Id = Guid.NewGuid();
 		Name = name;
