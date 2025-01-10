@@ -24,7 +24,7 @@ public class UseCase : IInputPort
 	public async ValueTask Handle(InputDto dto)
 	{
 		TasksWhereStatusIsReadyToStartSpecification specification = new(dto.PagingParams);
-		PagedList<TaskAggregate> tasks = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
+		PagedList<TodoTask> tasks = await _unitOfWork.Repository<TodoTask>().FindAsync(specification);
 		
 		await _outputPort.Handle(new OutputDto { Tasks = tasks });
 	}
@@ -37,6 +37,6 @@ public class InputDto
 
 public class OutputDto
 {
-	public PagedList<TaskAggregate> Tasks { get; set; }
+	public PagedList<TodoTask> Tasks { get; set; }
 }
 

@@ -16,10 +16,10 @@ public class UseCaseTests
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> taskRepository = Substitute.For<IRepository<TaskAggregate>>();
+        IRepository<TodoTask> taskRepository = Substitute.For<IRepository<TodoTask>>();
         IRepository<TaskLog> taskLogRepository = Substitute.For<IRepository<TaskLog>>();
 
-        unitOfWork.Repository<TaskAggregate>().Returns(taskRepository);
+        unitOfWork.Repository<TodoTask>().Returns(taskRepository);
         unitOfWork.Repository<TaskLog>().Returns(taskLogRepository);
 
         InputDto input = new()
@@ -38,7 +38,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => 
+        await taskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
             t.Name == input.Name && 
             t.IsFun == input.IsFun && 
             t.IsProductive == input.IsProductive && 
@@ -56,13 +56,13 @@ public class UseCaseTests
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> taskRepository = Substitute.For<IRepository<TaskAggregate>>();
+        IRepository<TodoTask> taskRepository = Substitute.For<IRepository<TodoTask>>();
         IRepository<TaskLog> taskLogRepository = Substitute.For<IRepository<TaskLog>>();
 
         Guid providedId = Guid.NewGuid();
         
-        taskRepository.FindByIdAsync(providedId).Returns((TaskAggregate)null);
-        unitOfWork.Repository<TaskAggregate>().Returns(taskRepository);
+        taskRepository.FindByIdAsync(providedId).Returns((TodoTask)null);
+        unitOfWork.Repository<TodoTask>().Returns(taskRepository);
         unitOfWork.Repository<TaskLog>().Returns(taskLogRepository);
         
         InputDto input = new()
@@ -77,7 +77,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => t.Id == input.Id && t.Name == input.Name));
+        await taskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => t.Id == input.Id && t.Name == input.Name));
         await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id == input.Id));
@@ -89,10 +89,10 @@ public class UseCaseTests
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> taskRepository = Substitute.For<IRepository<TaskAggregate>>();
+        IRepository<TodoTask> taskRepository = Substitute.For<IRepository<TodoTask>>();
         IRepository<TaskLog> taskLogRepository = Substitute.For<IRepository<TaskLog>>();
 
-        unitOfWork.Repository<TaskAggregate>().Returns(taskRepository);
+        unitOfWork.Repository<TodoTask>().Returns(taskRepository);
         unitOfWork.Repository<TaskLog>().Returns(taskLogRepository);
 
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
@@ -113,7 +113,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => 
+        await taskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
             t.Name == input.Name &&
             t.DateTimeInfo.StartDateTime == input.StartDateTime &&
             t.DateTimeInfo.FinishDateTime == input.FinishDateTime &&
@@ -130,10 +130,10 @@ public class UseCaseTests
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> taskRepository = Substitute.For<IRepository<TaskAggregate>>();
+        IRepository<TodoTask> taskRepository = Substitute.For<IRepository<TodoTask>>();
         IRepository<TaskLog> taskLogRepository = Substitute.For<IRepository<TaskLog>>();
 
-        unitOfWork.Repository<TaskAggregate>().Returns(taskRepository);
+        unitOfWork.Repository<TodoTask>().Returns(taskRepository);
         unitOfWork.Repository<TaskLog>().Returns(taskLogRepository);
 
         InputDto input = new();
@@ -144,7 +144,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await taskRepository.Received(1).AddAsync(Arg.Is<TaskAggregate>(t => 
+        await taskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
             t.Name == "New Task"
         ));
     }

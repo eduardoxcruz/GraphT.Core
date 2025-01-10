@@ -4,7 +4,7 @@ using SeedWork;
 
 namespace GraphT.Model.Services.Specifications;
 
-public sealed class TaskIncludeDownstreamsSpecification : BaseSpecification<TaskAggregate>
+public sealed class TaskIncludeDownstreamsSpecification : BaseSpecification<TodoTask>
 {
 	public TaskIncludeDownstreamsSpecification(Guid id, PagingParams pagingParams) : 
 		base(t => t.Id.Equals(id))

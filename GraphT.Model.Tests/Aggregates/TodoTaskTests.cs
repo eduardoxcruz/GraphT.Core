@@ -3,13 +3,13 @@ using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Tests.Aggregates;
 
-public class TaskAggregateTests
+public class TodoTaskTests
 {
 	[Fact]
 	public void Constructor_UseDefaultOptionalArguments()
 	{
 		string taskName = "Test Task";
-		TaskAggregate task = new(taskName);
+		TodoTask task = new(taskName);
 
 		Assert.Equal(taskName, task.Name);
 		Assert.False(task.IsFun);
@@ -23,10 +23,10 @@ public class TaskAggregateTests
 	[Fact]
 	public void IsFunAndIsProductive_UpdatesRelevance()
 	{
-		TaskAggregate taskSuperfluous = new("Task Superfluous");
-		TaskAggregate taskEntertaining = new("Task Entertaining", isFun:true);
-		TaskAggregate taskNecessary = new("Task Necessary", isFun:false, isProductive:true);
-		TaskAggregate taskPurposeful = new("TaskPurposeful", isFun:true, isProductive:true);
+		TodoTask taskSuperfluous = new("Task Superfluous");
+		TodoTask taskEntertaining = new("Task Entertaining", isFun:true);
+		TodoTask taskNecessary = new("Task Necessary", isFun:false, isProductive:true);
+		TodoTask taskPurposeful = new("TaskPurposeful", isFun:true, isProductive:true);
 
 		Assert.Equal(Relevance.Superfluous, taskSuperfluous.Relevance);
 		Assert.Equal(Relevance.Entertaining, taskEntertaining.Relevance);
@@ -37,8 +37,8 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddUpstream_AddsTaskToUpstreams()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate upstreamTask = new("Upstream Task");
+		TodoTask task = new("Test Task");
+		TodoTask upstreamTask = new("Upstream Task");
 
 		task.AddUpstream(upstreamTask);
 
@@ -48,9 +48,9 @@ public class TaskAggregateTests
 	[Fact]
 	public void RemoveUpstream_RemovesTaskFromUpstreams()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate upstreamTask = new("Upstream Task");
-		TaskAggregate upstreamTask2 = new("Upstream Task 2");
+		TodoTask task = new("Test Task");
+		TodoTask upstreamTask = new("Upstream Task");
+		TodoTask upstreamTask2 = new("Upstream Task 2");
 
 		task.AddUpstream(upstreamTask);
 		task.AddUpstream(upstreamTask2);
@@ -63,10 +63,10 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddUpstreams_AddsUpstreamsToCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate upstreamTask1 = new("Upstream Task 1");
-		TaskAggregate upstreamTask2 = new("Upstream Task 2");
-		HashSet<TaskAggregate> newUpstreams = new() { upstreamTask1, upstreamTask2 };
+		TodoTask task = new("Test Task");
+		TodoTask upstreamTask1 = new("Upstream Task 1");
+		TodoTask upstreamTask2 = new("Upstream Task 2");
+		HashSet<TodoTask> newUpstreams = new() { upstreamTask1, upstreamTask2 };
 
 		task.AddUpstreams(newUpstreams);
 
@@ -77,7 +77,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddUpstreams_ThrowsExceptionIfNewCollectionAreNull()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
 		Assert.Throws<ArgumentException>(() => task.AddUpstreams(null));
 	}
@@ -85,19 +85,19 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddUpstreams_ThrowsExceptionIfNewCollectionAreEmpty()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
-		Assert.Throws<ArgumentException>(() => task.AddUpstreams(new HashSet<TaskAggregate>()));
+		Assert.Throws<ArgumentException>(() => task.AddUpstreams(new HashSet<TodoTask>()));
 	}
 
 	[Fact]
 	public void RemoveUpstreams_RemovesUpstreamsFromCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate upstreamTask1 = new("Upstream Task 1");
-		TaskAggregate upstreamTask2 = new("Upstream Task 2");
-		TaskAggregate upstreamTask3 = new("Upstream Task 3");
-		HashSet<TaskAggregate> newUpstreams = new() { upstreamTask2, upstreamTask3 };
+		TodoTask task = new("Test Task");
+		TodoTask upstreamTask1 = new("Upstream Task 1");
+		TodoTask upstreamTask2 = new("Upstream Task 2");
+		TodoTask upstreamTask3 = new("Upstream Task 3");
+		HashSet<TodoTask> newUpstreams = new() { upstreamTask2, upstreamTask3 };
 
 		task.AddUpstream(upstreamTask1);
 		task.AddUpstreams(newUpstreams);
@@ -111,13 +111,13 @@ public class TaskAggregateTests
 	[Fact]
 	public void ReplaceUpstreams_ReplacesUpstreamCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate upstreamTask1 = new("Upstream Task 1");
-		TaskAggregate upstreamTask2 = new("Upstream Task 2");
-		TaskAggregate upstreamTask3 = new("Upstream Task 3");
-		TaskAggregate upstreamTask4 = new("Upstream Task 4");
-		HashSet<TaskAggregate> originalUpstreams = new() { upstreamTask1, upstreamTask2 };
-		HashSet<TaskAggregate> newUpstreams = new() { upstreamTask3, upstreamTask4 };
+		TodoTask task = new("Test Task");
+		TodoTask upstreamTask1 = new("Upstream Task 1");
+		TodoTask upstreamTask2 = new("Upstream Task 2");
+		TodoTask upstreamTask3 = new("Upstream Task 3");
+		TodoTask upstreamTask4 = new("Upstream Task 4");
+		HashSet<TodoTask> originalUpstreams = new() { upstreamTask1, upstreamTask2 };
+		HashSet<TodoTask> newUpstreams = new() { upstreamTask3, upstreamTask4 };
 
 		task.AddUpstreams(originalUpstreams);
 		task.ReplaceUpstreams(newUpstreams);
@@ -131,10 +131,10 @@ public class TaskAggregateTests
 	[Fact]
 	public void ClearUpstreams_ClearsCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate upstreamTask1 = new("Upstream Task 1");
-		TaskAggregate upstreamTask2 = new("Upstream Task 2");
-		HashSet<TaskAggregate> upstreams = new() { upstreamTask1, upstreamTask2 };
+		TodoTask task = new("Test Task");
+		TodoTask upstreamTask1 = new("Upstream Task 1");
+		TodoTask upstreamTask2 = new("Upstream Task 2");
+		HashSet<TodoTask> upstreams = new() { upstreamTask1, upstreamTask2 };
 
 		task.AddUpstreams(upstreams);
 		task.ClearUpstreams();
@@ -145,8 +145,8 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddDownstream_AddsTaskToDownstreams()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate downstream = new("Upstream Task");
+		TodoTask task = new("Test Task");
+		TodoTask downstream = new("Upstream Task");
 
 		task.AddDownstream(downstream);
 
@@ -156,9 +156,9 @@ public class TaskAggregateTests
 	[Fact]
 	public void RemoveDownstream_RemovesTaskFromDownstreams()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate downstream = new("Task");
-		TaskAggregate downstream2 = new("Task 2");
+		TodoTask task = new("Test Task");
+		TodoTask downstream = new("Task");
+		TodoTask downstream2 = new("Task 2");
 
 		task.AddDownstream(downstream);
 		task.AddDownstream(downstream2);
@@ -171,10 +171,10 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddDownstreams_AddsDownstreamsToCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate downstream1 = new("Upstream Task 1");
-		TaskAggregate downstream2 = new("Upstream Task 2");
-		HashSet<TaskAggregate> newDownstreams = new() { downstream1, downstream2 };
+		TodoTask task = new("Test Task");
+		TodoTask downstream1 = new("Upstream Task 1");
+		TodoTask downstream2 = new("Upstream Task 2");
+		HashSet<TodoTask> newDownstreams = new() { downstream1, downstream2 };
 
 		task.AddDownstreams(newDownstreams);
 
@@ -185,7 +185,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddDownstreams_ThrowsExceptionIfNewCollectionAreNull()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
 		Assert.Throws<ArgumentException>(() => task.AddDownstreams(null));
 	}
@@ -193,19 +193,19 @@ public class TaskAggregateTests
 	[Fact]
 	public void AddDownstreams_ThrowsExceptionIfNewCollectionAreEmpty()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
-		Assert.Throws<ArgumentException>(() => task.AddDownstreams(new HashSet<TaskAggregate>()));
+		Assert.Throws<ArgumentException>(() => task.AddDownstreams(new HashSet<TodoTask>()));
 	}
 
 	[Fact]
 	public void RemoveDownstreams_RemovesDownstreamsFromCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate downstream1 = new("Task 1");
-		TaskAggregate downstream2 = new("Task 2");
-		TaskAggregate downstream3 = new("Task 3");
-		HashSet<TaskAggregate> newDownstreams = new() { downstream2, downstream3 };
+		TodoTask task = new("Test Task");
+		TodoTask downstream1 = new("Task 1");
+		TodoTask downstream2 = new("Task 2");
+		TodoTask downstream3 = new("Task 3");
+		HashSet<TodoTask> newDownstreams = new() { downstream2, downstream3 };
 
 		task.AddDownstream(downstream1);
 		task.AddDownstreams(newDownstreams);
@@ -219,13 +219,13 @@ public class TaskAggregateTests
 	[Fact]
 	public void ReplaceDownstreams_ReplacesDownstreamCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate downstream1 = new("Task 1");
-		TaskAggregate downstream2 = new("Task 2");
-		TaskAggregate downstream3 = new("Task 3");
-		TaskAggregate downstream4 = new("Task 4");
-		HashSet<TaskAggregate> originalDownstreams = new() { downstream1, downstream2 };
-		HashSet<TaskAggregate> newDownstreams = new() { downstream3, downstream4 };
+		TodoTask task = new("Test Task");
+		TodoTask downstream1 = new("Task 1");
+		TodoTask downstream2 = new("Task 2");
+		TodoTask downstream3 = new("Task 3");
+		TodoTask downstream4 = new("Task 4");
+		HashSet<TodoTask> originalDownstreams = new() { downstream1, downstream2 };
+		HashSet<TodoTask> newDownstreams = new() { downstream3, downstream4 };
 
 		task.AddDownstreams(originalDownstreams);
 		task.ReplaceDownstreams(newDownstreams);
@@ -239,10 +239,10 @@ public class TaskAggregateTests
 	[Fact]
 	public void ClearDownstreams_ClearsCollection()
 	{
-		TaskAggregate task = new("Test Task");
-		TaskAggregate downstream1 = new("Task 1");
-		TaskAggregate downstream2 = new("Task 2");
-		HashSet<TaskAggregate> downstreams = new() { downstream1, downstream2 };
+		TodoTask task = new("Test Task");
+		TodoTask downstream1 = new("Task 1");
+		TodoTask downstream2 = new("Task 2");
+		HashSet<TodoTask> downstreams = new() { downstream1, downstream2 };
 
 		task.AddDownstreams(downstreams);
 		task.ClearDownstreams();
@@ -253,7 +253,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetStartDate_UpdatesStartDate()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 		DateTimeOffset startDateTime = new(2000, 01, 01, 0, 0, 0, TimeSpan.Zero);
 
 		task.SetStartDate(startDateTime);
@@ -264,7 +264,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetStartDate_ThrowsExceptionIfStartDateAfterFinishDate()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 		DateTimeOffset finishDate = DateTimeOffset.Now;
 
 		task.SetFinishDate(finishDate);
@@ -275,7 +275,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetFinishDate_UpdatesFinishDate()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 		DateTimeOffset finishDateTime = new(2000, 01, 01, 0, 0, 0, TimeSpan.Zero);
 
 		task.SetFinishDate(finishDateTime);
@@ -286,7 +286,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetFinishDate_ThrowsExceptionIfFinishDateBeforeStartDate()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 		DateTimeOffset startDate = DateTimeOffset.Now;
 
 		task.SetStartDate(startDate);
@@ -297,7 +297,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetLimitDate_UpdatesLimitDate()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 		DateTimeOffset limitDate = DateTimeOffset.Now.AddDays(1);
 
 		task.SetLimitDate(limitDate);
@@ -308,7 +308,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetPriority_UpdatesPriority()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
 		task.Priority = Priority.DoItNow;
 
@@ -318,7 +318,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetComplexity_UpdatesComplexity()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
 		task.Complexity = Complexity.Indefinite;
 
@@ -328,7 +328,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void SetStatus_UpdatesStatus()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 
 		task.Status = Status.Completed;
 
@@ -338,7 +338,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void Progress_ReturnsZero_WhenNoDownstreamTasksAndParentIsNotCompleted()
 	{
-		TaskAggregate task = new("Parent Task", status: Status.Backlog);
+		TodoTask task = new("Parent Task", status: Status.Backlog);
 		
 		Assert.Equal(0, task.Progress);
 		Assert.NotEqual(Status.Completed, task.Status);
@@ -347,7 +347,7 @@ public class TaskAggregateTests
 	[Fact]
 	public void Progress_ReturnsHundred_WhenNoDownstreamTasksAndParentIsCompleted()
 	{
-		TaskAggregate task = new("Parent Task", status: Status.Completed);
+		TodoTask task = new("Parent Task", status: Status.Completed);
 		
 		Assert.Equal(100, task.Progress);
 		Assert.Equal(Status.Completed, task.Status);
@@ -356,9 +356,9 @@ public class TaskAggregateTests
 	[Fact]
 	public void Progress_ReturnsHundred_WhenAllDownstreamTasksAreCompletedOrDropped()
 	{
-		TaskAggregate task = new("Parent Task");
+		TodoTask task = new("Parent Task");
 		
-		task.AddDownstreams(new HashSet<TaskAggregate>
+		task.AddDownstreams(new HashSet<TodoTask>
 		{
 			new("Downstream 1", status: Status.Completed), 
 			new("Downstream 2", status: Status.Completed),
@@ -371,9 +371,9 @@ public class TaskAggregateTests
 	[Fact]
 	public void Progress_ReturnsZero_WhenAllDownstreamTasksAreInBacklog()
 	{
-		TaskAggregate task = new("Parent Task");
+		TodoTask task = new("Parent Task");
 		
-		task.AddDownstreams(new HashSet<TaskAggregate>
+		task.AddDownstreams(new HashSet<TodoTask>
 		{
 			new("Downstream 1", status: Status.Backlog), 
 			new("Downstream 2", status: Status.Backlog)
@@ -385,9 +385,9 @@ public class TaskAggregateTests
 	[Fact]
 	public void Progress_ReturnsCorrectProgress()
 	{
-		TaskAggregate task = new("Parent Task");
+		TodoTask task = new("Parent Task");
 		
-		task.AddDownstreams(new HashSet<TaskAggregate>
+		task.AddDownstreams(new HashSet<TodoTask>
 		{
 			new("Downstream 1", status: Status.Backlog), 
 			new("Downstream 2", status: Status.ReadyToStart),

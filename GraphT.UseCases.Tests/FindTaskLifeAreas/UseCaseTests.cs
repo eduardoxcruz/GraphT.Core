@@ -16,19 +16,19 @@ public class UseCaseTests
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
+		TodoTask testTask = new("Test Task", id: taskId);
 		LifeArea lifeArea1 = new("Life Area 1");
 		LifeArea lifeArea2 = new("Life Area 2");
 		testTask.AddLifeAreas([lifeArea1, lifeArea2]);
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
+		unitOfWork.Repository<TodoTask>().Returns(repository);
 		repository.FindByIdAsync(taskId).Returns(testTask);
-		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TodoTask>([ testTask ], 1, 1, 10));
 
 		UseCase useCase = new(outputPort, unitOfWork);
 
@@ -53,16 +53,16 @@ public class UseCaseTests
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
+		TodoTask testTask = new("Test Task", id: taskId);
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
+		unitOfWork.Repository<TodoTask>().Returns(repository);
 		repository.FindByIdAsync(taskId).Returns(testTask);
-		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TodoTask>([ testTask ], 1, 1, 10));
 
 		UseCase useCase = new(outputPort, unitOfWork);
 
@@ -83,16 +83,16 @@ public class UseCaseTests
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
+		TodoTask testTask = new("Test Task", id: taskId);
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 5 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
+		unitOfWork.Repository<TodoTask>().Returns(repository);
 		repository.FindByIdAsync(taskId).Returns(testTask);
-		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 2, 5));
+		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TodoTask>([ testTask ], 1, 2, 5));
 
 		UseCase useCase = new(outputPort, unitOfWork);
 

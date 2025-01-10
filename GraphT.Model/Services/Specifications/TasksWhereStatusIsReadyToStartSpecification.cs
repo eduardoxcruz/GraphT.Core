@@ -5,7 +5,7 @@ using SeedWork;
 
 namespace GraphT.Model.Services.Specifications;
 
-public sealed class TasksWhereStatusIsReadyToStartSpecification : BaseSpecification<TaskAggregate>
+public sealed class TasksWhereStatusIsReadyToStartSpecification : BaseSpecification<TodoTask>
 {
 	public TasksWhereStatusIsReadyToStartSpecification(PagingParams pagingParams) : base(task => (task.Status == Status.ReadyToStart))
 	{

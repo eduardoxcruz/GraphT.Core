@@ -17,11 +17,11 @@ public class UnitOfWorkTests : TestBase
 	[Fact]
 	public async Task SaveChangesAsync_PersistsChangesToDatabase()
 	{
-		TaskAggregate task = new("Test Task");
+		TodoTask task = new("Test Task");
 		
-		await _unitOfWork.Repository<TaskAggregate>().AddAsync(task);
+		await _unitOfWork.Repository<TodoTask>().AddAsync(task);
 		int saveResult = await _unitOfWork.SaveChangesAsync();
-		TaskAggregate? savedTask = await _context.TaskAggregates.FindAsync(task.Id);
+		TodoTask? savedTask = await _context.TodoTasks.FindAsync(task.Id);
 
 		Assert.Equal(1, saveResult);
 		Assert.NotNull(savedTask);
@@ -31,8 +31,8 @@ public class UnitOfWorkTests : TestBase
 	[Fact]
 	public void Repository_ReturnsSameInstanceForSameType()
 	{
-		IRepository<TaskAggregate> repo1 = _unitOfWork.Repository<TaskAggregate>();
-		IRepository<TaskAggregate> repo2 = _unitOfWork.Repository<TaskAggregate>();
+		IRepository<TodoTask> repo1 = _unitOfWork.Repository<TodoTask>();
+		IRepository<TodoTask> repo2 = _unitOfWork.Repository<TodoTask>();
 
 		Assert.Same(repo1, repo2);
 	}
@@ -40,7 +40,7 @@ public class UnitOfWorkTests : TestBase
 	[Fact]
 	public void Repository_ReturnsDifferentInstancesForDifferentTypes()
 	{
-		IRepository<TaskAggregate> repo1 = _unitOfWork.Repository<TaskAggregate>();
+		IRepository<TodoTask> repo1 = _unitOfWork.Repository<TodoTask>();
 		IRepository<TaskLog> repo2 = _unitOfWork.Repository<TaskLog>();
 
 		Assert.NotSame(repo1, repo2);
@@ -51,6 +51,6 @@ public class UnitOfWorkTests : TestBase
 	{
 		_unitOfWork.Dispose();
 
-		Assert.Throws<ObjectDisposedException>(() => _context.TaskAggregates.ToList());
+		Assert.Throws<ObjectDisposedException>(() => _context.TodoTasks.ToList());
 	}
 }

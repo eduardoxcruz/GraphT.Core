@@ -9,7 +9,7 @@ namespace GraphT.EfCore.Repositories;
 
 public partial class EfDbContext : DbContext
 {
-	public DbSet<TaskAggregate> TaskAggregates { get; set; }
+	public DbSet<TodoTask> TodoTasks { get; set; }
 	public DbSet<TaskLog> TaskLogs { get; set; }
 	public DbSet<LifeArea> LifeAreas { get; set; }
 	
@@ -17,7 +17,7 @@ public partial class EfDbContext : DbContext
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
-		new TaskAggregateEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskAggregate>());
+		new TodoTaskEntityTypeConfiguration().Configure(modelBuilder.Entity<TodoTask>());
 		new TaskLogEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskLog>());
 		new LifeAreaEntityTypeConfiguration().Configure(modelBuilder.Entity<LifeArea>());
 		OnModelCreatingPartial(modelBuilder);

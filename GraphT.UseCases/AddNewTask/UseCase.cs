@@ -24,12 +24,12 @@ public class UseCase : IInputPort
 	{
 		Guid id = Guid.NewGuid();
 		
-		if ((dto.Id.HasValue) && ((await _unitOfWork.Repository<TaskAggregate>().FindByIdAsync(dto.Id!)) is null))
+		if ((dto.Id.HasValue) && ((await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id!)) is null))
 		{
 			id = dto.Id.Value;
 		}
 		
-		TaskAggregate task = new(dto.Name ?? "New Task", dto.Status, dto.IsFun, dto.IsProductive, dto.Complexity, dto.Priority, id);
+		TodoTask task = new(dto.Name ?? "New Task", dto.Status, dto.IsFun, dto.IsProductive, dto.Complexity, dto.Priority, id);
 		
 		if (dto.StartDateTime.HasValue) task.SetStartDate(dto.StartDateTime.Value);
 
@@ -46,7 +46,7 @@ public class UseCase : IInputPort
 		}
 		
 		await _unitOfWork.Repository<TaskLog>().AddAsync(createdTaskLog);
-		await _unitOfWork.Repository<TaskAggregate>().AddAsync(task);
+		await _unitOfWork.Repository<TodoTask>().AddAsync(task);
 		await _unitOfWork.SaveChangesAsync();
 		await _outputPort.Handle(new OutputDto(id));
 	}
