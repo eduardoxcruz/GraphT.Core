@@ -10,11 +10,7 @@ namespace GraphT.IoC;
 
 public static class DependencyContainer
 {
-	public static IServiceCollection AddGraphTServices(
-		this IServiceCollection services,
-		IConfiguration configuration,
-		string connectionStringName
-	)
+	public static IServiceCollection AddGraphTServices(this IServiceCollection services, IConfiguration configuration, string connectionStringName)
 	{
 		services
 			.AddGraphTUseCases()
