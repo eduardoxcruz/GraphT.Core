@@ -16,14 +16,14 @@ public class UseCaseTests
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
 
         Guid taskId = Guid.NewGuid();
-        TaskAggregate existingTask = new("Test task", id: taskId);
+        TodoTask existingTask = new("Test task", id: taskId);
         InputDto input = new() { Id = taskId };
 
         repository.FindByIdAsync(taskId).Returns(existingTask);
-        unitOfWork.Repository<TaskAggregate>().Returns(repository);
+        unitOfWork.Repository<TodoTask>().Returns(repository);
 
         UseCase useCase = new(outputPort, unitOfWork);
 
@@ -31,7 +31,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        unitOfWork.Received(1).Repository<TaskAggregate>();
+        unitOfWork.Received(1).Repository<TodoTask>();
         await repository.Received(1).FindByIdAsync(taskId);
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => dto.Task.Id.Equals(taskId)));
     }
@@ -42,13 +42,13 @@ public class UseCaseTests
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
         
         Guid taskId = Guid.NewGuid();
         InputDto input = new() { Id = taskId };
         
-        unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindByIdAsync(taskId).Returns((TaskAggregate)null!);
+        unitOfWork.Repository<TodoTask>().Returns(repository);
+        repository.FindByIdAsync(taskId).Returns((TodoTask)null!);
         
         UseCase useCase = new(outputPort, unitOfWork);
 

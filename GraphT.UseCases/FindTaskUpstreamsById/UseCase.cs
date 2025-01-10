@@ -23,12 +23,12 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TaskAggregate? task = await _unitOfWork.Repository<TaskAggregate>().FindByIdAsync(dto.Id);
+		TodoTask? task = await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id);
 
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
 
 		TaskIncludeUpstreamsSpecification specification = new(dto.Id, dto.PagingParams);
-		task = (await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification)).First();
+		task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).First();
 		PagedList<TaskIdAndName> upstreams = new(
 			task.Upstreams.Select(TaskIdAndName.MapFrom).ToList(),
 			task.Upstreams.Count,

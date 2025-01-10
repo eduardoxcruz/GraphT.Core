@@ -7,7 +7,7 @@ public class TaskIdAndName
 	public Guid Id { get; set; }
 	public string Name { get; set; }
 
-	public static TaskIdAndName MapFrom(TaskAggregate source)
+	public static TaskIdAndName MapFrom(TodoTask source)
 	{
 		return new TaskIdAndName { Id = source.Id, Name = source.Name };
 	}

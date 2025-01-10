@@ -4,7 +4,7 @@ using SeedWork;
 
 namespace GraphT.Model.Services.Specifications;
 
-public sealed class TaskIncludeLifeAreasSpecification : BaseSpecification<TaskAggregate>
+public sealed class TaskIncludeLifeAreasSpecification : BaseSpecification<TodoTask>
 {
 	public TaskIncludeLifeAreasSpecification(Guid id, PagingParams pagingParams) : 
 		base(t => t.Id.Equals(id))

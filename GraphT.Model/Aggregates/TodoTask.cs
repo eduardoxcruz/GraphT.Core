@@ -2,7 +2,7 @@
 
 namespace GraphT.Model.Aggregates;
 
-public class TaskAggregate
+public class TodoTask
 {
 	public Guid Id { get; private set; }
 	public string Name { get; set; }
@@ -11,8 +11,8 @@ public class TaskAggregate
 	private bool _isProductive;
 	private Relevance _relevance;
 	private DateTimeInfo _dateTimeInfo;
-	private HashSet<TaskAggregate> _upstreams = null!;
-	private HashSet<TaskAggregate> _downstreams = null!;
+	private HashSet<TodoTask> _upstreams = null!;
+	private HashSet<TodoTask> _downstreams = null!;
 	private HashSet<LifeArea> _lifeAreas = null!;
 	public bool IsFun
 	{
@@ -37,13 +37,13 @@ public class TaskAggregate
 	public float Progress => GetProgress();
 	public Relevance Relevance => _relevance;
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
-	public IReadOnlySet<TaskAggregate> Upstreams => _upstreams;
-	public IReadOnlySet<TaskAggregate> Downstreams => _downstreams;
+	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
+	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
 
-	private TaskAggregate(){ }
+	private TodoTask(){ }
 
-	public TaskAggregate(string name, 
+	public TodoTask(string name, 
 							Status? status = null,
 							bool? isFun = null, 
 							bool? isProductive = null,
@@ -76,35 +76,35 @@ public class TaskAggregate
 		};
 	}
 	
-	public void AddUpstream(TaskAggregate upstream)
+	public void AddUpstream(TodoTask upstream)
 	{
-		ValidateTaskAggregate(upstream);
+		ValidateTask(upstream);
 		
 		_upstreams.Add(upstream);
 	}
 
-	public void RemoveUpstream(TaskAggregate upstream)
+	public void RemoveUpstream(TodoTask upstream)
 	{
-		ValidateTaskAggregate(upstream);
+		ValidateTask(upstream);
 		
-		_upstreams.RemoveWhere(TaskAggregate => TaskAggregate.Id.Equals(upstream.Id));
+		_upstreams.RemoveWhere(todoTask => todoTask.Id.Equals(upstream.Id));
 	}
 
-	public void AddUpstreams(HashSet<TaskAggregate> upstreams)
+	public void AddUpstreams(HashSet<TodoTask> upstreams)
 	{
 		ValidateTaskCollection(upstreams);
 		
 		_upstreams.UnionWith(upstreams);
 	}
 
-	public void RemoveUpstreams(HashSet<TaskAggregate> upstreams)
+	public void RemoveUpstreams(HashSet<TodoTask> upstreams)
 	{
 		ValidateTaskCollection(upstreams);
 		
 		_upstreams.ExceptWith(upstreams);
 	}
 
-	public void ReplaceUpstreams(HashSet<TaskAggregate> newUpstreams)
+	public void ReplaceUpstreams(HashSet<TodoTask> newUpstreams)
 	{
 		ValidateTaskCollection(newUpstreams);
 		
@@ -119,35 +119,35 @@ public class TaskAggregate
 		_upstreams.Clear();
 	}
 
-	public void AddDownstream(TaskAggregate downstream)
+	public void AddDownstream(TodoTask downstream)
 	{
-		ValidateTaskAggregate(downstream);
+		ValidateTask(downstream);
 		
 		_downstreams.Add(downstream);
 	}
 	
-	public void RemoveDownstream(TaskAggregate downstream)
+	public void RemoveDownstream(TodoTask downstream)
 	{
-		ValidateTaskAggregate(downstream);
+		ValidateTask(downstream);
 		
-		_downstreams.RemoveWhere(TaskAggregate => TaskAggregate.Id.Equals(downstream.Id));
+		_downstreams.RemoveWhere(todoTask => todoTask.Id.Equals(downstream.Id));
 	}
 
-	public void AddDownstreams(HashSet<TaskAggregate> downstreams)
+	public void AddDownstreams(HashSet<TodoTask> downstreams)
 	{
 		ValidateTaskCollection(downstreams);
 		
 		_downstreams.UnionWith(downstreams);
 	}
 
-	public void RemoveDownstreams(HashSet<TaskAggregate> downstreams)
+	public void RemoveDownstreams(HashSet<TodoTask> downstreams)
 	{
 		ValidateTaskCollection(downstreams);
 
 		_downstreams.ExceptWith(downstreams);
 	}
 
-	public void ReplaceDownstreams(HashSet<TaskAggregate> newDownstreams)
+	public void ReplaceDownstreams(HashSet<TodoTask> newDownstreams)
 	{
 		ValidateTaskCollection(newDownstreams);
 		
@@ -162,12 +162,12 @@ public class TaskAggregate
 		_downstreams.Clear();
 	}
 	
-	private void ValidateTaskAggregate(TaskAggregate taskAggregate)
+	private void ValidateTask(TodoTask todoTask)
 	{
-		if (taskAggregate.Id.Equals(Guid.Empty)) throw new ArgumentException("Task id cannot be empty");
+		if (todoTask.Id.Equals(Guid.Empty)) throw new ArgumentException("Task id cannot be empty");
 	}
 
-	private void ValidateTaskCollection(HashSet<TaskAggregate> taskCollection)
+	private void ValidateTaskCollection(HashSet<TodoTask> taskCollection)
 	{
 		if (taskCollection is null) throw new ArgumentException("Task collection cannot be null");
 

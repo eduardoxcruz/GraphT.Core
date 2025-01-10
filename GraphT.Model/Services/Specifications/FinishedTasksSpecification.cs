@@ -5,7 +5,7 @@ using SeedWork;
 
 namespace GraphT.Model.Services.Specifications;
 
-public sealed class FinishedTasksSpecification : BaseSpecification<TaskAggregate>
+public sealed class FinishedTasksSpecification : BaseSpecification<TodoTask>
 {
 	public FinishedTasksSpecification(string? name, PagingParams pagingParams) : 
 		base(task => 

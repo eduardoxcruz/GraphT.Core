@@ -16,9 +16,8 @@ public static class DependencyContainer
 		IConfiguration configuration,
 		string connectionString)
 	{
-		services.AddDbContext<EfDbContext>(options =>
-			options.UseSqlServer(configuration.GetConnectionString(connectionString)));
-		services.AddScoped<IRepository<TaskAggregate>, Repository<TaskAggregate>>();
+		services.AddDbContext<EfDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(connectionString)));
+		services.AddScoped<IRepository<TodoTask>, Repository<TodoTask>>();
 		services.AddScoped<IRepository<TaskLog>, Repository<TaskLog>>();
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 

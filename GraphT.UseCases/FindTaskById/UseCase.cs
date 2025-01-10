@@ -23,7 +23,7 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TaskAggregate? task = await _unitOfWork.Repository<TaskAggregate>().FindByIdAsync(dto.Id);
+		TodoTask? task = await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id);
 
 		if (task is null) throw new TaskNotFoundException(dto.Id);
 		
@@ -38,5 +38,5 @@ public class InputDto
 
 public class OutputDto
 {
-	public TaskAggregate Task { get; set; }
+	public TodoTask Task { get; set; }
 }
