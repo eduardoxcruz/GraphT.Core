@@ -16,7 +16,7 @@ public static class TimeSpendCalculatorService
 		//Generic last log when none found
 		TaskLog? lastLog = (await unitOfWork
 			.Repository<TaskLog>()
-			.FindAsync(new LastTaskLogSpecification(taskId)))
+			.FindAsync(new TaskLastLogSpecification(taskId)))
 			.FirstOrDefault() ?? new TaskLog(Guid.Empty, newDateTime, Status.Created, TimeSpan.Zero);
 		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		
