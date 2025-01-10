@@ -5,23 +5,22 @@ using SeedWork;
 
 namespace GraphT.EfCore.Repositories.Tests;
 
-public class UnitOfWorkTests : TestBase
+public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 {
-	private readonly UnitOfWork _unitOfWork;
+	public TestDatabaseFixture Fixture { get; }
 
-	public UnitOfWorkTests()
-	{
-		_unitOfWork = new UnitOfWork(_context);
-	}
+	public UnitOfWorkTests(TestDatabaseFixture fixture) => Fixture = fixture;
 
 	[Fact]
 	public async Task SaveChangesAsync_PersistsChangesToDatabase()
 	{
+		EfDbContext context = Fixture.CreateContext();
+		UnitOfWork unitOfWork = new(context);
 		TodoTask task = new("Test Task");
 		
-		await _unitOfWork.Repository<TodoTask>().AddAsync(task);
-		int saveResult = await _unitOfWork.SaveChangesAsync();
-		TodoTask? savedTask = await _context.TodoTasks.FindAsync(task.Id);
+		await unitOfWork.Repository<TodoTask>().AddAsync(task);
+		int saveResult = await unitOfWork.SaveChangesAsync();
+		TodoTask? savedTask = await context.TodoTasks.FindAsync(task.Id);
 
 		Assert.Equal(1, saveResult);
 		Assert.NotNull(savedTask);
@@ -31,8 +30,10 @@ public class UnitOfWorkTests : TestBase
 	[Fact]
 	public void Repository_ReturnsSameInstanceForSameType()
 	{
-		IRepository<TodoTask> repo1 = _unitOfWork.Repository<TodoTask>();
-		IRepository<TodoTask> repo2 = _unitOfWork.Repository<TodoTask>();
+		EfDbContext context = Fixture.CreateContext();
+		UnitOfWork unitOfWork = new(context);
+		IRepository<TodoTask> repo1 = unitOfWork.Repository<TodoTask>();
+		IRepository<TodoTask> repo2 = unitOfWork.Repository<TodoTask>();
 
 		Assert.Same(repo1, repo2);
 	}
@@ -40,8 +41,10 @@ public class UnitOfWorkTests : TestBase
 	[Fact]
 	public void Repository_ReturnsDifferentInstancesForDifferentTypes()
 	{
-		IRepository<TodoTask> repo1 = _unitOfWork.Repository<TodoTask>();
-		IRepository<TaskLog> repo2 = _unitOfWork.Repository<TaskLog>();
+		EfDbContext context = Fixture.CreateContext();
+		UnitOfWork unitOfWork = new(context);
+		IRepository<TodoTask> repo1 = unitOfWork.Repository<TodoTask>();
+		IRepository<TaskLog> repo2 = unitOfWork.Repository<TaskLog>();
 
 		Assert.NotSame(repo1, repo2);
 	}
@@ -49,8 +52,10 @@ public class UnitOfWorkTests : TestBase
 	[Fact]
 	public void Dispose_DisposesContext()
 	{
-		_unitOfWork.Dispose();
+		EfDbContext context = Fixture.CreateContext();
+		UnitOfWork unitOfWork = new(context);
+		unitOfWork.Dispose();
 
-		Assert.Throws<ObjectDisposedException>(() => _context.TodoTasks.ToList());
+		Assert.Throws<ObjectDisposedException>(() => context.TodoTasks.ToList());
 	}
 }
