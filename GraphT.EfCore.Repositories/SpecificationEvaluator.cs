@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+
+using Microsoft.EntityFrameworkCore;
 
 using SeedWork;
 
@@ -38,6 +40,18 @@ public static class SpecificationEvaluator<TEntity> where TEntity : class
 		{
 			query = query.OrderByDescending(specification.OrderByDescending);
 		}
+
+		if (query is IOrderedQueryable<TEntity> orderedQuery)
+        {
+            for (int i = 0; i < specification.ThenByExpressions.Count; i++)
+            {
+                Expression<Func<TEntity, object>> expression = specification.ThenByExpressions[i];
+                bool isDescending = specification.ThenByDescendingFlags[i];
+
+                orderedQuery = isDescending ? orderedQuery.ThenByDescending(expression) : orderedQuery.ThenBy(expression);
+            }
+            query = orderedQuery;
+        }
 
 		if (specification.GroupBy != null)
 		{
