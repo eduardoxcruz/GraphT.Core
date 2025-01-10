@@ -28,7 +28,7 @@ public class UseCaseTests
 
 		unitOfWork.Repository<TaskAggregate>().Returns(repository);
 		repository.FindByIdAsync(taskId).Returns(testTask);
-		repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		repository.FindAsync(Arg.Any<TaskIncludeUpstreamsSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
 
 		UseCase useCase = new(outputPort, unitOfWork);
 
@@ -36,7 +36,7 @@ public class UseCaseTests
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>());
+		await repository.Received(1).FindAsync(Arg.Any<TaskIncludeUpstreamsSpecification>());
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.Upstreams.Count == 2 &&
 			dto.Upstreams.TotalCount == 2 &&
@@ -62,7 +62,7 @@ public class UseCaseTests
 
 		unitOfWork.Repository<TaskAggregate>().Returns(repository);
 		repository.FindByIdAsync(taskId).Returns(testTask);
-		repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		repository.FindAsync(Arg.Any<TaskIncludeUpstreamsSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
 
 		UseCase useCase = new(outputPort, unitOfWork);
 
@@ -70,7 +70,7 @@ public class UseCaseTests
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>());
+		await repository.Received(1).FindAsync(Arg.Any<TaskIncludeUpstreamsSpecification>());
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.Upstreams.Count == 0 &&
 			dto.Upstreams.TotalCount == 0
@@ -92,7 +92,7 @@ public class UseCaseTests
 
 		unitOfWork.Repository<TaskAggregate>().Returns(repository);
 		repository.FindByIdAsync(taskId).Returns(testTask);
-		repository.FindAsync(Arg.Any<FindUpstreamsByTaskIdSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 2, 5));
+		repository.FindAsync(Arg.Any<TaskIncludeUpstreamsSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 2, 5));
 
 		UseCase useCase = new(outputPort, unitOfWork);
 
@@ -100,7 +100,7 @@ public class UseCaseTests
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Is<FindUpstreamsByTaskIdSpecification>(spec =>
+		await repository.Received(1).FindAsync(Arg.Is<TaskIncludeUpstreamsSpecification>(spec =>
 			spec.PageNumber == pagingParams.PageNumber &&
 			spec.PageSize == pagingParams.PageSize
 		));
