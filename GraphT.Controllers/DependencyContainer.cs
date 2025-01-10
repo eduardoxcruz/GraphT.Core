@@ -1,6 +1,7 @@
 ﻿using GraphT.Controllers.AddNewTask;
 using GraphT.Controllers.FindReadyToStartTasks;
 using GraphT.Controllers.FindTaskById;
+using GraphT.Controllers.FindTaskDownstreamsById;
 using GraphT.Controllers.UpdateTask;
 using GraphT.Controllers.FindTaskUpstreamsById;
 
@@ -17,6 +18,7 @@ public static class DependencyContainer
 		services.AddScoped<IFindTaskByIdController, FindTaskById.Controller>();
 		services.AddScoped<IFindTaskUpstreamsByIdController, FindTaskUpstreamsById.Controller>();
 		services.AddScoped<IFindReadyToStartTasksController, FindReadyToStartTasks.Controller>();
+		services.AddScoped<IFindTaskDownstreamsByIdController, FindTaskDownstreamsById.Controller>();
 
 		return services;
 	}
