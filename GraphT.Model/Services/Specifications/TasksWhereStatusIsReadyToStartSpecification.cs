@@ -5,9 +5,9 @@ using SeedWork;
 
 namespace GraphT.Model.Services.Specifications;
 
-public sealed class FindReadyToStartTasksSpecification : BaseSpecification<TaskAggregate>
+public sealed class TasksWhereStatusIsReadyToStartSpecification : BaseSpecification<TaskAggregate>
 {
-	public FindReadyToStartTasksSpecification(PagingParams pagingParams) : base(task => (task.Status == Status.ReadyToStart))
+	public TasksWhereStatusIsReadyToStartSpecification(PagingParams pagingParams) : base(task => (task.Status == Status.ReadyToStart))
 	{
 		ApplyOrderByDescending(task => task.Priority);
 		AddThenBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue);

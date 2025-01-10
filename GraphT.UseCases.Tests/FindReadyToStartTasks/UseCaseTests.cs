@@ -26,7 +26,7 @@ public class UseCaseTests
         InputDto input = new() { PagingParams = pagingParams };
 
         unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindAsync(Arg.Any<FindReadyToStartTasksSpecification>()).Returns(new PagedList<TaskAggregate>(tasks, tasks.Count, pagingParams.PageNumber, pagingParams.PageSize));
+        repository.FindAsync(Arg.Any<TasksWhereStatusIsReadyToStartSpecification>()).Returns(new PagedList<TaskAggregate>(tasks, tasks.Count, pagingParams.PageNumber, pagingParams.PageSize));
 
         UseCase useCase = new(outputPort, unitOfWork);
 
@@ -34,7 +34,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await repository.Received(1).FindAsync(Arg.Is<FindReadyToStartTasksSpecification>(spec =>
+        await repository.Received(1).FindAsync(Arg.Is<TasksWhereStatusIsReadyToStartSpecification>(spec =>
             spec.PageNumber == pagingParams.PageNumber &&
             spec.PageSize == pagingParams.PageSize
         ));
@@ -60,7 +60,7 @@ public class UseCaseTests
         InputDto input = new() { PagingParams = pagingParams };
 
         unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindAsync(Arg.Any<FindReadyToStartTasksSpecification>())
+        repository.FindAsync(Arg.Any<TasksWhereStatusIsReadyToStartSpecification>())
             .Returns(new PagedList<TaskAggregate>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
 
         UseCase useCase = new(outputPort, unitOfWork);
@@ -69,7 +69,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await repository.Received(1).FindAsync(Arg.Any<FindReadyToStartTasksSpecification>());
+        await repository.Received(1).FindAsync(Arg.Any<TasksWhereStatusIsReadyToStartSpecification>());
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto =>
             dto.Tasks.Count == 0 &&
             dto.Tasks.TotalCount == 0 &&
@@ -90,7 +90,7 @@ public class UseCaseTests
         InputDto input = new() { PagingParams = pagingParams };
 
         unitOfWork.Repository<TaskAggregate>().Returns(repository);
-        repository.FindAsync(Arg.Any<FindReadyToStartTasksSpecification>())
+        repository.FindAsync(Arg.Any<TasksWhereStatusIsReadyToStartSpecification>())
             .Returns(new PagedList<TaskAggregate>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
 
         UseCase useCase = new(outputPort, unitOfWork);
@@ -99,7 +99,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await repository.Received(1).FindAsync(Arg.Is<FindReadyToStartTasksSpecification>(spec =>
+        await repository.Received(1).FindAsync(Arg.Is<TasksWhereStatusIsReadyToStartSpecification>(spec =>
             spec.PageNumber == pagingParams.PageNumber &&
             spec.PageSize == pagingParams.PageSize
         ));
