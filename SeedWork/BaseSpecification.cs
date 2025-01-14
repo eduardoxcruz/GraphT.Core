@@ -2,7 +2,7 @@
 
 namespace SeedWork;
 
-public abstract class BaseSpecification<T> : ISpecification<T>
+public class BaseSpecification<T> : ISpecification<T>
 {
 	public int PageNumber { get; private set; }
 	public int PageSize { get; private set; }
