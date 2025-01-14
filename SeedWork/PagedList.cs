@@ -11,15 +11,21 @@ public class PagedList<TEntity> : List<TEntity>
 
 	public PagedList(List<TEntity> items, int count, int pageNumber, int pageSize)
 	{
+		if (pageNumber < 1) pageNumber = 1;
+		if (pageSize < 1) pageSize = PagingParams.MaxPageSize;
+		
 		TotalCount = count;
 		PageSize = pageSize;
 		CurrentPage = pageNumber;
-		TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+		TotalPages = count != 0 ? (int)Math.Ceiling(count / (double)pageSize) : 1;
 		AddRange(items);
 	}
 
 	public static PagedList<TEntity> ToPagedList(IQueryable<TEntity> source, int pageNumber, int pageSize)
 	{
+		if (pageNumber < 1) pageNumber = 1;
+		if (pageSize < 1) pageSize = PagingParams.MaxPageSize;
+		
 		int count = source.Count();
 		List<TEntity> items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 		return new PagedList<TEntity>(items, count, pageNumber, pageSize);
