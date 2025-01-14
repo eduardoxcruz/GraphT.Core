@@ -7,7 +7,7 @@ namespace GraphT.EfCore.Repositories.Tests;
 
 public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 {
-	public TestDatabaseFixture Fixture { get; }
+	private TestDatabaseFixture Fixture { get; }
 
 	public UnitOfWorkTests(TestDatabaseFixture fixture) => Fixture = fixture;
 
