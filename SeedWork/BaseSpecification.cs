@@ -24,7 +24,7 @@ public class BaseSpecification<T> : ISpecification<T>
 		ThenByDescendingFlags = new List<bool>();
 	}
 
-	protected BaseSpecification(Expression<Func<T, bool>> criteria)
+	public BaseSpecification(Expression<Func<T, bool>> criteria)
 	{
 		IncludeStrings = new List<string>();
 		Includes = new List<Expression<Func<T, object>>>();
