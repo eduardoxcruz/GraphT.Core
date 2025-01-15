@@ -6,10 +6,9 @@ namespace GraphT.Model.Services.Specifications;
 
 public sealed class TaskIncludeDownstreamsSpecification : BaseSpecification<TodoTask>
 {
-	public TaskIncludeDownstreamsSpecification(Guid id, PagingParams pagingParams) : 
+	public TaskIncludeDownstreamsSpecification(Guid id) : 
 		base(t => t.Id.Equals(id))
 	{
-		ApplyPaging(pagingParams.PageNumber, pagingParams.PageSize);
 		AddInclude(t => t.Downstreams);
 	}
 }
