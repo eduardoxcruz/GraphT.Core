@@ -1,9 +1,8 @@
-using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
 
-namespace GraphT.EfCore.Repositories.Tests.Entities;
+namespace GraphT.EfCore.Repositories.Tests.Repositories;
 
 public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 {
