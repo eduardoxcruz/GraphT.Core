@@ -1,6 +1,7 @@
 ﻿using GraphT.Model.Aggregates;
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services;
+using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
@@ -39,7 +40,9 @@ public class UseCase : IInputPort
 		if (dto.Status is not null)
 		{
 			DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-			(string, TimeSpan) timeSpend = await TimeSpendCalculatorService.GetTimeSpend(dto.Id.Value, dto.Status.Value, dateTimeOffset, _unitOfWork);
+			TaskLog? lastLog = (await _unitOfWork.Repository<TaskLog>().FindAsync(new TaskLastLogSpecification(dto.Id.Value))).FirstOrDefault() ?? 
+				new TaskLog(Guid.Empty, dateTimeOffset, Status.Created, TimeSpan.Zero);
+			(string, TimeSpan) timeSpend = TimeSpendCalculatorService.GetTimeSpend(dto.Id.Value, dto.Status.Value, dateTimeOffset, lastLog);
 			task.Status = dto.Status.Value;
 			task.SetTimeSpend(timeSpend.Item1);
 			TaskLog taskLog = new(task.Id, dateTimeOffset, task.Status, timeSpend.Item2);

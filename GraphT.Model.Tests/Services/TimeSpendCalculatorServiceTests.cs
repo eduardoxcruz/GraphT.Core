@@ -11,22 +11,17 @@ namespace GraphT.Model.Tests.Services;
 public class TimeSpendCalculatorServiceTests
 {
 	[Fact]
-	public async Task GetTimeSpend_TaskHasNoLogs_ReturnsDefaultTime()
+	public void GetTimeSpend_TaskHasNoLogs_ReturnsDefaultTime()
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
 		Status newStatus = Status.Completed;
 		DateTimeOffset newDateTime = DateTimeOffset.UtcNow;
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
-		
-		repository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>(new List<TaskLog>(), 0, 1, 1));
-		unitOfWork.Repository<TaskLog>().Returns(repository);
-		
+
 		(string, TimeSpan Zero) expected = ("\u26a1 0 day(s) - 0 hours - 0 minutes", TimeSpan.Zero);
 
 		// Act
-		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, newStatus, newDateTime, unitOfWork);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, newStatus, newDateTime, new TaskLog(Guid.Empty, DateTimeOffset.UtcNow, Status.Created, TimeSpan.Zero));
 
 		// Assert
 		Assert.Equal(expected, result);
@@ -37,7 +32,7 @@ public class TimeSpendCalculatorServiceTests
 	[InlineData(60, "0 day(s) - 1 hours - 0 minutes")]
 	[InlineData(90, "0 day(s) - 1 hours - 30 minutes")]
 	[InlineData(120, "0 day(s) - 2 hours - 0 minutes")]
-	public async Task GetTimeSpend_TaskInProgressThenChangedToAnotherState_ReturnsCorrectTimeSpend(int timeDifferenceMinutes, string expectedDuration)
+	public void GetTimeSpend_TaskInProgressThenChangedToAnotherState_ReturnsCorrectTimeSpend(int timeDifferenceMinutes, string expectedDuration)
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
@@ -45,8 +40,6 @@ public class TimeSpendCalculatorServiceTests
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-timeDifferenceMinutes);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
 
 		TaskLog lastLog = new(taskId, initialDateTime, initialStatus, TimeSpan.Zero);
 		TimeSpan expectedTimeSpan = finalDateTime - initialDateTime;
@@ -56,11 +49,8 @@ public class TimeSpendCalculatorServiceTests
 			
 		(string, TimeSpan) expectedResult = ($"{expectedEmoji} {expectedDuration}", expectedTimeSpan);
 
-		repository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>([lastLog], 1, 1, 1));
-		unitOfWork.Repository<TaskLog>().Returns(repository);
-
 		// Act
-		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, unitOfWork);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);
@@ -70,7 +60,7 @@ public class TimeSpendCalculatorServiceTests
 	[InlineData(50, "0 day(s) - 0 hours - 1 minute")]
 	[InlineData(100, "0 day(s) - 0 hours - 2 minutes")]
 	[InlineData(80000, "2 day(s) - 4 hours - 16 minutes")]
-	public async Task GetTimeSpend_TaskInProgressThenChangedToAnotherState_WithNonZeroTimeSpentOnTask_ReturnsCorrectTimeSpend(long timeSpentOnTask, string expectedDuration)
+	public void GetTimeSpend_TaskInProgressThenChangedToAnotherState_WithNonZeroTimeSpentOnTask_ReturnsCorrectTimeSpend(long timeSpentOnTask, string expectedDuration)
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
@@ -78,8 +68,6 @@ public class TimeSpendCalculatorServiceTests
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-1);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
 
 		TaskLog lastLog = new(taskId, initialDateTime, initialStatus, TimeSpan.FromMilliseconds(timeSpentOnTask));
 		TimeSpan expectedTimeSpan = (finalDateTime - initialDateTime) + lastLog.TimeSpentOnTask!.Value;
@@ -90,18 +78,15 @@ public class TimeSpendCalculatorServiceTests
 
 		(string, TimeSpan) expectedResult = ($"{expectedEmoji} {expectedTimeSpan.Days} day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
 
-		repository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>([lastLog], 1, 1, 1));
-		unitOfWork.Repository<TaskLog>().Returns(repository);
-
 		// Act
-		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, unitOfWork);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);
 	}
 
 	[Fact]
-	public async Task GetTimeSpend_TimeSpentGreaterThanOneHour_ReturnsCorrectEmojiAndTimeSpend()
+	public void GetTimeSpend_TimeSpentGreaterThanOneHour_ReturnsCorrectEmojiAndTimeSpend()
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
@@ -109,26 +94,21 @@ public class TimeSpendCalculatorServiceTests
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddHours(-2);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
 
 		TaskLog lastLog = new(taskId, initialDateTime, initialStatus, TimeSpan.Zero);
 		TimeSpan expectedTimeSpan = finalDateTime - initialDateTime;
 		string expectedEmoji = "\u23f0";
 		(string, TimeSpan expectedTimeSpan) expectedResult = ($"{expectedEmoji} 0 day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
 		
-		repository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>([lastLog], 1, 1, 1));
-		unitOfWork.Repository<TaskLog>().Returns(repository);
-
 		// Act
-		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, unitOfWork);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);
 	}
 
 	[Fact]
-	public async Task GetTimeSpend_TimeSpentLessThanOrEqualToOneHour_ReturnsCorrectEmojiAndTimeSpend()
+	public void GetTimeSpend_TimeSpentLessThanOrEqualToOneHour_ReturnsCorrectEmojiAndTimeSpend()
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
@@ -136,19 +116,14 @@ public class TimeSpendCalculatorServiceTests
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-59);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskLog>? repository = Substitute.For<IRepository<TaskLog>>();
 
 		TaskLog lastLog = new(taskId, initialDateTime, initialStatus, TimeSpan.Zero);
 		TimeSpan expectedTimeSpan = finalDateTime - initialDateTime;
 		string expectedEmoji = "\u23f0";
 		(string, TimeSpan expectedTimeSpan) expectedResult = ($"{expectedEmoji} 0 day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
-		
-		repository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>([lastLog], 1, 1, 1));
-		unitOfWork.Repository<TaskLog>().Returns(repository);
 
 		// Act
-		(string, TimeSpan) result = await TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, unitOfWork);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);

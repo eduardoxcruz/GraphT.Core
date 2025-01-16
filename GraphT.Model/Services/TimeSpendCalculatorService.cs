@@ -7,17 +7,12 @@ namespace GraphT.Model.Services;
 
 public static class TimeSpendCalculatorService
 {
-	public static async ValueTask<(string, TimeSpan)> GetTimeSpend(
+	public static (string, TimeSpan) GetTimeSpend(
 		Guid taskId, 
 		Status newStatus, 
 		DateTimeOffset newDateTime, 
-		IUnitOfWork unitOfWork)
+		TaskLog lastLog)
 	{
-		//Generic last log when none found
-		TaskLog? lastLog = (await unitOfWork
-			.Repository<TaskLog>()
-			.FindAsync(new TaskLastLogSpecification(taskId)))
-			.FirstOrDefault() ?? new TaskLog(Guid.Empty, newDateTime, Status.Created, TimeSpan.Zero);
 		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		
 		if ((lastLog.Status is Status.InProgress) && (newStatus is not Status.InProgress))
