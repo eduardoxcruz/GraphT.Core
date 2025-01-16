@@ -2,6 +2,8 @@
 using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
+using Microsoft.EntityFrameworkCore;
+
 using SeedWork;
 
 namespace GraphT.EfCore.Repositories.Tests.Specifications;
@@ -21,7 +23,6 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         // Arrange
         EfDbContext context = _fixture.CreateContext();
         Repository<TodoTask> repository = new(context);
-        await repository.RemoveRangeAsync(context.TodoTasks);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         FinishedTasksSpecification spec = new(null, pagingParams);
         List<TodoTask> tasks = [
@@ -33,6 +34,7 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         ];
 
         // Act
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -49,7 +51,6 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         // Arrange
         EfDbContext context = _fixture.CreateContext();
         Repository<TodoTask> repository = new(context);
-        await repository.RemoveRangeAsync(context.TodoTasks);
         string nameFilter = "Special";
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         FinishedTasksSpecification spec = new(nameFilter, pagingParams);
@@ -62,6 +63,7 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         ];
 
         // Act
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -78,7 +80,6 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         // Arrange
         EfDbContext context = _fixture.CreateContext();
         Repository<TodoTask> repository = new(context);
-        await repository.RemoveRangeAsync(context.TodoTasks);
         PagingParams pagingParams = new() { PageNumber = 2, PageSize = 2 };
         FinishedTasksSpecification spec = new(null, pagingParams);
         List<TodoTask> tasks = [
@@ -90,6 +91,7 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         ];
 
         // Act
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -110,7 +112,6 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         // Arrange
         EfDbContext context = _fixture.CreateContext();
         Repository<TodoTask> repository = new(context);
-        await repository.RemoveRangeAsync(context.TodoTasks);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         FinishedTasksSpecification spec = new(null, pagingParams);
         List<TodoTask> tasks = [
@@ -120,6 +121,7 @@ public class FinishedTasksSpecificationTests : IClassFixture<TestDatabaseFixture
         ];
 
         // Act
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
