@@ -100,9 +100,9 @@ public class UseCaseTests
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Is<TaskIncludeLifeAreasSpecification>(spec =>
-			spec.PageNumber == pagingParams.PageNumber &&
-			spec.PageSize == pagingParams.PageSize
+		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
+			dto.LifeAreas.PageSize == pagingParams.PageSize &&
+			dto.LifeAreas.CurrentPage == pagingParams.PageNumber
 		));
 	}
 }
