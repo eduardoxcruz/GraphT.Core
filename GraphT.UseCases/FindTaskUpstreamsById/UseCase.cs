@@ -27,7 +27,7 @@ public class UseCase : IInputPort
 
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
 
-		TaskIncludeUpstreamsSpecification specification = new(dto.Id, dto.PagingParams);
+		TaskIncludeUpstreamsSpecification specification = new(dto.Id);
 		task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).First();
 		PagedList<TaskIdAndName> upstreams = new(
 			task.Upstreams.Select(TaskIdAndName.MapFrom).ToList(),
