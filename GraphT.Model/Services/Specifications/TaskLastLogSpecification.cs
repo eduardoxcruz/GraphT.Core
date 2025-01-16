@@ -9,5 +9,6 @@ public sealed class TaskLastLogSpecification : BaseSpecification<TaskLog>
 	public TaskLastLogSpecification(Guid taskId) : base(taskLog => taskLog.TaskId.Equals(taskId))
 	{
 		ApplyOrderByDescending(taskLog => taskLog.DateTime);
+		ApplyPaging(1, 1);
 	}
 }
