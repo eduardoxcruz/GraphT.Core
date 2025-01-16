@@ -25,13 +25,17 @@ public class TaskIncludeUpstreamsSpecificationTests : IClassFixture<TestDatabase
         TodoTask mainTask = new("Main Task");
         TodoTask upstream = new("Name 1");
         TodoTask upstream2 = new("Name 2");
+        TodoTask upstream3 = new("Name 3");
+        TodoTask upstream4 = new("Name 4");
         TaskIncludeUpstreamsSpecification spec = new(mainTask.Id);
 
         // Act
         mainTask.AddUpstreams([upstream, upstream2]);
+        upstream3.AddDownstream(mainTask);
+        upstream4.AddDownstream(mainTask);
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-        await context.TodoTasks.AddRangeAsync(mainTask, upstream, upstream2);
+        await context.TodoTasks.AddRangeAsync(mainTask, upstream, upstream2, upstream3, upstream4);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
         TodoTask resultTask = results.First();
@@ -40,9 +44,11 @@ public class TaskIncludeUpstreamsSpecificationTests : IClassFixture<TestDatabase
         Assert.NotNull(results);
         Assert.Single(results);
         Assert.Equal(mainTask.Id, resultTask.Id);
-        Assert.Equal(2, resultTask.Upstreams.Count);
+        Assert.Equal(4, resultTask.Upstreams.Count);
         Assert.Contains(resultTask.Upstreams, t => t.Id == upstream.Id);
         Assert.Contains(resultTask.Upstreams, t => t.Id == upstream2.Id);
+        Assert.Contains(resultTask.Upstreams, t => t.Id == upstream3.Id);
+        Assert.Contains(resultTask.Upstreams, t => t.Id == upstream4.Id);
     }
 
     [Fact]
