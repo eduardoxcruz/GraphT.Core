@@ -1,5 +1,7 @@
 using GraphT.Model.ValueObjects;
 
+using Microsoft.EntityFrameworkCore;
+
 using SeedWork;
 
 namespace GraphT.EfCore.Repositories.Tests.Repositories;
@@ -18,7 +20,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		Guid uselessId = Guid.NewGuid();
 		DateTimeOffset expectedTime = DateTimeOffset.Now;
@@ -32,6 +33,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		PagedList<TaskLog> results =
@@ -54,7 +56,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		List<TaskLog> logs =
 		[
 			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddMinutes(30), Status.Created), 
@@ -62,6 +63,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddDays(2), Status.InProgress)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		PagedList<TaskLog> results = await repository.FindAsync();
@@ -80,9 +82,9 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		TaskLog log = new(Guid.NewGuid(), DateTimeOffset.UtcNow, Status.Created);
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await repository.AddAsync(log);
 		await context.SaveChangesAsync();
 		PagedList<TaskLog> results = await repository.FindAsync();
@@ -101,7 +103,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		List<TaskLog> logs =
 		[
@@ -110,6 +111,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, DateTimeOffset.UtcNow, Status.InProgress)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await repository.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		PagedList<TaskLog> results = await repository.FindAsync();
@@ -130,6 +132,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		Repository<TaskLog> repository = new(context);
 		TaskLog log = new(Guid.NewGuid(), DateTimeOffset.UtcNow, Status.Created);
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddAsync(log);
 		await context.SaveChangesAsync();
 		await repository.RemoveAsync(log);
@@ -149,7 +152,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		List<TaskLog> logs =
 		[
@@ -158,6 +160,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, DateTimeOffset.UtcNow, Status.InProgress)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		await repository.RemoveRangeAsync(logs);
@@ -177,7 +180,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		Guid uselessId = Guid.NewGuid();
 		DateTimeOffset expectedTime = DateTimeOffset.Now;
@@ -191,6 +193,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		bool results = await repository.ContainsAsync(new BaseSpecification<TaskLog>(t => t.TaskId.Equals(taskId)));
@@ -203,7 +206,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		Guid uselessId = Guid.NewGuid();
 		DateTimeOffset expectedTime = DateTimeOffset.Now;
@@ -217,6 +219,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		bool result = await repository.ContainsAsync(taskLog => taskLog.Status == expectedStatus);
@@ -229,7 +232,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		Guid uselessId = Guid.NewGuid();
 		DateTimeOffset expectedTime = DateTimeOffset.Now;
@@ -243,6 +245,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		int result = await repository.CountAsync(new BaseSpecification<TaskLog>(t => t.TaskId.Equals(taskId)));
@@ -255,7 +258,6 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TaskLog> repository = new(context);
-		await repository.RemoveRangeAsync(context.TaskLogs);
 		Guid taskId = Guid.NewGuid();
 		Guid uselessId = Guid.NewGuid();
 		DateTimeOffset expectedTime = DateTimeOffset.Now;
@@ -269,6 +271,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
 
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		int result = await repository.CountAsync(t => t.TaskId.Equals(taskId));
