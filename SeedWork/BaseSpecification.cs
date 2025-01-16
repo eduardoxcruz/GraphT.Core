@@ -2,7 +2,7 @@
 
 namespace SeedWork;
 
-public abstract class BaseSpecification<T> : ISpecification<T>
+public class BaseSpecification<T> : ISpecification<T>
 {
 	public int PageNumber { get; private set; }
 	public int PageSize { get; private set; }
@@ -24,7 +24,7 @@ public abstract class BaseSpecification<T> : ISpecification<T>
 		ThenByDescendingFlags = new List<bool>();
 	}
 
-	protected BaseSpecification(Expression<Func<T, bool>> criteria)
+	public BaseSpecification(Expression<Func<T, bool>> criteria)
 	{
 		IncludeStrings = new List<string>();
 		Includes = new List<Expression<Func<T, object>>>();

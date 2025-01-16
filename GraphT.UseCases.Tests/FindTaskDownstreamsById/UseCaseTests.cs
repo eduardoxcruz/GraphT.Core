@@ -3,6 +3,7 @@ using GraphT.Model.Services.Specifications;
 using GraphT.UseCases.FindTaskDownstreamsById;
 
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 
 using SeedWork;
 
@@ -100,9 +101,9 @@ public class UseCaseTests
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Is<TaskIncludeDownstreamsSpecification>(spec =>
-			spec.PageNumber == pagingParams.PageNumber &&
-			spec.PageSize == pagingParams.PageSize
+		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
+			dto.Downstreams.PageSize == pagingParams.PageSize &&
+			dto.Downstreams.CurrentPage == pagingParams.PageNumber
 		));
 	}
 }

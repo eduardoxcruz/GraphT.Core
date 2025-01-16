@@ -9,8 +9,8 @@ public sealed class FinishedTasksSpecification : BaseSpecification<TodoTask>
 {
 	public FinishedTasksSpecification(string? name, PagingParams pagingParams) : 
 		base(task => 
-			(task.Status == Status.Completed) && 
-			(task.Status == Status.Dropped) && 
+			((task.Status == Status.Completed) || 
+			(task.Status == Status.Dropped)) && 
 			(name == null || task.Name.Contains(name) ))
 	{
 		ApplyPaging(pagingParams.PageNumber, pagingParams.PageSize);

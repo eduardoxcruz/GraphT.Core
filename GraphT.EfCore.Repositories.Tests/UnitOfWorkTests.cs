@@ -1,13 +1,15 @@
 ﻿using GraphT.Model.Aggregates;
 using GraphT.Model.ValueObjects;
 
+using Microsoft.EntityFrameworkCore;
+
 using SeedWork;
 
 namespace GraphT.EfCore.Repositories.Tests;
 
 public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 {
-	public TestDatabaseFixture Fixture { get; }
+	private TestDatabaseFixture Fixture { get; }
 
 	public UnitOfWorkTests(TestDatabaseFixture fixture) => Fixture = fixture;
 
@@ -18,6 +20,7 @@ public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 		UnitOfWork unitOfWork = new(context);
 		TodoTask task = new("Test Task");
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await unitOfWork.Repository<TodoTask>().AddAsync(task);
 		int saveResult = await unitOfWork.SaveChangesAsync();
 		TodoTask? savedTask = await context.TodoTasks.FindAsync(task.Id);

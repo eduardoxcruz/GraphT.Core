@@ -1,24 +1,26 @@
-﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Aggregates;
 using GraphT.Model.ValueObjects;
+
+using Microsoft.EntityFrameworkCore;
 
 using SeedWork;
 
-namespace GraphT.EfCore.Repositories.Tests;
+namespace GraphT.EfCore.Repositories.Tests.Repositories;
 
-public class RepositoryTests : IClassFixture<TestDatabaseFixture>
+public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 {
-	public TestDatabaseFixture Fixture { get; }
+	private TestDatabaseFixture Fixture { get; }
 
-	public RepositoryTests(TestDatabaseFixture fixture) => Fixture = fixture;
+	public TodoTaskRepository(TestDatabaseFixture fixture) => Fixture = fixture;
 
 	[Fact]
 	public async Task FindByIdAsync_ReturnsCorrectEntity()
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		TodoTask task = new("Test Task");
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
 		TodoTask? result = await repository.FindByIdAsync(task.Id);
@@ -33,35 +35,27 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		Status expectedStatus = Status.InProgress;
-		List<TodoTask> tasks = new()
-		{
-			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", expectedStatus), 
-			new TodoTask("Task 3", expectedStatus),
-			new TodoTask("Task 4"), 
-			new TodoTask("Task 5", expectedStatus), 
-			new TodoTask("Task 6", expectedStatus),
-			new TodoTask("Task 7"), 
-			new TodoTask("Task 8", expectedStatus), 
-			new TodoTask("Task 9", expectedStatus)
-		};
-		TasksWithSpecificStatusSpecification spec = new(expectedStatus, 2, 2);
+		List<TodoTask> tasks =
+		[
+			new("Task 1"), new("Task 2", expectedStatus), new("Task 3", expectedStatus)
+			, new("Task 4"), new("Task 5", expectedStatus), new("Task 6", expectedStatus)
+			, new("Task 7"), new("Task 8", expectedStatus), new("Task 9", expectedStatus)
+		];
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> results = await repository.FindAsync(spec);
+		PagedList<TodoTask> results = await repository.FindAsync(new BaseSpecification<TodoTask>(t => t.Status == expectedStatus));
 		
 		Assert.NotNull(results);
 		Assert.NotEmpty(results);
 		Assert.All(results, todoTask => Assert.Equal(expectedStatus, todoTask.Status));
-		Assert.Equal(2, results.Count);
 		Assert.Equal(6, results.TotalCount);
-		Assert.Equal(2, results.CurrentPage);
-		Assert.Equal(3, results.TotalPages);
-		Assert.True(results.HasNext);
-		Assert.True(results.HasPrevious);
+		Assert.Equal(1, results.CurrentPage);
+		Assert.Equal(1, results.TotalPages);
+		Assert.False(results.HasNext);
+		Assert.False(results.HasPrevious);
 	}
 	
 	[Fact]
@@ -69,21 +63,24 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
-		List<TodoTask> tasks = new()
-		{
-			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", Status.ReadyToStart), 
-			new TodoTask("Task 3", Status.Paused),
-			new TodoTask("Task 4", Status.Dropped),
-			new TodoTask("Task 5", Status.Completed)
-		};
+		List<TodoTask> tasks =
+		[
+			new("Task 1"), new("Task 2", Status.ReadyToStart), new("Task 3", Status.Paused)
+			, new("Task 4", Status.Dropped), new("Task 5", Status.Completed)
+		];
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 		PagedList<TodoTask> results = await repository.FindAsync();
 		
-		Assert.Equal(5, results.Count);
+		Assert.NotNull(results);
+		Assert.NotEmpty(results);
+		Assert.Equal(5, results.TotalCount);
+		Assert.Equal(1, results.CurrentPage);
+		Assert.Equal(1, results.TotalPages);
+		Assert.False(results.HasNext);
+		Assert.False(results.HasPrevious);
 	}
 
 	[Fact]
@@ -91,9 +88,9 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		TodoTask task = new("New Task");
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await repository.AddAsync(task);
 		await context.SaveChangesAsync();
 		TodoTask? addedTask = await context.TodoTasks.FindAsync(task.Id);
@@ -107,16 +104,13 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
-		List<TodoTask> tasks = new()
-		{
-			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", Status.ReadyToStart), 
-			new TodoTask("Task 3", Status.Paused),
-			new TodoTask("Task 4", Status.Dropped),
-			new TodoTask("Task 5", Status.Completed)
-		};
+		List<TodoTask> tasks =
+		[
+			new("Task 1"), new("Task 2", Status.ReadyToStart), new("Task 3", Status.Paused)
+			, new("Task 4", Status.Dropped), new("Task 5", Status.Completed)
+		];
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await repository.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 
@@ -134,9 +128,9 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		TodoTask task = new("Task to Remove");
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
 		await repository.RemoveAsync(task);
@@ -151,16 +145,13 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
-		List<TodoTask> tasks = new()
-		{
-			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", Status.ReadyToStart), 
-			new TodoTask("Task 3", Status.Paused),
-			new TodoTask("Task 4", Status.Dropped),
-			new TodoTask("Task 5", Status.Completed)
-		};
+		List<TodoTask> tasks =
+		[
+			new("Task 1"), new("Task 2", Status.ReadyToStart), new("Task 3", Status.Paused)
+			, new("Task 4", Status.Dropped), new("Task 5", Status.Completed)
+		];
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 		await repository.RemoveRangeAsync(tasks);
@@ -179,10 +170,10 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		TodoTask task = new("Task to Update");
 		string newName = "New task name";
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
 		task.Name = newName;
@@ -199,7 +190,6 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		List<TodoTask> tasks = new()
 		{
 			new TodoTask("Task 1"), 
@@ -207,6 +197,7 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 			new TodoTask("Task 3", Status.Paused)
 		};
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 		tasks[0].Name = "Task 4";
@@ -231,14 +222,13 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		Status expectedStatus = Status.Paused;
 		TodoTask task = new("Backlog Task", expectedStatus);
-		TasksWithSpecificStatusSpecification spec = new(expectedStatus);
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
-		bool result = await repository.ContainsAsync(spec);
+		bool result = await repository.ContainsAsync(new BaseSpecification<TodoTask>(t => t.Id.Equals(task.Id)));
 
 		Assert.True(result);
 	}
@@ -248,13 +238,13 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		Status expectedStatus = Status.Dropped;
 		TodoTask task = new("Backlog Task", expectedStatus);
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
-		bool result = await repository.ContainsAsync(todoTask => todoTask.Status == expectedStatus);
+		bool result = await repository.ContainsAsync(todoTask => todoTask.Id.Equals(task.Id));
 
 		Assert.True(result);
 	}
@@ -264,7 +254,6 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		Status expectedStatus = Status.Completed;
 		List<TodoTask> tasks = new()
 		{
@@ -272,11 +261,11 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 			new TodoTask("Task 2"), 
 			new TodoTask("Task 3", expectedStatus)
 		};
-		TasksWithSpecificStatusSpecification spec = new(expectedStatus);
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		int count = await repository.CountAsync(spec);
+		int count = await repository.CountAsync(new BaseSpecification<TodoTask>(t => t.Status == expectedStatus));
 
 		Assert.Equal(1, count);
 	}
@@ -286,7 +275,6 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		await repository.RemoveRangeAsync(context.TodoTasks);
 		Status expectedStatus = Status.ReadyToStart;
 		List<TodoTask> tasks = new()
 		{
@@ -296,10 +284,9 @@ public class RepositoryTests : IClassFixture<TestDatabaseFixture>
 			new TodoTask("Task 4")
 		};
 		
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> dbTasks =
-			await repository.FindAsync(new TasksWithSpecificStatusSpecification(expectedStatus));
 		int count = await repository.CountAsync(todoTask => todoTask.Status == expectedStatus);
 
 		Assert.Equal(3, count);

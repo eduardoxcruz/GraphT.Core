@@ -11,6 +11,7 @@ public sealed class TasksWhereStatusIsReadyToStartSpecification : BaseSpecificat
 	{
 		ApplyOrderByDescending(task => task.Priority);
 		AddThenBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue);
+		AddInclude(task => (task.Downstreams.Count == 0) || (task.Progress >= 99));
 		ApplyPaging(pagingParams.PageNumber, pagingParams.PageSize);
 	}
 }
