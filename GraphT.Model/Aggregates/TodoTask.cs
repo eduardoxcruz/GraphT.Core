@@ -34,7 +34,7 @@ public class TodoTask
 	}
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
-	public float Progress => GetProgress();
+	public float Progress { get; set; }
 	public Relevance Relevance => _relevance;
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
@@ -59,6 +59,7 @@ public class TodoTask
 		_dateTimeInfo = new DateTimeInfo();
 		Complexity = complexity ?? Complexity.Indefinite;
 		Priority = priority ?? Priority.MentalClutter;
+		Progress = 0;
 		_upstreams = [];
 		_downstreams = [];
 		_lifeAreas = [];
@@ -263,29 +264,5 @@ public class TodoTask
 	public void SetTimeSpend(string timeSpend)
 	{
 		_dateTimeInfo.TimeSpend = timeSpend;
-	}
-	
-	private float GetProgress()
-	{
-		int totalDownstreams = _downstreams.Count;
-		int backlogTasks = _downstreams.Count(task => task.Status is Status.Backlog);
-		int completedOrDroppedTasks = _downstreams.Count(task => task.Status is Status.Dropped or Status.Completed);
-		const int currentTask = 1;
-		const float isFinished = 100f;
-		const float isUnfinished = 0f;
-
-		switch (totalDownstreams)
-		{
-			case 0 when (Status is not Status.Completed):
-				return isUnfinished;
-			case 0 when (Status is Status.Completed):
-				return isFinished;
-		}
-
-		if (completedOrDroppedTasks >= totalDownstreams) return isFinished;
-		
-		if (backlogTasks == totalDownstreams) return isUnfinished;
-
-		return (completedOrDroppedTasks * isFinished) / (totalDownstreams + currentTask);
 	}
 }
