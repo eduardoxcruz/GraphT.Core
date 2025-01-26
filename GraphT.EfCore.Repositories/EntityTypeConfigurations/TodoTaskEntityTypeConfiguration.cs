@@ -18,6 +18,7 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
 		builder.Property(todoTask => todoTask.Complexity).HasColumnOrder(5);
 		builder.Property(todoTask => todoTask.Priority).HasColumnOrder(6);
 		builder.Property(todoTask => todoTask.Relevance).HasColumnOrder(7);
+		builder.Property(todoTask => todoTask.Progress).HasColumnOrder(8);
 		builder.ComplexProperty(todoTask => todoTask.DateTimeInfo);
 
 		builder
@@ -27,7 +28,5 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
 				right => right.HasOne(typeof(TodoTask)).WithMany().HasForeignKey("UpstreamId").HasPrincipalKey(nameof(TodoTask.Id)),
 				left => left.HasOne(typeof(TodoTask)).WithMany().HasForeignKey("DownstreamId").HasPrincipalKey(nameof(TodoTask.Id)),
 				join => join.HasKey("UpstreamId", "DownstreamId"));
-		
-		builder.Ignore(todoTask => todoTask.Progress);
 	}
 }
