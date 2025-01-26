@@ -73,6 +73,7 @@ public class BaseSpecification<T> : ISpecification<T>
 	protected virtual void AddThenBy(Expression<Func<T, object>> thenByExpression)
     {
         ThenByExpressions.Add(thenByExpression);
+        ThenByDescendingFlags.Add(false);
     }
 
     protected virtual void AddThenByDescending(Expression<Func<T, object>> thenByExpression)
