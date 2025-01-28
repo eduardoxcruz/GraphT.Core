@@ -14,6 +14,7 @@ public static class DependencyContainer
 		services.AddScoped<UseCases.FindTaskDownstreamsById.IOutputPort, FindTaskDownstreamsById.Presenter>();
 		services.AddScoped<UseCases.FindTaskLifeAreasById.IOutputPort, FindTaskLifeAreasById.Presenter>();
 		services.AddScoped<UseCases.FindInProgressTasks.IOutputPort, FindInProgressTasks.Presenter>();
+		services.AddScoped<UseCases.FindFinishedTasks.IOutputPort, FindFinishedTasks.Presenter>();
 
 		return services;
 	}
