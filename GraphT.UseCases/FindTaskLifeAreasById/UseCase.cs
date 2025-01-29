@@ -23,12 +23,10 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TodoTask? task = await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id);
+		TaskIncludeLifeAreasSpecification specification = new(dto.Id);
+		TodoTask? task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).FirstOrDefault();
 
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
-
-		TaskIncludeLifeAreasSpecification specification = new(dto.Id);
-		task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).First();
 		
 		await _outputPort.Handle(new OutputDto() { LifeAreas = new PagedList<LifeArea>(
 			task.LifeAreas.ToList(),
