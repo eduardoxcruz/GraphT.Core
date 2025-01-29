@@ -28,7 +28,6 @@ public class UseCaseTests
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
 		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns(testTask);
 		repository.FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>()).Returns(new PagedList<TodoTask>([ testTask ], 1, 1, 10));
 
 		UseCase useCase = new(outputPort, unitOfWork);
@@ -62,7 +61,6 @@ public class UseCaseTests
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
 		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns(testTask);
 		repository.FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>()).Returns(new PagedList<TodoTask>([ testTask ], 1, 1, 10));
 
 		UseCase useCase = new(outputPort, unitOfWork);
@@ -92,7 +90,6 @@ public class UseCaseTests
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
 		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns(testTask);
 		repository.FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>()).Returns(new PagedList<TodoTask>([ testTask ], 1, 2, 5));
 
 		UseCase useCase = new(outputPort, unitOfWork);
