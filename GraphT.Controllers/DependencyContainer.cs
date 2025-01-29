@@ -1,4 +1,5 @@
 ﻿using GraphT.Controllers.AddNewTask;
+using GraphT.Controllers.DeleteTask;
 using GraphT.Controllers.FindFinishedTasks;
 using GraphT.Controllers.FindInProgressTasks;
 using GraphT.Controllers.FindReadyToStartTasks;
@@ -25,6 +26,7 @@ public static class DependencyContainer
 		services.AddScoped<IFindTaskLifeAreasByIdController, FindTaskLifeAreasById.Controller>();
 		services.AddScoped<IFindInProgressTasksController, FindInProgressTasks.Controller>();
 		services.AddScoped<IFindFinishedTasksController, FindFinishedTasks.Controller>();
+		services.AddScoped<IDeleteTaskController, DeleteTask.Controller>();
 
 		return services;
 	}
