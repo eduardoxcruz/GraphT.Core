@@ -1,4 +1,6 @@
-﻿using GraphT.Model.Aggregates;
+﻿using System.Linq.Expressions;
+
+using GraphT.Model.Aggregates;
 using GraphT.Model.ValueObjects;
 using GraphT.UseCases.AddNewTask;
 
@@ -61,7 +63,7 @@ public class UseCaseTests
 
         Guid providedId = Guid.NewGuid();
         
-        taskRepository.FindByIdAsync(providedId).Returns((TodoTask)null);
+        taskRepository.ContainsAsync(todoTask => todoTask.Id.Equals(providedId)).Returns(false);
         unitOfWork.Repository<TodoTask>().Returns(taskRepository);
         unitOfWork.Repository<TaskLog>().Returns(taskLogRepository);
         

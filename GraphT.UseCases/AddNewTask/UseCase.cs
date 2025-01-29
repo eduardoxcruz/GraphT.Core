@@ -24,7 +24,7 @@ public class UseCase : IInputPort
 	{
 		Guid id = Guid.NewGuid();
 		
-		if ((dto.Id.HasValue) && ((await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id!)) is null))
+		if ((dto.Id.HasValue) && !(await _unitOfWork.Repository<TodoTask>().ContainsAsync(todoTask => todoTask.Id.Equals(dto.Id!))))
 		{
 			id = dto.Id.Value;
 		}
