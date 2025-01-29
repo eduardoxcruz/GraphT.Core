@@ -63,7 +63,7 @@ public class UseCaseTests
 
         Guid providedId = Guid.NewGuid();
         
-        taskRepository.ContainsAsync(todoTask => todoTask.Id.Equals(providedId)).Returns(false);
+        taskRepository.ContainsAsync(Arg.Any<Expression<Func<TodoTask, bool>>>()).Returns(false);
         unitOfWork.Repository<TodoTask>().Returns(taskRepository);
         unitOfWork.Repository<TaskLog>().Returns(taskLogRepository);
         
