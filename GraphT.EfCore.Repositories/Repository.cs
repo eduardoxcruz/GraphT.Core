@@ -59,12 +59,7 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 
 	public ValueTask UpdateRangeAsync(IEnumerable<TEntity> entities)
 	{
-		context.Set<TEntity>().AttachRange(entities);
-		
-		foreach (TEntity entity in entities)
-		{
-			context.Entry(entity).State = EntityState.Modified;
-		}
+		context.Set<TEntity>().UpdateRange(entities);
 		
 		return ValueTask.CompletedTask;
 	}
