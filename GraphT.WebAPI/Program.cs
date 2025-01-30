@@ -31,18 +31,21 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
-app.UseCors("DefaultPolicy");
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("DevelopmentPolicy");
+    app.UseExceptionHandler("/error-development");
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         options.RoutePrefix = string.Empty;
     });
+}
+else {
+    app.UseCors("DefaultPolicy");
+    app.UseExceptionHandler("/error");
 }
 
 app.UseHttpsRedirection();
