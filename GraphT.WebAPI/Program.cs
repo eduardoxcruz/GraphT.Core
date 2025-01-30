@@ -28,6 +28,10 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+builder.Services.ConfigureSwaggerGen(options =>
+{
+	options.CustomSchemaIds(x => x.FullName);
+});
 
 WebApplication app = builder.Build();
 
