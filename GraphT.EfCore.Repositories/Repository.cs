@@ -15,7 +15,7 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 
 	public async ValueTask<PagedList<TEntity>> FindAsync(ISpecification<TEntity>? specification = null)
 	{
-		IQueryable<TEntity> query = await ApplySpecification(specification);
+		IQueryable<TEntity> query = (await ApplySpecification(specification));
 		int count = await query.CountAsync();
 		
 		if (specification?.IsPagingEnabled == true)
@@ -25,9 +25,7 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 				.Take(specification.PageSize);
 		}
 
-		List<TEntity> items = await query.AsNoTracking().ToListAsync();
-		
-		return new PagedList<TEntity>(items, count, specification?.PageNumber ?? 1, specification?.PageSize ?? count);
+		return new PagedList<TEntity>(await query.ToListAsync(), count, specification?.PageNumber ?? 1, specification?.PageSize ?? count);
 	}
 
 	public async ValueTask AddAsync(TEntity entity)
@@ -93,6 +91,6 @@ public class Repository<TEntity>(DbContext context) : IRepository<TEntity> where
 	
 	private ValueTask<IQueryable<TEntity>> ApplySpecification(ISpecification<TEntity>? spec)
 	{
-		return SpecificationEvaluator<TEntity>.GetQuery(context.Set<TEntity>().AsQueryable(), spec);
+		return SpecificationEvaluator<TEntity>.GetQuery(context.Set<TEntity>().AsQueryable().AsNoTracking(), spec);
 	}
 }
