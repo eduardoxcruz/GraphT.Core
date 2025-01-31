@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using GraphT.Controllers.FindTaskLifeAreasById;
 using GraphT.UseCases.FindTaskLifeAreasById;
 
@@ -24,6 +26,17 @@ public class TaskLifeAreasController : ControllerBase
             Id = id,
             PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
         });
+        var metadata = new
+	    {
+		    result.LifeAreas.TotalCount,
+		    result.LifeAreas.PageSize,
+		    result.LifeAreas.CurrentPage,
+		    result.LifeAreas.TotalPages,
+		    result.LifeAreas.HasNext,
+		    result.LifeAreas.HasPrevious
+	    };
+	    Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
+        
         return Ok(result);
     }
 }
