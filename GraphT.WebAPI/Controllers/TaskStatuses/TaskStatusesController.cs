@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using GraphT.Controllers.FindFinishedTasks;
 using GraphT.Controllers.FindInProgressTasks;
 using GraphT.Controllers.FindReadyToStartTasks;
@@ -29,10 +31,21 @@ public class TaskStatusesController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var result = await _findFinishedTasksController.RunUseCase(new UseCases.FindFinishedTasks.InputDto
+	    UseCases.FindFinishedTasks.OutputDto result = await _findFinishedTasksController.RunUseCase(new UseCases.FindFinishedTasks.InputDto
         {
             PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
         });
+	    var metadata = new
+	    {
+		    result.Tasks.TotalCount,
+		    result.Tasks.PageSize,
+		    result.Tasks.CurrentPage,
+		    result.Tasks.TotalPages,
+		    result.Tasks.HasNext,
+		    result.Tasks.HasPrevious
+	    };
+	    Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
+	    
         return Ok(result);
     }
 
@@ -41,10 +54,20 @@ public class TaskStatusesController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var result = await _findInProgressTasksController.RunUseCase(new UseCases.FindInProgressTasks.InputDto
+        UseCases.FindInProgressTasks.OutputDto result = await _findInProgressTasksController.RunUseCase(new UseCases.FindInProgressTasks.InputDto
         {
             PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
         });
+        var metadata = new
+        {
+	        result.Tasks.TotalCount,
+	        result.Tasks.PageSize,
+	        result.Tasks.CurrentPage,
+	        result.Tasks.TotalPages,
+	        result.Tasks.HasNext,
+	        result.Tasks.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
         return Ok(result);
     }
 
@@ -53,10 +76,20 @@ public class TaskStatusesController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var result = await _findReadyToStartTasksController.RunUseCase(new UseCases.FindReadyToStartTasks.InputDto
+        UseCases.FindReadyToStartTasks.OutputDto result = await _findReadyToStartTasksController.RunUseCase(new UseCases.FindReadyToStartTasks.InputDto
         {
             PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
         });
+        var metadata = new
+        {
+	        result.Tasks.TotalCount,
+	        result.Tasks.PageSize,
+	        result.Tasks.CurrentPage,
+	        result.Tasks.TotalPages,
+	        result.Tasks.HasNext,
+	        result.Tasks.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
         return Ok(result);
     }
 }
