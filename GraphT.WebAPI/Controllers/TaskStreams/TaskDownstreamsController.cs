@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using GraphT.Controllers.FindTaskDownstreamsById;
 using GraphT.UseCases.FindTaskDownstreamsById;
 
@@ -24,6 +26,17 @@ public class TaskDownstreamsController : ControllerBase
             Id = id,
             PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
         });
+        var metadata = new
+	    {
+		    result.Downstreams.TotalCount,
+		    result.Downstreams.PageSize,
+		    result.Downstreams.CurrentPage,
+		    result.Downstreams.TotalPages,
+		    result.Downstreams.HasNext,
+		    result.Downstreams.HasPrevious
+	    };
+	    Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
+
         return Ok(result);
     }
 }
