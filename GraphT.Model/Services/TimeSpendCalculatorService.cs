@@ -15,7 +15,7 @@ public static class TimeSpendCalculatorService
 	{
 		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		
-		if ((lastLog.Status is Status.InProgress) && (newStatus is not Status.InProgress))
+		if ((lastLog.Status is Status.Doing) && (newStatus is not Status.Doing))
 		{
 			timeSpend = lastLog.TimeSpentOnTask!.Value + (newDateTime - lastLog.DateTime);
 		}

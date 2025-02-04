@@ -9,7 +9,7 @@ public sealed class TasksWhereStatusIsReadyToStartSpecification : BaseSpecificat
 {
 	public TasksWhereStatusIsReadyToStartSpecification(PagingParams pagingParams) : 
 		base(task => 
-			(task.Status == Status.ReadyToStart || task.Status == Status.Paused) && 
+			(task.Status == Status.Ready || task.Status == Status.Paused) && 
 			(task.Downstreams.Count == 0 || task.Progress >= 99)
 		)
 	{
