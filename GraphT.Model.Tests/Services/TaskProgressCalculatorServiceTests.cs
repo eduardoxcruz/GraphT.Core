@@ -114,7 +114,7 @@ public class TaskProgressCalculatorServiceTests
         // Agregar tareas en progreso
         for (int i = 0; i < (totalTasks - completedTasks); i++)
         {
-            downstreams.Add(new TodoTask($"In Progress Task {i}", status: Status.InProgress));
+            downstreams.Add(new TodoTask($"In Progress Task {i}", status: Status.Doing));
         }
 
         bool finishCurrentTask = false;

@@ -36,7 +36,7 @@ public class TimeSpendCalculatorServiceTests
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
-		Status initialStatus = Status.InProgress;
+		Status initialStatus = Status.Doing;
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-timeDifferenceMinutes);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
@@ -64,7 +64,7 @@ public class TimeSpendCalculatorServiceTests
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
-		Status initialStatus = Status.InProgress;
+		Status initialStatus = Status.Doing;
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-1);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
@@ -90,7 +90,7 @@ public class TimeSpendCalculatorServiceTests
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
-		Status initialStatus = Status.InProgress;
+		Status initialStatus = Status.Doing;
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddHours(-2);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
@@ -112,7 +112,7 @@ public class TimeSpendCalculatorServiceTests
 	{
 		// Arrange
 		Guid taskId = Guid.NewGuid();
-		Status initialStatus = Status.InProgress;
+		Status initialStatus = Status.Doing;
 		Status finalStatus = Status.Completed;
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-59);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;

@@ -83,7 +83,7 @@ public class UseCaseTests
 	}
 
 	[Theory]
-	[InlineData(Status.InProgress, Status.Completed, 1, 5, 45, "\u23f0 1 day(s) - 7 hours - 45 minutes")]
+	[InlineData(Status.Doing, Status.Completed, 1, 5, 45, "\u23f0 1 day(s) - 7 hours - 45 minutes")]
 	public async Task Handle_WhenPreviousLogExist_UpdatesTimeSpendCorrectly(
 		Status initialStatus,
 		Status newStatus,
@@ -145,7 +145,7 @@ public class UseCaseTests
 
 		Guid taskId = Guid.NewGuid();
 		Status newStatus = Status.Completed;
-		TodoTask existingTask = new("New Task", id: taskId, status: Status.ReadyToStart);
+		TodoTask existingTask = new("New Task", id: taskId, status: Status.Ready);
 		InputDto dto = new() { Id = taskId, Status = newStatus };
 		string expectedTimeSpendString = "\u26a1 0 day(s) - 0 hours - 0 minutes";
 		

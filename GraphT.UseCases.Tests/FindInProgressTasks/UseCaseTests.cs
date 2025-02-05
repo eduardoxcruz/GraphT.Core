@@ -19,8 +19,8 @@ public class UseCaseTests
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
         IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
 
-        TodoTask task1 = new("Task 1", Status.InProgress);
-        TodoTask task2 = new("Task 2", Status.InProgress);
+        TodoTask task1 = new("Task 1", Status.Doing);
+        TodoTask task2 = new("Task 2", Status.Doing);
         List<TodoTask> tasks = [task1, task2];
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         InputDto input = new() { PagingParams = pagingParams };
@@ -43,7 +43,7 @@ public class UseCaseTests
             dto.Tasks.TotalCount == 2 &&
             dto.Tasks.CurrentPage == 1 &&
             dto.Tasks.PageSize == 10 &&
-            dto.Tasks.All(task => task.Status == Status.InProgress)
+            dto.Tasks.All(task => task.Status == Status.Doing)
         ));
     }
 

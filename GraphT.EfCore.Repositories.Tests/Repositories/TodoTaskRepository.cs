@@ -35,7 +35,7 @@ public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		Status expectedStatus = Status.InProgress;
+		Status expectedStatus = Status.Doing;
 		List<TodoTask> tasks =
 		[
 			new("Task 1"), new("Task 2", expectedStatus), new("Task 3", expectedStatus)
@@ -65,7 +65,7 @@ public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 		Repository<TodoTask> repository = new(context);
 		List<TodoTask> tasks =
 		[
-			new("Task 1"), new("Task 2", Status.ReadyToStart), new("Task 3", Status.Paused)
+			new("Task 1"), new("Task 2", Status.Ready), new("Task 3", Status.Paused)
 			, new("Task 4", Status.Dropped), new("Task 5", Status.Completed)
 		];
 		
@@ -106,7 +106,7 @@ public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 		Repository<TodoTask> repository = new(context);
 		List<TodoTask> tasks =
 		[
-			new("Task 1"), new("Task 2", Status.ReadyToStart), new("Task 3", Status.Paused)
+			new("Task 1"), new("Task 2", Status.Ready), new("Task 3", Status.Paused)
 			, new("Task 4", Status.Dropped), new("Task 5", Status.Completed)
 		];
 		
@@ -147,7 +147,7 @@ public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 		Repository<TodoTask> repository = new(context);
 		List<TodoTask> tasks =
 		[
-			new("Task 1"), new("Task 2", Status.ReadyToStart), new("Task 3", Status.Paused)
+			new("Task 1"), new("Task 2", Status.Ready), new("Task 3", Status.Paused)
 			, new("Task 4", Status.Dropped), new("Task 5", Status.Completed)
 		];
 		
@@ -193,7 +193,7 @@ public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 		List<TodoTask> tasks = new()
 		{
 			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", Status.ReadyToStart), 
+			new TodoTask("Task 2", Status.Ready), 
 			new TodoTask("Task 3", Status.Paused)
 		};
 		
@@ -275,7 +275,7 @@ public class TodoTaskRepository : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = Fixture.CreateContext();
 		Repository<TodoTask> repository = new(context);
-		Status expectedStatus = Status.ReadyToStart;
+		Status expectedStatus = Status.Ready;
 		List<TodoTask> tasks = new()
 		{
 			new TodoTask("Task 1", expectedStatus), 
