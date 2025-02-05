@@ -13,7 +13,7 @@ public enum Status
 
 public static class StatusExtensions
 {
-	public static string FormatedName(this Status status)
+	public static string GetLabel(this Status status)
 	{
 		string formatedName = status switch
 		{
