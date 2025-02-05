@@ -60,7 +60,7 @@ public class UseCaseTests
 			, IsFun = true
 			, IsProductive = true
 			, Complexity = Complexity.High
-			, Priority = Priority.DropEverythingElse
+			, Priority = Priority.Critical
 		};
 
 		unitOfWork.Repository<TodoTask>().Returns(repository);

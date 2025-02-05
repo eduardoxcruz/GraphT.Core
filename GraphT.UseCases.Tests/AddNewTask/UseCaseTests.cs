@@ -31,7 +31,7 @@ public class UseCaseTests
             IsFun = true,
             IsProductive = true,
             Complexity = Complexity.High,
-            Priority = Priority.DoItNow
+            Priority = Priority.Urgent
         };
 
         UseCase useCase = new(outputPort, unitOfWork);

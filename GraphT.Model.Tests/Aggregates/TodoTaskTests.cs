@@ -15,7 +15,7 @@ public class TodoTaskTests
 		Assert.False(task.IsFun);
 		Assert.False(task.IsProductive);
 		Assert.Equal(Complexity.Indefinite, task.Complexity);
-		Assert.Equal(Priority.MentalClutter, task.Priority);
+		Assert.Equal(Priority.Distraction, task.Priority);
 		Assert.Equal(Status.Backlog, task.Status);
 		Assert.Equal(Relevance.Superfluous, task.Relevance);
 	}
@@ -310,9 +310,9 @@ public class TodoTaskTests
 	{
 		TodoTask task = new("Test Task");
 
-		task.Priority = Priority.DoItNow;
+		task.Priority = Priority.Urgent;
 
-		Assert.Equal(Priority.DoItNow, task.Priority);
+		Assert.Equal(Priority.Urgent, task.Priority);
 	}
 
 	[Fact]

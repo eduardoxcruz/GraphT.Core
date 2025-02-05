@@ -58,7 +58,7 @@ public class TodoTask
 		_isProductive = isProductive ?? false;
 		_dateTimeInfo = new DateTimeInfo();
 		Complexity = complexity ?? Complexity.Indefinite;
-		Priority = priority ?? Priority.MentalClutter;
+		Priority = priority ?? Priority.Distraction;
 		Progress = 0;
 		_upstreams = [];
 		_downstreams = [];

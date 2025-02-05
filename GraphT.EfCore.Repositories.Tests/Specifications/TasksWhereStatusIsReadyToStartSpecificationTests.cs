@@ -54,10 +54,10 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         List<TodoTask> tasks = [
-            new("Task Low", Status.Ready) { Priority = Priority.MentalClutter },
-            new("Task Medium", Status.Paused) { Priority = Priority.ThinkAboutIt },
-            new("Task Medium", Status.Ready) { Priority = Priority.DoItNow },
-            new("Task High", Status.Paused) { Priority = Priority.DropEverythingElse }
+            new("Task Low", Status.Ready) { Priority = Priority.Distraction },
+            new("Task Medium", Status.Paused) { Priority = Priority.Consider },
+            new("Task Medium", Status.Ready) { Priority = Priority.Urgent },
+            new("Task High", Status.Paused) { Priority = Priority.Critical }
         ];
 
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
@@ -69,8 +69,8 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         Assert.NotNull(results);
         Assert.Equal(4, results.TotalCount);
         Assert.Equal(4, results.Count);
-        Assert.Equal(Priority.DropEverythingElse, results.First().Priority);
-        Assert.Equal(Priority.MentalClutter, results.Last().Priority);
+        Assert.Equal(Priority.Critical, results.First().Priority);
+        Assert.Equal(Priority.Distraction, results.Last().Priority);
     }
 
     [Fact]
@@ -82,10 +82,10 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", Status.Ready) { Priority = Priority.DoItNow };
-        TodoTask secondTask = new("Task Soon", Status.Ready) { Priority = Priority.DoItNow };
-        TodoTask thirdTask = new("Task Later", Status.Ready) { Priority = Priority.DoItNow };
-        TodoTask fourthTask = new("Task Later", Status.Ready) { Priority = Priority.DoItNow };
+        TodoTask firstTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
+        TodoTask secondTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
+        TodoTask thirdTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
+        TodoTask fourthTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
         List<TodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
