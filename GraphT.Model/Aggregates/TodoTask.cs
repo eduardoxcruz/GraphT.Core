@@ -43,9 +43,9 @@ public class TodoTask
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
 
-	public string ComplexityLabel => this.Complexity.FormatedName();
-	public string PriorityLabel => this.Priority.FormatedName();
-	public string RelevanceLabel => this.Relevance.FormatedName();
+	public string ComplexityLabel => this.Complexity.GetLabel();
+	public string PriorityLabel => this.Priority.GetLabel();
+	public string RelevanceLabel => this.Relevance.GetLabel();
 	public string StatusLabel => this.Status.GetLabel();
 
 	private TodoTask(){ }

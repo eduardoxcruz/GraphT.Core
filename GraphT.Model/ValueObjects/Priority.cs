@@ -10,7 +10,7 @@ public enum Priority
 
 public static class PriorityExtensions
 {
-	public static string FormatedName(this Priority priority)
+	public static string GetLabel(this Priority priority)
 	{
 		string formatedName = priority switch
 		{

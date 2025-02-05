@@ -9,7 +9,7 @@ public enum Relevance {
 
 public static class RelevanceExtensions
 {
-	public static string FormatedName(this Relevance relevance)
+	public static string GetLabel(this Relevance relevance)
 	{
 		string formatedName = relevance switch
 		{
