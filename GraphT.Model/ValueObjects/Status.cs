@@ -19,7 +19,7 @@ public static class StatusExtensions
 		{
 			Status.Backlog => "\ud83d\udcdd Backlog",
 			Status.Ready => "\ud83d\udc4c Ready To Start",
-			Status.Doing => "\u25b6 In Progress",
+			Status.Doing => "\u25b6 Currently Doing",
 			Status.Paused => "\u23f8 Paused",
 			Status.Dropped => "\ud83d\uddd1 Dropped",
 			Status.Completed => "\u2705 Completed",
