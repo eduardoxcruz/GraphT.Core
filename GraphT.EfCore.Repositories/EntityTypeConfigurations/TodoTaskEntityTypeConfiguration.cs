@@ -28,5 +28,10 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
 				right => right.HasOne(typeof(TodoTask)).WithMany().HasForeignKey("UpstreamId").HasPrincipalKey(nameof(TodoTask.Id)),
 				left => left.HasOne(typeof(TodoTask)).WithMany().HasForeignKey("DownstreamId").HasPrincipalKey(nameof(TodoTask.Id)),
 				join => join.HasKey("UpstreamId", "DownstreamId"));
+
+		builder.Ignore(todoTask => todoTask.StatusLabel);
+		builder.Ignore(todoTask => todoTask.ComplexityLabel);
+		builder.Ignore(todoTask => todoTask.PriorityLabel);
+		builder.Ignore(todoTask => todoTask.RelevanceLabel);
 	}
 }
