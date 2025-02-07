@@ -26,9 +26,9 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         List<TodoTask> tasks = [
-            new("Task 1", Status.ReadyToStart),
+            new("Task 1", Status.Ready),
             new("Task 2", Status.Paused),
-            new("Task 3", Status.InProgress),
+            new("Task 3", Status.Doing),
             new("Task 4", Status.Completed),
             new("Task 5", Status.Backlog)
         ];
@@ -42,7 +42,7 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         Assert.NotNull(results);
         Assert.Equal(2, results.TotalCount);
         Assert.Equal(2, results.Count);
-        Assert.All(results, task => Assert.True(task.Status is Status.ReadyToStart or Status.Paused)); 
+        Assert.All(results, task => Assert.True(task.Status is Status.Ready or Status.Paused)); 
     }
 
     [Fact]
@@ -54,10 +54,10 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         List<TodoTask> tasks = [
-            new("Task Low", Status.ReadyToStart) { Priority = Priority.MentalClutter },
-            new("Task Medium", Status.Paused) { Priority = Priority.ThinkAboutIt },
-            new("Task Medium", Status.ReadyToStart) { Priority = Priority.DoItNow },
-            new("Task High", Status.Paused) { Priority = Priority.DropEverythingElse }
+            new("Task Low", Status.Ready) { Priority = Priority.Distraction },
+            new("Task Medium", Status.Paused) { Priority = Priority.Consider },
+            new("Task Medium", Status.Ready) { Priority = Priority.Urgent },
+            new("Task High", Status.Paused) { Priority = Priority.Critical }
         ];
 
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
@@ -69,8 +69,8 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         Assert.NotNull(results);
         Assert.Equal(4, results.TotalCount);
         Assert.Equal(4, results.Count);
-        Assert.Equal(Priority.DropEverythingElse, results.First().Priority);
-        Assert.Equal(Priority.MentalClutter, results.Last().Priority);
+        Assert.Equal(Priority.Critical, results.First().Priority);
+        Assert.Equal(Priority.Distraction, results.Last().Priority);
     }
 
     [Fact]
@@ -82,10 +82,10 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", Status.ReadyToStart) { Priority = Priority.DoItNow };
-        TodoTask secondTask = new("Task Soon", Status.ReadyToStart) { Priority = Priority.DoItNow };
-        TodoTask thirdTask = new("Task Later", Status.ReadyToStart) { Priority = Priority.DoItNow };
-        TodoTask fourthTask = new("Task Later", Status.ReadyToStart) { Priority = Priority.DoItNow };
+        TodoTask firstTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
+        TodoTask secondTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
+        TodoTask thirdTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
+        TodoTask fourthTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
         List<TodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
@@ -122,9 +122,9 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         
-        TodoTask taskWithIncompleteDownstreams = new("Main Task 1", Status.ReadyToStart);
-        TodoTask taskWithCompleteDownstreams = new("Main Task 2", Status.ReadyToStart);
-        TodoTask downstream1 = new("Downstream 1", Status.InProgress);
+        TodoTask taskWithIncompleteDownstreams = new("Main Task 1", Status.Ready);
+        TodoTask taskWithCompleteDownstreams = new("Main Task 2", Status.Ready);
+        TodoTask downstream1 = new("Downstream 1", Status.Doing);
         TodoTask downstream2 = new("Downstream 2", Status.Completed);
 
         taskWithIncompleteDownstreams.AddDownstream(downstream1);

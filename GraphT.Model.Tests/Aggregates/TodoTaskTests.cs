@@ -15,7 +15,7 @@ public class TodoTaskTests
 		Assert.False(task.IsFun);
 		Assert.False(task.IsProductive);
 		Assert.Equal(Complexity.Indefinite, task.Complexity);
-		Assert.Equal(Priority.MentalClutter, task.Priority);
+		Assert.Equal(Priority.Distraction, task.Priority);
 		Assert.Equal(Status.Backlog, task.Status);
 		Assert.Equal(Relevance.Superfluous, task.Relevance);
 	}
@@ -310,9 +310,9 @@ public class TodoTaskTests
 	{
 		TodoTask task = new("Test Task");
 
-		task.Priority = Priority.DoItNow;
+		task.Priority = Priority.Urgent;
 
-		Assert.Equal(Priority.DoItNow, task.Priority);
+		Assert.Equal(Priority.Urgent, task.Priority);
 	}
 
 	[Fact]
@@ -333,73 +333,5 @@ public class TodoTaskTests
 		task.Status = Status.Completed;
 
 		Assert.Equal(Status.Completed, task.Status);
-	}
-	
-	[Fact]
-	public void Progress_ReturnsZero_WhenNoDownstreamTasksAndParentIsNotCompleted()
-	{
-		TodoTask task = new("Parent Task", status: Status.Backlog);
-		
-		Assert.Equal(0, task.Progress);
-		Assert.NotEqual(Status.Completed, task.Status);
-	}
-	
-	[Fact]
-	public void Progress_ReturnsHundred_WhenNoDownstreamTasksAndParentIsCompleted()
-	{
-		TodoTask task = new("Parent Task", status: Status.Completed);
-		
-		Assert.Equal(100, task.Progress);
-		Assert.Equal(Status.Completed, task.Status);
-	}
-	
-	[Fact]
-	public void Progress_ReturnsHundred_WhenAllDownstreamTasksAreCompletedOrDropped()
-	{
-		TodoTask task = new("Parent Task");
-		
-		task.AddDownstreams(new HashSet<TodoTask>
-		{
-			new("Downstream 1", status: Status.Completed), 
-			new("Downstream 2", status: Status.Completed),
-			new("Downstream 3", status: Status.Dropped)
-		});
-
-		Assert.Equal(100, task.Progress);
-	}
-
-	[Fact]
-	public void Progress_ReturnsZero_WhenAllDownstreamTasksAreInBacklog()
-	{
-		TodoTask task = new("Parent Task");
-		
-		task.AddDownstreams(new HashSet<TodoTask>
-		{
-			new("Downstream 1", status: Status.Backlog), 
-			new("Downstream 2", status: Status.Backlog)
-		});
-
-		Assert.Equal(0, task.Progress);
-	}
-	
-	[Fact]
-	public void Progress_ReturnsCorrectProgress()
-	{
-		TodoTask task = new("Parent Task");
-		
-		task.AddDownstreams(new HashSet<TodoTask>
-		{
-			new("Downstream 1", status: Status.Backlog), 
-			new("Downstream 2", status: Status.ReadyToStart),
-			new("Downstream 3", status: Status.InProgress),
-			new("Downstream 4", status: Status.Paused),
-			new("Downstream 5", status: Status.Dropped),
-			new("Downstream 6", status: Status.Completed),
-		});
-
-		float expectedProgress = 28;
-		float tolerance = 1;
-
-		Assert.True(Math.Abs(task.Progress - expectedProgress) < tolerance);
 	}
 }

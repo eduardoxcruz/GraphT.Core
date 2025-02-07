@@ -9,7 +9,7 @@ public enum Complexity
 
 public static class ComplexityExtensions
 {
-	public static string FormatedName(this Complexity complexity)
+	public static string GetLabel(this Complexity complexity)
 	{
 		string formatedName = complexity switch
 		{

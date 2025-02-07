@@ -26,7 +26,7 @@ public class TaskLastLogSpecificationTests  : IClassFixture<TestDatabaseFixture>
         DateTimeOffset now = DateTimeOffset.UtcNow;
         List<TaskLog> logs = [
             new(taskId, now.AddHours(-2), Status.Created),
-            new(taskId, now.AddHours(-1), Status.InProgress),
+            new(taskId, now.AddHours(-1), Status.Doing),
             new(taskId, now, Status.Paused)
         ];
         TaskLastLogSpecification spec = new(taskId);
@@ -76,8 +76,8 @@ public class TaskLastLogSpecificationTests  : IClassFixture<TestDatabaseFixture>
         List<TaskLog> logs = [
             new(targetTaskId, now, Status.Created),
             new(otherTaskId, now.AddMinutes(1), Status.Created),
-            new(targetTaskId, now.AddHours(-1), Status.InProgress),
-            new(otherTaskId, now.AddHours(-2), Status.InProgress)
+            new(targetTaskId, now.AddHours(-1), Status.Doing),
+            new(otherTaskId, now.AddHours(-2), Status.Doing)
         ];
         TaskLastLogSpecification spec = new(targetTaskId);
 

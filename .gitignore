@@ -489,3 +489,6 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .idea/
+
+# Entity Framework Migrations
+GraphT.EfCore.Repositories/Migrations/

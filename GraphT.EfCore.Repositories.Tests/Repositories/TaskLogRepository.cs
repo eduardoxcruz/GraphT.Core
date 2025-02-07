@@ -28,7 +28,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		[
 			new(taskId, expectedTime, expectedStatus), 
 			new(uselessId, expectedTime.AddHours(-1), Status.Completed), 
-			new(taskId, expectedTime.AddHours(-2), Status.InProgress), 
+			new(taskId, expectedTime.AddHours(-2), Status.Doing), 
 			new(uselessId, expectedTime.AddHours(-3), Status.Created), 
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
@@ -59,8 +59,8 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		List<TaskLog> logs =
 		[
 			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddMinutes(30), Status.Created), 
-			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddHours(-5), Status.ReadyToStart), 
-			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddDays(2), Status.InProgress)
+			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddHours(-5), Status.Ready), 
+			new(Guid.NewGuid(), DateTimeOffset.UtcNow.AddDays(2), Status.Doing)
 		];
 
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
@@ -107,8 +107,8 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		List<TaskLog> logs =
 		[
 			new(taskId, DateTimeOffset.UtcNow, Status.Created), 
-			new(taskId, DateTimeOffset.UtcNow, Status.ReadyToStart), 
-			new(taskId, DateTimeOffset.UtcNow, Status.InProgress)
+			new(taskId, DateTimeOffset.UtcNow, Status.Ready), 
+			new(taskId, DateTimeOffset.UtcNow, Status.Doing)
 		];
 
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
@@ -156,8 +156,8 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		List<TaskLog> logs =
 		[
 			new(taskId, DateTimeOffset.UtcNow, Status.Created), 
-			new(taskId, DateTimeOffset.UtcNow, Status.ReadyToStart), 
-			new(taskId, DateTimeOffset.UtcNow, Status.InProgress)
+			new(taskId, DateTimeOffset.UtcNow, Status.Ready), 
+			new(taskId, DateTimeOffset.UtcNow, Status.Doing)
 		];
 
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
@@ -188,7 +188,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		[
 			new(taskId, expectedTime, expectedStatus), 
 			new(uselessId, expectedTime.AddHours(-1), Status.Completed), 
-			new(taskId, expectedTime.AddHours(-2), Status.InProgress), 
+			new(taskId, expectedTime.AddHours(-2), Status.Doing), 
 			new(uselessId, expectedTime.AddHours(-3), Status.Created), 
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
@@ -214,7 +214,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		[
 			new(taskId, expectedTime, expectedStatus), 
 			new(uselessId, expectedTime.AddHours(-1), Status.Completed), 
-			new(taskId, expectedTime.AddHours(-2), Status.InProgress), 
+			new(taskId, expectedTime.AddHours(-2), Status.Doing), 
 			new(uselessId, expectedTime.AddHours(-3), Status.Created), 
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
@@ -240,7 +240,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		[
 			new(taskId, expectedTime, expectedStatus), 
 			new(uselessId, expectedTime.AddHours(-1), Status.Completed), 
-			new(taskId, expectedTime.AddHours(-2), Status.InProgress), 
+			new(taskId, expectedTime.AddHours(-2), Status.Doing), 
 			new(uselessId, expectedTime.AddHours(-3), Status.Created), 
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];
@@ -266,7 +266,7 @@ public class TaskLogRepository : IClassFixture<TestDatabaseFixture>
 		[
 			new(taskId, expectedTime, expectedStatus), 
 			new(uselessId, expectedTime.AddHours(-1), Status.Completed), 
-			new(taskId, expectedTime.AddHours(-2), Status.InProgress), 
+			new(taskId, expectedTime.AddHours(-2), Status.Doing), 
 			new(uselessId, expectedTime.AddHours(-3), Status.Created), 
 			new(taskId, expectedTime.AddHours(-4), Status.Dropped)
 		];

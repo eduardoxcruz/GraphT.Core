@@ -28,8 +28,8 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
         List<TodoTask> tasks = [
             new("Task 1", Status.Completed),
             new("Task 2", Status.Dropped),
-            new("Task 3", Status.InProgress),
-            new("Task 4", Status.ReadyToStart),
+            new("Task 3", Status.Doing),
+            new("Task 4", Status.Ready),
             new("Task 5", Status.Backlog)
         ];
 

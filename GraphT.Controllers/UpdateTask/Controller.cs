@@ -10,7 +10,7 @@ public class Controller : IUpdateTaskController
 {
 	private readonly IInputPort _inputPort;
 
-	Controller(IInputPort inputPort)
+	public Controller(IInputPort inputPort)
 	{
 		_inputPort = inputPort;
 	}

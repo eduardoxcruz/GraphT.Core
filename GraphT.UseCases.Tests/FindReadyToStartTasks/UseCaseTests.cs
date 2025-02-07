@@ -19,8 +19,8 @@ public class UseCaseTests
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
         IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
 
-        TodoTask task1 = new("Task 1", Status.ReadyToStart);
-        TodoTask task2 = new("Task 2", Status.ReadyToStart);
+        TodoTask task1 = new("Task 1", Status.Ready);
+        TodoTask task2 = new("Task 2", Status.Ready);
         List<TodoTask> tasks = [task1, task2];
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         InputDto input = new() { PagingParams = pagingParams };

@@ -6,14 +6,14 @@ public class TodoTask
 {
 	public Guid Id { get; private set; }
 	public string Name { get; set; }
-	public Status Status { get; set; }
+
+	private DateTimeInfo _dateTimeInfo;
 	private bool _isFun;
 	private bool _isProductive;
-	private Relevance _relevance;
-	private DateTimeInfo _dateTimeInfo;
 	private HashSet<TodoTask> _upstreams = null!;
 	private HashSet<TodoTask> _downstreams = null!;
 	private HashSet<LifeArea> _lifeAreas = null!;
+
 	public bool IsFun
 	{
 		get => _isFun;
@@ -34,12 +34,19 @@ public class TodoTask
 	}
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
+	public Relevance Relevance { get; private set; }
+	public Status Status { get; set; }
 	public float Progress { get; set; }
-	public Relevance Relevance => _relevance;
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
+	
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
+
+	public string ComplexityLabel => this.Complexity.GetLabel();
+	public string PriorityLabel => this.Priority.GetLabel();
+	public string RelevanceLabel => this.Relevance.GetLabel();
+	public string StatusLabel => this.Status.GetLabel();
 
 	private TodoTask(){ }
 
@@ -54,11 +61,11 @@ public class TodoTask
 		Id = id ?? Guid.NewGuid();
 		Name = name;
 		Status = status ?? Status.Backlog;
-		_isFun = isFun ?? false;
-		_isProductive = isProductive ?? false;
+		IsFun = isFun ?? false;
+		IsProductive = isProductive ?? false;
 		_dateTimeInfo = new DateTimeInfo();
 		Complexity = complexity ?? Complexity.Indefinite;
-		Priority = priority ?? Priority.MentalClutter;
+		Priority = priority ?? Priority.Distraction;
 		Progress = 0;
 		_upstreams = [];
 		_downstreams = [];
@@ -68,7 +75,7 @@ public class TodoTask
 
 	private void UpdateRelevance()
 	{
-		this._relevance = IsFun switch
+		this.Relevance = IsFun switch
 		{
 			true when IsProductive => Relevance.Purposeful,
 			false when IsProductive => Relevance.Necessary,
