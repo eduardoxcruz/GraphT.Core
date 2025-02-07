@@ -31,8 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{2789D0EA-29B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.WebAPI", "GraphT.WebAPI\GraphT.WebAPI.csproj", "{5F2A1EF2-72F8-4644-8FC9-3641219ECCF3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Unit Tests", "5. Unit Tests", "{91E66628-F973-45A9-B247-1B88599BB8D2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.Model.Tests", "GraphT.Model.Tests\GraphT.Model.Tests.csproj", "{2606DB1D-0888-40A8-A151-5C2C85893E7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore.Repositories", "GraphT.EfCore.Repositories\GraphT.EfCore.Repositories.csproj", "{2C1A3413-54E8-416E-9980-52554F8DF2BC}"
