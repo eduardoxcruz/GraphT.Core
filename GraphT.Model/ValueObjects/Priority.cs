@@ -1,25 +1,15 @@
-﻿namespace GraphT.Model.ValueObjects;
+﻿using GraphT.Model.ValueObjects.EnumLabel;
+
+namespace GraphT.Model.ValueObjects;
 
 public enum Priority
 {
+	[EnumLabel("\ud83d\udecc Distraction")]
 	Distraction = 0,
+	[EnumLabel("\ud83e\uddcd\u200d\u2642\ufe0f Consider")]
 	Consider = 1,
+	[EnumLabel("\ud83c\udfc3\u200d\u2642\ufe0f Urgent")]
 	Urgent = 2,
-	Critical = 3 
-}
-
-public static class PriorityExtensions
-{
-	public static string GetLabel(this Priority priority)
-	{
-		string formatedName = priority switch
-		{
-			Priority.Distraction => "\ud83d\udecc Distraction",
-			Priority.Consider => "\ud83e\uddcd\u200d\u2642\ufe0f Consider",
-			Priority.Urgent => "\ud83c\udfc3\u200d\u2642\ufe0f Urgent",
-			_ => "\ud83d\udeb4\u200d\u2642\ufe0f Critical"
-		};
-
-		return formatedName;
-	} 
+	[EnumLabel("\ud83d\udeb4\u200d\u2642\ufe0f Critical")]
+	Critical = 3
 }
