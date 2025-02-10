@@ -20,7 +20,7 @@ public class UseCaseTests
 
         // Assert
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto =>
-			dto.Items.All(list => list.Count != 0) &&
+			dto.Items.All(keyPairValue => keyPairValue.Value.Count != 0) &&
             ValidateEnumContents(dto)
         ));
     }
@@ -28,10 +28,10 @@ public class UseCaseTests
     private static bool ValidateEnumContents(OutputDto dto)
     {
         // Get enum lists
-        List<EnumItemAndLabel> complexities = dto.Items[0];
-        List<EnumItemAndLabel> priorities = dto.Items[1];
-        List<EnumItemAndLabel> relevances = dto.Items[2];
-        List<EnumItemAndLabel> statuses = dto.Items[3];
+        List<EnumItemAndLabel> complexities = dto.Items["complexities"];
+        List<EnumItemAndLabel> priorities = dto.Items["priorities"];
+        List<EnumItemAndLabel> relevances = dto.Items["relevances"];
+        List<EnumItemAndLabel> statuses = dto.Items["statuses"];
 
         // Verify that each list has the correct number of elements
         if (complexities.Count != Enum.GetValues<Complexity>().Length ||
@@ -51,7 +51,7 @@ public class UseCaseTests
     {
         TEnum[] enumValues = Enum.GetValues<TEnum>();
 
-        return (from enumValue in enumValues let id = Convert.ToInt32(enumValue) select enumValue.GetLabel())
+        return (from enumValue in enumValues let id = Convert.ToUInt32(enumValue) select enumValue.GetLabel())
 	        .All(expectedLabel => items.Any(item => item.Label == expectedLabel));
     }
 }

@@ -20,28 +20,25 @@ public class UseCase : IInputPort
 	
 	public async ValueTask Handle()
 	{
-		var items = new List<List<EnumItemAndLabel>>
+		Dictionary<string, List<EnumItemAndLabel>> items = new()
 		{
-			ConvertEnumToItems<Complexity>(),
-			ConvertEnumToItems<Priority>(),
-			ConvertEnumToItems<Relevance>(),
-			ConvertEnumToItems<Status>()
-		};
+            { "complexities", ConvertEnumToItems<Complexity>() },
+            { "priorities", ConvertEnumToItems<Priority>() },
+            { "relevances", ConvertEnumToItems<Relevance>() },
+            { "statuses", ConvertEnumToItems<Status>() }
+        };
 
-		await _outputPort.Handle(new OutputDto { Items = items });
+		await _outputPort.Handle(new OutputDto(items));
 	}
 
 	private static List<EnumItemAndLabel> ConvertEnumToItems<TEnum>() 
 		where TEnum : struct, Enum
 	{
 		return Enum.GetValues<TEnum>()
-			.Select(e => new EnumItemAndLabel(Convert.ToInt32(e), e.GetLabel()))
+			.Select(e => new EnumItemAndLabel(Convert.ToUInt16(e), e.GetLabel()))
 			.ToList();
 	}
 }
 
-public class OutputDto
-{
-	public List<List<EnumItemAndLabel>> Items { get; set; }
-}
+public record struct OutputDto(Dictionary<string, List<EnumItemAndLabel>> Items) {}
 
