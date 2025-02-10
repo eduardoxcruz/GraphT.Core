@@ -9,6 +9,7 @@ namespace GraphT.WebAPI.Controllers.TaskStreams;
 
 [ApiController]
 [Route("api/tasks/streams/upstreams")]
+[Produces("application/json")]
 public class TaskUpstreamsController : ControllerBase
 {
     private readonly IFindTaskUpstreamsByIdController _controller;

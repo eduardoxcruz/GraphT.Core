@@ -1,6 +1,7 @@
 using GraphT.Controllers.AddNewTask;
 using GraphT.Controllers.DeleteTask;
 using GraphT.Controllers.FindTaskById;
+using GraphT.Controllers.GetTaskEnumsItems;
 using GraphT.Controllers.UpdateTask;
 
 using Microsoft.AspNetCore.Mvc;
@@ -9,23 +10,34 @@ namespace GraphT.WebAPI.Controllers.TodoTasks;
 
 [ApiController]
 [Route("api/tasks")]
+[Produces("application/json")]
 public class TodoTasksController : ControllerBase
 {
     private readonly IAddNewTaskController _addNewTaskController;
     private readonly IUpdateTaskController _updateTaskController;
     private readonly IFindTaskByIdController _findTaskByIdController;
     private readonly IDeleteTaskController _deleteTaskController;
+    private readonly IGetTaskEnumsItemsController _getTaskEnumsItemsController;
 
     public TodoTasksController(
-        IAddNewTaskController addNewTaskController,
-        IUpdateTaskController updateTaskController,
-        IFindTaskByIdController findTaskByIdController,
-        IDeleteTaskController deleteTaskController)
+	    IAddNewTaskController addNewTaskController,
+	    IUpdateTaskController updateTaskController,
+	    IFindTaskByIdController findTaskByIdController,
+	    IDeleteTaskController deleteTaskController,
+	    IGetTaskEnumsItemsController getTaskEnumsItemsController)
     {
-        _addNewTaskController = addNewTaskController;
-        _updateTaskController = updateTaskController;
-        _findTaskByIdController = findTaskByIdController;
-        _deleteTaskController = deleteTaskController;
+	    _addNewTaskController = addNewTaskController;
+	    _updateTaskController = updateTaskController;
+	    _findTaskByIdController = findTaskByIdController;
+	    _deleteTaskController = deleteTaskController;
+	    _getTaskEnumsItemsController = getTaskEnumsItemsController;
+    }
+
+    [HttpGet("enums")]
+    public async Task<ActionResult<UseCases.GetTaskEnumsItems.OutputDto>> GetEnums()
+    {
+        UseCases.GetTaskEnumsItems.OutputDto result = await _getTaskEnumsItemsController.RunUseCase();
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

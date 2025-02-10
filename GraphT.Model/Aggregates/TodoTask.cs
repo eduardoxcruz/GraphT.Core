@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.ValueObjects;
+using GraphT.Model.ValueObjects.EnumLabel;
 
 namespace GraphT.Model.Aggregates;
 

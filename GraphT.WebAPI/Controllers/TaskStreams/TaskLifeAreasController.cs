@@ -9,6 +9,7 @@ namespace GraphT.WebAPI.Controllers.TaskStreams;
 
 [ApiController]
 [Route("api/tasks/streams/life-areas")]
+[Produces("application/json")]
 public class TaskLifeAreasController : ControllerBase
 {
     private readonly IFindTaskLifeAreasByIdController _controller;

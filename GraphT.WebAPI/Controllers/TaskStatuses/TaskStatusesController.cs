@@ -10,6 +10,7 @@ namespace GraphT.WebAPI.Controllers.TaskStatuses;
 
 [ApiController]
 [Route("api/tasks/statuses")]
+[Produces("application/json")]
 public class TaskStatusesController : ControllerBase
 {
     private readonly IFindFinishedTasksController _findFinishedTasksController;
