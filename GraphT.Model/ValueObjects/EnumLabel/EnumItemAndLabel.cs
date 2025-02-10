@@ -1,3 +1,3 @@
 ﻿namespace GraphT.Model.ValueObjects.EnumLabel;
 
-public record EnumItemAndLabel(int Value, string Label);
+public record struct EnumItemAndLabel(uint Value, string Label);
