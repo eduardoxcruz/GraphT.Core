@@ -1,24 +1,14 @@
-﻿namespace GraphT.Model.ValueObjects;
+﻿using GraphT.Model.ValueObjects.EnumLabel;
+
+namespace GraphT.Model.ValueObjects;
 
 public enum Relevance { 
+	[EnumLabel("\ud83d\ude12 Superfluous")]
 	Superfluous = 0,
+	[EnumLabel("\ud83e\udd24 Entertaining")]
 	Entertaining = 1,
+	[EnumLabel("\ud83e\uddd0 Necessary")]
 	Necessary = 2,
+	[EnumLabel("\ud83d\ude0e Purposeful")]
 	Purposeful = 3 
-}
-
-public static class RelevanceExtensions
-{
-	public static string GetLabel(this Relevance relevance)
-	{
-		string formatedName = relevance switch
-		{
-			Relevance.Superfluous => "\ud83d\ude12 Superfluous",
-			Relevance.Entertaining => "\ud83e\udd24 Entertaining",
-			Relevance.Necessary => "\ud83e\uddd0 Necessary",
-			_ => "\ud83d\ude0e Purposeful"
-		};
-
-		return formatedName;
-	}
 }
