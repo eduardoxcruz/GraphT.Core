@@ -10,6 +10,7 @@ namespace GraphT.WebAPI.Controllers.TodoTasks;
 
 [ApiController]
 [Route("api/tasks")]
+[Produces("application/json")]
 public class TodoTasksController : ControllerBase
 {
     private readonly IAddNewTaskController _addNewTaskController;
@@ -19,16 +20,16 @@ public class TodoTasksController : ControllerBase
     private readonly IGetTaskEnumsItemsController _getTaskEnumsItemsController;
 
     public TodoTasksController(
-        IAddNewTaskController addNewTaskController,
-        IUpdateTaskController updateTaskController,
-        IFindTaskByIdController findTaskByIdController,
+	    IAddNewTaskController addNewTaskController,
+	    IUpdateTaskController updateTaskController,
+	    IFindTaskByIdController findTaskByIdController,
 	    IDeleteTaskController deleteTaskController,
 	    IGetTaskEnumsItemsController getTaskEnumsItemsController)
     {
-        _addNewTaskController = addNewTaskController;
-        _updateTaskController = updateTaskController;
-        _findTaskByIdController = findTaskByIdController;
-        _deleteTaskController = deleteTaskController;
+	    _addNewTaskController = addNewTaskController;
+	    _updateTaskController = updateTaskController;
+	    _findTaskByIdController = findTaskByIdController;
+	    _deleteTaskController = deleteTaskController;
 	    _getTaskEnumsItemsController = getTaskEnumsItemsController;
     }
 
