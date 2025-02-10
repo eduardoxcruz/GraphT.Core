@@ -8,6 +8,7 @@ using GraphT.Controllers.FindTaskDownstreamsById;
 using GraphT.Controllers.FindTaskLifeAreasById;
 using GraphT.Controllers.UpdateTask;
 using GraphT.Controllers.FindTaskUpstreamsById;
+using GraphT.Controllers.GetTaskEnumsItems;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,7 @@ public static class DependencyContainer
 		services.AddScoped<IFindInProgressTasksController, FindInProgressTasks.Controller>();
 		services.AddScoped<IFindFinishedTasksController, FindFinishedTasks.Controller>();
 		services.AddScoped<IDeleteTaskController, DeleteTask.Controller>();
+		services.AddScoped<IGetTaskEnumsItemsController, GetTaskEnumsItems.Controller>();
 
 		return services;
 	}
