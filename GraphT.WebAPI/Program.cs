@@ -13,9 +13,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("DefaultPolicy", policy =>
     {
         policy
-            .WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>())
-            .WithMethods(builder.Configuration.GetSection("Cors:Methods").Get<string[]>() ?? Array.Empty<string>())
-            .WithHeaders(builder.Configuration.GetSection("Cors:Headers").Get<string[]>() ?? Array.Empty<string>())
+            .WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [])
+            .WithMethods(builder.Configuration.GetSection("Cors:Methods").Get<string[]>() ?? [])
+            .WithHeaders(builder.Configuration.GetSection("Cors:Headers").Get<string[]>() ?? [])
             .AllowCredentials();
     });
 
