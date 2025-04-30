@@ -1,9 +1,11 @@
 using System.Text.Json;
 
+using GraphT.Controllers.FindTasksWithoutUpstreams;
 using GraphT.Controllers.FindTaskUpstreamsById;
-using GraphT.UseCases.FindTaskUpstreamsById;
 
 using Microsoft.AspNetCore.Mvc;
+
+using SeedWork;
 
 namespace GraphT.WebAPI.Controllers.TaskStreams;
 
@@ -12,32 +14,58 @@ namespace GraphT.WebAPI.Controllers.TaskStreams;
 [Produces("application/json")]
 public class TaskUpstreamsController : ControllerBase
 {
-    private readonly IFindTaskUpstreamsByIdController _controller;
+	private readonly IFindTaskUpstreamsByIdController _findTaskUpstreamsByIdController;
+	private readonly IFindTasksWithoutUpstreamsController _findTasksWithoutUpstreamsController;
 
-    public TaskUpstreamsController(IFindTaskUpstreamsByIdController controller)
-    {
-        _controller = controller;
-    }
+	public TaskUpstreamsController(IFindTaskUpstreamsByIdController findTaskUpstreamsByIdController
+		, IFindTasksWithoutUpstreamsController findTasksWithoutUpstreamsController)
+	{
+		_findTaskUpstreamsByIdController = findTaskUpstreamsByIdController;
+		_findTasksWithoutUpstreamsController = findTasksWithoutUpstreamsController;
+	}
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<OutputDto>> GetUpstreams(Guid id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-    {
-        OutputDto result = await _controller.RunUseCase(new InputDto
-        {
-            Id = id,
-            PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
-        });
-        var metadata = new
-	    {
-		    result.Upstreams.TotalCount,
-		    result.Upstreams.PageSize,
-		    result.Upstreams.CurrentPage,
-		    result.Upstreams.TotalPages,
-		    result.Upstreams.HasNext,
-		    result.Upstreams.HasPrevious
-	    };
-	    Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
+	[HttpGet("{id}")]
+	public async Task<ActionResult<UseCases.FindTaskUpstreamsById.OutputDto>> GetUpstreams(Guid id, [FromQuery] int pageNumber = 1
+		, [FromQuery] int pageSize = 10)
+	{
+		UseCases.FindTaskUpstreamsById.OutputDto result = await _findTaskUpstreamsByIdController.RunUseCase(new UseCases.FindTaskUpstreamsById.InputDto
+		{
+			Id = id, PagingParams = new PagingParams { PageNumber = pageNumber, PageSize = pageSize }
+		});
+		var metadata = new
+		{
+			result.Upstreams.TotalCount
+			, result.Upstreams.PageSize
+			, result.Upstreams.CurrentPage
+			, result.Upstreams.TotalPages
+			, result.Upstreams.HasNext
+			, result.Upstreams.HasPrevious
+		};
+		Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
 
-        return Ok(result);
-    }
+		return Ok(result);
+	}
+
+	[HttpGet("tasks-without-upstreams")]
+	public async Task<ActionResult<UseCases.FindTasksWithoutUpstreams.OutputDto>> GetTasksWithoutUpstreams(
+		[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+	{
+		UseCases.FindTasksWithoutUpstreams.OutputDto result =
+			await _findTasksWithoutUpstreamsController.RunUseCase(new UseCases.FindTasksWithoutUpstreams.InputDto
+			{
+				PagingParams = new PagingParams { PageNumber = pageNumber, PageSize = pageSize }
+			});
+		var metadata = new
+		{
+			result.Tasks.TotalCount
+			, result.Tasks.PageSize
+			, result.Tasks.CurrentPage
+			, result.Tasks.TotalPages
+			, result.Tasks.HasNext
+			, result.Tasks.HasPrevious
+		};
+		Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
+
+		return Ok(result);
+	}
 }
