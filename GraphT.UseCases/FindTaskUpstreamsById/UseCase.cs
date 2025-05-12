@@ -28,8 +28,8 @@ public class UseCase : IInputPort
 
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
 
-		PagedList<SimpleTask> upstreams = new(
-			task.Upstreams.Select(SimpleTask.MapFrom).ToList(),
+		PagedList<PlainTask> upstreams = new(
+			task.Upstreams.Select(PlainTask.MapFrom).ToList(),
 			task.Upstreams.Count,
 			dto.PagingParams.PageNumber,
 			dto.PagingParams.PageSize);
@@ -46,6 +46,6 @@ public class InputDto
 
 public class OutputDto
 {
-	public PagedList<SimpleTask> Upstreams { get; set; }
+	public PagedList<PlainTask> Upstreams { get; set; }
 }
 

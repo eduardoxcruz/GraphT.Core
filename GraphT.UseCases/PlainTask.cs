@@ -4,7 +4,7 @@ using GraphT.Model.ValueObjects.EnumLabel;
 
 namespace GraphT.UseCases;
 
-public class SimpleTask
+public class PlainTask
 {
 	public Guid Id { get; set; }
 	public string Name { get; set; }
@@ -21,9 +21,9 @@ public class SimpleTask
 	public string RelevanceLabel => this.Relevance.GetLabel();
 	public string StatusLabel => this.Status.GetLabel();
 
-	public static SimpleTask MapFrom(TodoTask source)
+	public static PlainTask MapFrom(TodoTask source)
 	{
-		return new SimpleTask()
+		return new PlainTask()
 		{
 			Id = source.Id,
 			Name = source.Name,
