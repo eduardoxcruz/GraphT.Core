@@ -13,8 +13,8 @@ public sealed class TasksWhereStatusIsReadyToStartSpecification : BaseSpecificat
 			(task.Downstreams.Count == 0 || task.Progress >= 99)
 		)
 	{
-		ApplyOrderByDescending(task => task.Priority);
-		AddThenBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue);
+		ApplyOrderByDescending(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue);
+		AddThenBy(task => task.Priority);
 		ApplyPaging(pagingParams.PageNumber, pagingParams.PageSize);
 	}
 }
