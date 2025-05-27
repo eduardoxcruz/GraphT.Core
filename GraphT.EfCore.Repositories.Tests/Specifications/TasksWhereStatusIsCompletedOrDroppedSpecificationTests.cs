@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
@@ -33,7 +34,6 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
             new("Task 5", Status.Backlog)
         ];
 
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -43,6 +43,7 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
         Assert.Equal(2, results.TotalCount);
         Assert.Equal(2, results.Count);
         Assert.All(results, task => Assert.True(task.Status is Status.Completed or Status.Dropped));
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
     [Fact]
@@ -70,7 +71,6 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
         thirdTask.SetFinishDate(now);
         fourthTask.SetFinishDate(now.AddDays(-3));
 
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -82,6 +82,7 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
         Assert.Equal(firstTask.Id, results[1].Id);
         Assert.Equal(secondTask.Id, results[2].Id);
         Assert.Equal(fourthTask.Id, results[3].Id);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
     [Fact]
@@ -100,7 +101,6 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
             new("Task 5", Status.Completed)
         ];
 
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -113,5 +113,6 @@ public class TasksWhereStatusIsCompletedOrDroppedSpecificationTests : IClassFixt
         Assert.Equal(3, results.TotalPages);
         Assert.True(results.HasNext);
         Assert.True(results.HasPrevious);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 }

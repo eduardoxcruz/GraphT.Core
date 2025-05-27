@@ -22,10 +22,10 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
     {
         // Arrange
         EfDbContext context = _fixture.CreateContext();
-        Repository<TodoTask> repository = new(context);
+        Repository<TaskAggregate> repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
-        List<TodoTask> tasks = [
+        List<TaskAggregate> tasks = [
             new("Task 1", Status.Ready),
             new("Task 2", Status.Paused),
             new("Task 3", Status.Doing),
@@ -33,16 +33,17 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
             new("Task 5", Status.Backlog)
         ];
 
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-        await context.TodoTasks.AddRangeAsync(tasks);
+        await context.TaskAggregates.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindAsync(spec);
+        PagedList<TaskAggregate> results = await repository.FindAsync(spec);
 
         // Assert
         Assert.NotNull(results);
         Assert.Equal(2, results.TotalCount);
         Assert.Equal(2, results.Count);
-        Assert.All(results, task => Assert.True(task.Status is Status.Ready or Status.Paused)); 
+        Assert.All(results, task => Assert.True(task.Status is Status.Ready or Status.Paused));
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
     [Fact]
@@ -50,20 +51,19 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
     {
         // Arrange
         EfDbContext context = _fixture.CreateContext();
-        Repository<TodoTask> repository = new(context);
+        Repository<TaskAggregate> repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
-        List<TodoTask> tasks = [
+        List<TaskAggregate> tasks = [
             new("Task Low", Status.Ready) { Priority = Priority.Distraction },
             new("Task Medium", Status.Paused) { Priority = Priority.Consider },
             new("Task Medium", Status.Ready) { Priority = Priority.Urgent },
             new("Task High", Status.Paused) { Priority = Priority.Critical }
         ];
 
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-        await context.TodoTasks.AddRangeAsync(tasks);
+        await context.TaskAggregates.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindAsync(spec);
+        PagedList<TaskAggregate> results = await repository.FindAsync(spec);
 
         // Assert
         Assert.NotNull(results);
@@ -71,6 +71,8 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         Assert.Equal(4, results.Count);
         Assert.Equal(Priority.Critical, results.First().Priority);
         Assert.Equal(Priority.Distraction, results.Last().Priority);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
     [Fact]
@@ -78,15 +80,15 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
     {
         // Arrange
         EfDbContext context = _fixture.CreateContext();
-        Repository<TodoTask> repository = new(context);
+        Repository<TaskAggregate> repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
-        TodoTask secondTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
-        TodoTask thirdTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
-        TodoTask fourthTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
-        List<TodoTask> tasks = [
+        TaskAggregate firstTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
+        TaskAggregate secondTask = new("Task Soon", Status.Ready) { Priority = Priority.Urgent };
+        TaskAggregate thirdTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
+        TaskAggregate fourthTask = new("Task Later", Status.Ready) { Priority = Priority.Urgent };
+        List<TaskAggregate> tasks = [
 	        thirdTask,
 	        firstTask,
             fourthTask,
@@ -99,10 +101,9 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         fourthTask.SetLimitDate(now.AddDays(5));
 
         // Act
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-        await context.TodoTasks.AddRangeAsync(tasks);
+        await context.TaskAggregates.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindAsync(spec);
+        PagedList<TaskAggregate> results = await repository.FindAsync(spec);
 
         // Assert
         Assert.NotNull(results);
@@ -111,6 +112,8 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
         Assert.Equal(secondTask.Id, results[1].Id);
         Assert.Equal(thirdTask.Id, results[2].Id);
         Assert.Equal(fourthTask.Id, results[3].Id);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
     [Fact]
@@ -118,34 +121,34 @@ public class TasksWhereStatusIsReadyToStartSpecificationTests: IClassFixture<Tes
     {
         // Arrange
         EfDbContext context = _fixture.CreateContext();
-        Repository<TodoTask> repository = new(context);
+        Repository<TaskAggregate> repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         TasksWhereStatusIsReadyToStartSpecification spec = new(pagingParams);
         
-        TodoTask taskWithIncompleteDownstreams = new("Main Task 1", Status.Ready);
-        TodoTask taskWithCompleteDownstreams = new("Main Task 2", Status.Ready);
-        TodoTask downstream1 = new("Downstream 1", Status.Doing);
-        TodoTask downstream2 = new("Downstream 2", Status.Completed);
+        TaskAggregate taskWithIncompleteDownstreams = new("Main Task 1", Status.Ready);
+        TaskAggregate taskWithCompleteDownstreams = new("Main Task 2", Status.Ready);
+        TaskAggregate downstream1 = new("Downstream 1", Status.Doing);
+        TaskAggregate downstream2 = new("Downstream 2", Status.Completed);
 
         taskWithIncompleteDownstreams.AddDownstream(downstream1);
         taskWithCompleteDownstreams.AddDownstream(downstream2);
         taskWithCompleteDownstreams.Progress = 99;
 
         // Act
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-        await context.TodoTasks.AddRangeAsync([
+        await context.TaskAggregates.AddRangeAsync([
             taskWithIncompleteDownstreams, 
             taskWithCompleteDownstreams,
             downstream1,
             downstream2
         ]);
         int result = await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindAsync(spec);
+        PagedList<TaskAggregate> results = await repository.FindAsync(spec);
 
         // Assert
         Assert.NotNull(results);
         Assert.Single(results);
         Assert.Equal(taskWithCompleteDownstreams.Id, results.First().Id);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 }

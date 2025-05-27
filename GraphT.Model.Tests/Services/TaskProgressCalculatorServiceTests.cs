@@ -1,4 +1,5 @@
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Services;
 using GraphT.Model.ValueObjects;
 
@@ -38,12 +39,12 @@ public class TaskProgressCalculatorServiceTests
     public void GetProgress_AllTasksInBacklog_ReturnsZero()
     {
         // Arrange
-        HashSet<TodoTask> downstreams = new()
-        {
-            new TodoTask("Task 1", status: Status.Backlog),
-            new TodoTask("Task 2", status: Status.Backlog),
-            new TodoTask("Task 3", status: Status.Backlog)
-        };
+        HashSet<TaskAggregate> downstreams =
+        [
+	        new("Task 1", status: Status.Backlog), 
+	        new("Task 2", status: Status.Backlog), 
+	        new("Task 3", status: Status.Backlog)
+        ];
         bool finishCurrentTask = false;
         float expectedProgress = 0f;
 
@@ -58,7 +59,7 @@ public class TaskProgressCalculatorServiceTests
     public void GetProgress_AllTasksCompletedOrDropped_Returns99()
     {
         // Arrange
-        HashSet<TodoTask> downstreams =
+        HashSet<TaskAggregate> downstreams =
         [
 	        new("Task 1", status: Status.Completed), 
 	        new("Task 2", status: Status.Dropped), 
@@ -78,10 +79,11 @@ public class TaskProgressCalculatorServiceTests
     public void GetProgress_AllTasksCompletedOrDroppedAndFinishCurrentTask_Returns100()
     {
         // Arrange
-        HashSet<TodoTask> downstreams =
+        HashSet<TaskAggregate> downstreams =
         [
-	        new("Task 1", status: Status.Completed), new("Task 2", status: Status.Dropped)
-	        , new("Task 3", status: Status.Completed)
+	        new("Task 1", status: Status.Completed), 
+	        new("Task 2", status: Status.Dropped), 
+	        new("Task 3", status: Status.Completed)
         ];
         bool finishCurrentTask = true;
         float expectedProgress = 100f;
@@ -103,18 +105,18 @@ public class TaskProgressCalculatorServiceTests
         float expectedProgress)
     {
         // Arrange
-        HashSet<TodoTask> downstreams = new();
+        HashSet<TaskAggregate> downstreams = [];
         
         // Agregar tareas completadas
         for (int i = 0; i < completedTasks; i++)
         {
-            downstreams.Add(new TodoTask($"Completed Task {i}", status: Status.Completed));
+            downstreams.Add(new TaskAggregate($"Completed Task {i}", status: Status.Completed));
         }
         
         // Agregar tareas en progreso
         for (int i = 0; i < (totalTasks - completedTasks); i++)
         {
-            downstreams.Add(new TodoTask($"In Progress Task {i}", status: Status.Doing));
+            downstreams.Add(new TaskAggregate($"In Progress Task {i}", status: Status.Doing));
         }
 
         bool finishCurrentTask = false;

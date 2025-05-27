@@ -1,4 +1,5 @@
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services.Specifications;
 
@@ -23,20 +24,11 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		bool taskExist = await _unitOfWork.Repository<TodoTask>().ContainsAsync(task => task.Id.Equals(dto.Id));
+		TodoTask? task = (await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id));
 		
-		if (!taskExist)
+		if (task is null)
 		{
 			throw new TaskNotFoundException("Task not found.", dto.Id);
-		}
-
-		TaskIncludeDownstreamsSpecification specification = new(dto.Id);
-		TodoTask? task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).FirstOrDefault();
-		
-		foreach (TodoTask downstream in task.Downstreams)
-		{
-			downstream.RemoveUpstream(task);
-			await _unitOfWork.Repository<TodoTask>().UpdateAsync(downstream);
 		}
 		
 		await _unitOfWork.Repository<TodoTask>().RemoveAsync(task);

@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services.Specifications;
 
@@ -24,12 +25,12 @@ public class UseCase : IInputPort
 	public async ValueTask Handle(InputDto dto)
 	{
 		TaskIncludeDownstreamsSpecification specification = new(dto.Id);
-		TodoTask? task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).FirstOrDefault();
+		TaskAggregate? task = (await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification)).FirstOrDefault();
 
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
 
-		PagedList<PlainTask> downstreams = new(
-			task.Downstreams.Select(PlainTask.MapFrom).ToList(),
+		PagedList<TodoTask> downstreams = new(
+			task.Downstreams.ToList(),
 			task.Downstreams.Count,
 			dto.PagingParams.PageNumber,
 			dto.PagingParams.PageSize);
@@ -46,5 +47,5 @@ public class InputDto
 
 public class OutputDto
 {
-	public PagedList<PlainTask> Downstreams { get; set; }
+	public PagedList<TodoTask> Downstreams { get; set; }
 }

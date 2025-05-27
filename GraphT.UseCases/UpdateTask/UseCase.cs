@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services;
 using GraphT.Model.Services.Specifications;

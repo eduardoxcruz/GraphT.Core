@@ -1,89 +1,27 @@
-﻿using GraphT.Model.ValueObjects;
-using GraphT.Model.ValueObjects.EnumLabel;
+﻿using GraphT.Model.Entities;
+using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Aggregates;
 
-public class TodoTask
+public class TaskAggregate(
+	string name
+	, Status? status = null
+	, bool? isFun = null
+	, bool? isProductive = null
+	, Complexity? complexity = null
+	, Priority? priority = null
+	, Guid? id = null)
+	: TodoTask(name, status, isFun, isProductive, complexity, priority, id)
 {
-	public Guid Id { get; private set; }
-	public string Name { get; set; }
-
-	private DateTimeInfo _dateTimeInfo;
-	private bool _isFun;
-	private bool _isProductive;
-	private HashSet<TodoTask> _upstreams = null!;
-	private HashSet<TodoTask> _downstreams = null!;
-	private HashSet<LifeArea> _lifeAreas = null!;
-
-	public bool IsFun
-	{
-		get => _isFun;
-		set
-		{
-			_isFun = value;
-			UpdateRelevance();
-		}
-	}
-	public bool IsProductive
-	{
-		get => _isProductive;
-		set
-		{
-			_isProductive = value;
-			UpdateRelevance();
-		}
-	}
-	public Complexity Complexity { get; set; }
-	public Priority Priority { get; set; }
-	public Relevance Relevance { get; private set; }
-	public Status Status { get; set; }
-	public float Progress { get; set; }
-	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
+	private HashSet<TodoTask> _upstreams = [];
+	private HashSet<TodoTask> _downstreams = [];
+	private HashSet<LifeArea> _lifeAreas = [];
 	
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
 
-	public string ComplexityLabel => this.Complexity.GetLabel();
-	public string PriorityLabel => this.Priority.GetLabel();
-	public string RelevanceLabel => this.Relevance.GetLabel();
-	public string StatusLabel => this.Status.GetLabel();
-
-	private TodoTask(){ }
-
-	public TodoTask(string name, 
-							Status? status = null,
-							bool? isFun = null, 
-							bool? isProductive = null,
-							Complexity? complexity = null, 
-							Priority? priority = null,
-							Guid? id = null)
-	{
-		Id = id ?? Guid.NewGuid();
-		Name = name;
-		Status = status ?? Status.Backlog;
-		IsFun = isFun ?? false;
-		IsProductive = isProductive ?? false;
-		_dateTimeInfo = new DateTimeInfo();
-		Complexity = complexity ?? Complexity.Indefinite;
-		Priority = priority ?? Priority.Distraction;
-		Progress = 0;
-		_upstreams = [];
-		_downstreams = [];
-		_lifeAreas = [];
-		UpdateRelevance();
-	}
-
-	private void UpdateRelevance()
-	{
-		this.Relevance = IsFun switch
-		{
-			true when IsProductive => Relevance.Purposeful,
-			false when IsProductive => Relevance.Necessary,
-			true when !IsProductive => Relevance.Entertaining,
-			_ => Relevance.Superfluous
-		};
-	}
+	private TaskAggregate() : this("New Task") { }
 	
 	public void AddUpstream(TodoTask upstream)
 	{
@@ -171,9 +109,9 @@ public class TodoTask
 		_downstreams.Clear();
 	}
 	
-	private void ValidateTask(TodoTask todoTask)
+	private void ValidateTask(TodoTask taskAggregate)
 	{
-		if (todoTask.Id.Equals(Guid.Empty)) throw new ArgumentException("Task id cannot be empty");
+		if (taskAggregate.Id.Equals(Guid.Empty)) throw new ArgumentException("Task id cannot be empty");
 	}
 
 	private void ValidateTaskCollection(HashSet<TodoTask> taskCollection)
@@ -229,6 +167,7 @@ public class TodoTask
 		_lifeAreas.Clear();
 	}
 	
+	// TODO: Implement this
 	private void ValidateLifeArea(LifeArea lifeArea)
 	{
 		if (lifeArea.Id.Equals(Guid.Empty)) throw new ArgumentException("Life Area id cannot be empty");
@@ -242,35 +181,5 @@ public class TodoTask
 
 		if (lifeAreaCollection.Any(lifeAreaAggregate => lifeAreaAggregate.Id.Equals(Guid.Empty)))
 			throw new ArgumentException("Life Area collection cannot contain life areas with empty Id");
-	}
-	
-	public void SetStartDate(DateTimeOffset startDate)
-	{
-		if (_dateTimeInfo.FinishDateTime is not null && startDate > _dateTimeInfo.FinishDateTime)
-		{
-			throw new ArgumentException("Start date cannot be after of finish date");
-		}
-		
-		_dateTimeInfo.StartDateTime = startDate;
-	}
-
-	public void SetFinishDate(DateTimeOffset finishDate)
-	{
-		if (_dateTimeInfo.StartDateTime is not null && finishDate < _dateTimeInfo.StartDateTime)
-		{
-			throw new ArgumentException("Finish date cannot be before start date");
-		}
-
-		_dateTimeInfo.FinishDateTime = finishDate;
-	}
-
-	public void SetLimitDate(DateTimeOffset limitDate)
-	{
-		_dateTimeInfo.LimitDateTime = limitDate;
-	}
-	
-	public void SetTimeSpend(string timeSpend)
-	{
-		_dateTimeInfo.TimeSpend = timeSpend;
 	}
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +15,22 @@ namespace GraphT.EfCore.Repositories;
 
 public static class DependencyContainer
 {
-	public static IServiceCollection AddGraphTEfCoreRepositories(
-		this IServiceCollection services,
-		IConfiguration configuration,
-		string connectionString)
-	{
-		services.AddDbContext<EfDbContext>(options => options
-			.UseSqlServer(configuration[$"ConnectionStrings:{connectionString}"])
-			.LogTo(message => Debug.WriteLine(message), LogLevel.Warning));
-		services.AddScoped<IRepository<TodoTask>, Repository<TodoTask>>();
+    public static IServiceCollection AddGraphTEfCoreRepositories(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string connectionString)
+    {
+        services.AddDbContext<EfDbContext>(options => options
+            .UseSqlServer(configuration[$"ConnectionStrings:{connectionString}"])
+            .LogTo(message => Debug.WriteLine(message), LogLevel.Warning));
+        
+        services.AddScoped<IRepository<TodoTask>, Repository<TodoTask>>();
 		services.AddScoped<IRepository<TaskLog>, Repository<TaskLog>>();
-		services.AddScoped<IRepository<LifeArea>, Repository<LifeArea>>();
-		services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IRepository<LifeArea>, Repository<LifeArea>>();
+        services.AddScoped<IRepository<TaskAggregate>, Repository<TaskAggregate>>();
+        services.AddScoped<IRepository<LifeAreaAggregate>, Repository<LifeAreaAggregate>>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-		return services;
-	}
+        return services;
+    }
 }

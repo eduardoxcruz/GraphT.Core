@@ -23,7 +23,7 @@ public class UseCase : IInputPort
 	public async ValueTask Handle(InputDto dto)
 	{
 		TasksWithoutUpstreamsSpecification specification = new(dto.PagingParams);
-		PagedList<TodoTask> tasks = await _unitOfWork.Repository<TodoTask>().FindAsync(specification);
+		PagedList<TaskAggregate> tasks = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
 		
 		await _outputPort.Handle(new OutputDto(tasks));
 	}
@@ -31,5 +31,5 @@ public class UseCase : IInputPort
 
 public record struct InputDto(PagingParams PagingParams) {}
 
-public record struct OutputDto(PagedList<TodoTask> Tasks) {}
+public record struct OutputDto(PagedList<TaskAggregate> Tasks) {}
 

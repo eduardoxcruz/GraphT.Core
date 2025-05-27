@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
 using GraphT.UseCases.DeleteTask;
 
@@ -24,7 +25,6 @@ public class UseCaseTests
         TodoTask existingTask = new("Test Task", id: taskId);
         InputDto input = new() { Id = taskId };
 
-        repository.ContainsAsync(Arg.Any<Expression<Func<TodoTask, bool>>>()).Returns(true);
         repository.FindByIdAsync(taskId).Returns(existingTask);
         unitOfWork.Repository<TodoTask>().Returns(repository);
 
@@ -33,8 +33,6 @@ public class UseCaseTests
         // Act
         await useCase.Handle(input);
 
-        // Assert
-        await repository.Received(1).ContainsAsync(Arg.Any<Expression<Func<TodoTask, bool>>>());
         await repository.Received(1).RemoveAsync(existingTask);
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle();
@@ -62,7 +60,6 @@ public class UseCaseTests
         );
         
         Assert.Equal(taskId, exception.Id);
-        await repository.Received(1).ContainsAsync(Arg.Any<Expression<Func<TodoTask, bool>>>());
         await repository.DidNotReceive().RemoveAsync(Arg.Any<TodoTask>());
         await unitOfWork.DidNotReceive().SaveChangesAsync();
         await outputPort.DidNotReceive().Handle();

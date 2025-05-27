@@ -1,4 +1,5 @@
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +20,14 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		Repository<LifeArea> repository = new(context);
 		LifeArea lifeArea = new("Life Area");
 		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 		await context.LifeAreas.AddAsync(lifeArea);
 		await context.SaveChangesAsync();
 		LifeArea? result = await repository.FindByIdAsync(lifeArea.Id);
-		
+
 		Assert.NotNull(result);
 		Assert.Equal(lifeArea.Id, result.Id);
 		Assert.Equal("Life Area", result.Name);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 
 	[Fact]
@@ -39,12 +40,11 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		[
 			new("Name"), new(expectedName), new("Name 2")
 		];
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 		PagedList<LifeArea> results = await repository.FindAsync(new BaseSpecification<LifeArea>(l => l.Name.Equals(expectedName)));
-		
+
 		Assert.NotNull(results);
 		Assert.NotEmpty(results);
 		Assert.All(results, lifeArea => Assert.Equal(expectedName, lifeArea.Name));
@@ -53,6 +53,7 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		Assert.Equal(1, results.TotalPages);
 		Assert.False(results.HasNext);
 		Assert.False(results.HasPrevious);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 	
 	[Fact]
@@ -64,12 +65,11 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		[
 			new("Name"), new("Name 2"), new("Name 3")
 		];
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 		PagedList<LifeArea> results = await repository.FindAsync();
-		
+
 		Assert.NotNull(results);
 		Assert.NotEmpty(results);
 		Assert.Equal(3, results.TotalCount);
@@ -77,6 +77,7 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		Assert.Equal(1, results.TotalPages);
 		Assert.False(results.HasNext);
 		Assert.False(results.HasPrevious);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 
 	[Fact]
@@ -85,14 +86,14 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		EfDbContext context = Fixture.CreateContext();
 		Repository<LifeArea> repository = new(context);
 		LifeArea lifeArea = new("Name");
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await repository.AddAsync(lifeArea);
 		await context.SaveChangesAsync();
 		LifeArea? addedLifeArea = await context.LifeAreas.FindAsync(lifeArea.Id);
-		
+
 		Assert.NotNull(addedLifeArea);
 		Assert.Equal(lifeArea.Id, addedLifeArea.Id);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 	
 	[Fact]
@@ -104,8 +105,7 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		[
 			new("Name 1"), new("Name 2"), new("Name 3")
 		];
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await repository.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 
@@ -116,6 +116,8 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 			Assert.NotNull(addedLifeArea);
 			Assert.Equal(lifeArea.Id, addedLifeArea.Id);
 		}
+
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 
 	[Fact]
@@ -124,14 +126,15 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		EfDbContext context = Fixture.CreateContext();
 		Repository<LifeArea> repository = new(context);
 		LifeArea lifeArea = new("Name");
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddAsync(lifeArea);
 		await repository.RemoveAsync(lifeArea);
 		await context.SaveChangesAsync();
+
 		LifeArea? removedLifeArea = await context.LifeAreas.FindAsync(lifeArea.Id);
-		
+
 		Assert.Null(removedLifeArea);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 	
 	[Fact]
@@ -143,19 +146,20 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		[
 			new("Name 1"), new("Name 2"), new("Name 3")
 		];
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 		await repository.RemoveRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
-		
+
 		foreach (LifeArea lifeArea in lifeAreas)
 		{
 			LifeArea? removedLifeArea = await context.LifeAreas.FindAsync(lifeArea.Id);
 			
 			Assert.Null(removedLifeArea);
 		}
+
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 
 	[Fact]
@@ -165,8 +169,7 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		Repository<LifeArea> repository = new(context);
 		LifeArea lifeArea = new("Life Area");
 		string newName = "New name";
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddAsync(lifeArea);
 		await context.SaveChangesAsync();
 		lifeArea.Name = newName;
@@ -176,6 +179,7 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 
 		Assert.NotNull(updatedLifeArea);
 		Assert.Equal(newName, updatedLifeArea.Name);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 	
 	[Fact]
@@ -189,8 +193,7 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 			new LifeArea("Name 2"), 
 			new LifeArea("Name 3")
 		};
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 		lifeAreas[0].Name = "Name 4";
@@ -201,13 +204,14 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		LifeArea? firstUpdated = await context.LifeAreas.FindAsync(lifeAreas[0].Id);
 		LifeArea? secondUpdated = await context.LifeAreas.FindAsync(lifeAreas[1].Id);
 		LifeArea? thirdUpdated = await context.LifeAreas.FindAsync(lifeAreas[2].Id);
-		
+
 		Assert.NotNull(firstUpdated);
 		Assert.NotNull(secondUpdated);
 		Assert.NotNull(thirdUpdated);
 		Assert.Equal("Name 4", firstUpdated.Name);
 		Assert.Equal("Name 5", secondUpdated.Name);
 		Assert.Equal("Name 6", thirdUpdated.Name);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 
 	[Fact]
@@ -217,13 +221,13 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		Repository<LifeArea> repository = new(context);
 		string expectedName = "Strange Name for Specification";
 		LifeArea lifeArea = new(expectedName);
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddAsync(lifeArea);
 		await context.SaveChangesAsync();
 		bool result = await repository.ContainsAsync(new BaseSpecification<LifeArea>(t => t.Name.Equals(expectedName)));
 
 		Assert.True(result);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 	
 	[Fact]
@@ -233,13 +237,13 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 		Repository<LifeArea> repository = new(context);
 		string expectedName = "Strange Name for Predicate";
 		LifeArea lifeArea = new(expectedName);
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddAsync(lifeArea);
 		await context.SaveChangesAsync();
 		bool result = await repository.ContainsAsync(t => t.Name.Equals(expectedName));
 
 		Assert.True(result);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 
 	[Fact]
@@ -254,13 +258,13 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 			new LifeArea("Name 2"), 
 			new LifeArea(expectedName)
 		};
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 		int count = await repository.CountAsync(new BaseSpecification<LifeArea>(t => t.Name.Equals(expectedName)));
 
 		Assert.Equal(1, count);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 	
 	[Fact]
@@ -275,12 +279,12 @@ public class LifeAreaRepository: IClassFixture<TestDatabaseFixture>
 			new LifeArea("Name 2"), 
 			new LifeArea(expectedName)
 		};
-		
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
+
 		await context.LifeAreas.AddRangeAsync(lifeAreas);
 		await context.SaveChangesAsync();
 		int count = await repository.CountAsync(t => t.Name.Equals(expectedName));
 
 		Assert.Equal(1, count);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [LifeAreas]");
 	}
 }

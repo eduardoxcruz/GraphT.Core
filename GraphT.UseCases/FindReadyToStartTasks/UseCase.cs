@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
@@ -24,7 +25,7 @@ public class UseCase : IInputPort
 	public async ValueTask Handle(InputDto dto)
 	{
 		TasksWhereStatusIsReadyToStartSpecification specification = new(dto.PagingParams);
-		PagedList<TodoTask> tasks = await _unitOfWork.Repository<TodoTask>().FindAsync(specification);
+		PagedList<TaskAggregate> tasks = await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification);
 		
 		await _outputPort.Handle(new OutputDto { Tasks = tasks });
 	}
@@ -37,6 +38,6 @@ public class InputDto
 
 public class OutputDto
 {
-	public PagedList<TodoTask> Tasks { get; set; }
+	public PagedList<TaskAggregate> Tasks { get; set; }
 }
 

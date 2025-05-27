@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
@@ -31,7 +32,6 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
 			, new("Task 4", Status.Ready), new("Task 5", Status.Backlog)
 		];
 
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 		PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -41,6 +41,7 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
 		Assert.Equal(1, results.TotalCount);
 		Assert.Single(results);
 		Assert.All(results, task => Assert.True(task.Status is Status.Doing));
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 	}
 
 	[Fact]
@@ -58,7 +59,6 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
             new("Task High", Status.Doing) { Priority = Priority.Critical }
         ];
 
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -69,6 +69,7 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
         Assert.Equal(4, results.Count);
         Assert.Equal(Priority.Critical, results.First().Priority);
         Assert.Equal(Priority.Distraction, results.Last().Priority);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
     [Fact]
@@ -97,7 +98,6 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
         fourthTask.SetLimitDate(now.AddDays(5));
 
         // Act
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -109,6 +109,7 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
         Assert.Equal(secondTask.Id, results[1].Id);
         Assert.Equal(thirdTask.Id, results[2].Id);
         Assert.Equal(fourthTask.Id, results[3].Id);
+        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
 	[Fact]
@@ -125,7 +126,6 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
 			, new("Task 4", Status.Doing), new("Task 5", Status.Doing)
 		];
 
-		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 		PagedList<TodoTask> results = await repository.FindAsync(spec);
@@ -138,5 +138,6 @@ public class TasksWhereStatusIsInProgressSpecificationTests : IClassFixture<Test
 		Assert.Equal(3, results.TotalPages);
 		Assert.True(results.HasNext);
 		Assert.True(results.HasPrevious);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 	}
 }

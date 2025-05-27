@@ -1,4 +1,5 @@
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services.Specifications;
 
@@ -24,7 +25,7 @@ public class UseCase : IInputPort
 	public async ValueTask Handle(InputDto dto)
 	{
 		TaskIncludeLifeAreasSpecification specification = new(dto.Id);
-		TodoTask? task = (await _unitOfWork.Repository<TodoTask>().FindAsync(specification)).FirstOrDefault();
+		TaskAggregate? task = (await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification)).FirstOrDefault();
 
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
 		

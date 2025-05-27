@@ -1,4 +1,5 @@
 ﻿using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
@@ -48,8 +49,10 @@ public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 		UnitOfWork unitOfWork = new(context);
 		IRepository<TodoTask> repo1 = unitOfWork.Repository<TodoTask>();
 		IRepository<TaskLog> repo2 = unitOfWork.Repository<TaskLog>();
+		IRepository<TaskAggregate> repo3 = unitOfWork.Repository<TaskAggregate>();
 
 		Assert.NotSame(repo1, repo2);
+		Assert.NotSame(repo2, repo3);
 	}
 
 	[Fact]
