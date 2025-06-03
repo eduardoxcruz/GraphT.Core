@@ -1,6 +1,5 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
-using GraphT.Model.Services.Specifications;
+﻿using GraphT.Model.Entities;
+using GraphT.Model.Services.Repositories;
 
 using SeedWork;
 
@@ -13,18 +12,17 @@ public interface IOutputPort : IPort<OutputDto> { }
 public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
-	private readonly IUnitOfWork _unitOfWork;
+	private readonly ITodoTaskRepository _todoTaskRepository;
 
-	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(IOutputPort outputPort, ITodoTaskRepository todoTaskRepository)
 	{
 		_outputPort = outputPort;
-		_unitOfWork = unitOfWork;
+		_todoTaskRepository = todoTaskRepository;
 	}
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TasksWhereStatusIsCompletedOrDroppedSpecification specification = new(dto.PagingParams);
-		PagedList<TodoTask> tasks = await _unitOfWork.Repository<TodoTask>().FindAsync(specification);
+		PagedList<TodoTask> tasks = await _todoTaskRepository.FindTasksCompletedOrDropped(dto.PagingParams);
 		
 		await _outputPort.Handle(new OutputDto { Tasks = tasks });
 	}
@@ -39,4 +37,3 @@ public class OutputDto
 {
 	public PagedList<TodoTask> Tasks { get; set; }
 }
-

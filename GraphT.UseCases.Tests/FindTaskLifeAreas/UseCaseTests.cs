@@ -1,6 +1,6 @@
-using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
+using GraphT.Model.ValueObjects;
 using GraphT.UseCases.FindTaskLifeAreasById;
 
 using NSubstitute;
@@ -16,27 +16,32 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ILifeAreasRepository lifeAreasRepository = Substitute.For<ILifeAreasRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
 		LifeArea lifeArea1 = new("Life Area 1");
 		LifeArea lifeArea2 = new("Life Area 2");
-		testTask.AddLifeAreas([lifeArea1, lifeArea2]);
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
-		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		// Configure repository mock behavior
+		todoTaskRepository.ContainsAsync(taskId).Returns(true);
+		lifeAreasRepository.FindTaskLifeAreasById(taskId)
+			.Returns(new PagedList<LifeArea>(
+				[lifeArea1, lifeArea2], 
+				2, 
+				1, 
+				10));
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, lifeAreasRepository);
 
 		// Act
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>());
+		await todoTaskRepository.Received(1).ContainsAsync(taskId);
+		await lifeAreasRepository.Received(1).FindTaskLifeAreasById(taskId);
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.LifeAreas.Count == 2 &&
 			dto.LifeAreas.TotalCount == 2 &&
@@ -52,24 +57,30 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ILifeAreasRepository lifeAreasRepository = Substitute.For<ILifeAreasRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
-		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		// Configure repository mock behavior
+		todoTaskRepository.ContainsAsync(taskId).Returns(true);
+		lifeAreasRepository.FindTaskLifeAreasById(taskId)
+			.Returns(new PagedList<LifeArea>(
+				[], 
+				0, 
+				1, 
+				10));
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, lifeAreasRepository);
 
 		// Act
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>());
+		await todoTaskRepository.Received(1).ContainsAsync(taskId);
+		await lifeAreasRepository.Received(1).FindTaskLifeAreasById(taskId);
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.LifeAreas.Count == 0 &&
 			dto.LifeAreas.TotalCount == 0
@@ -81,23 +92,30 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ILifeAreasRepository lifeAreasRepository = Substitute.For<ILifeAreasRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 5 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
-		repository.FindAsync(Arg.Any<TaskIncludeLifeAreasSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 2, 5));
+		// Configure repository mock behavior
+		todoTaskRepository.ContainsAsync(taskId).Returns(true);
+		lifeAreasRepository.FindTaskLifeAreasById(taskId)
+			.Returns(new PagedList<LifeArea>(
+				[], 
+				0, 
+				2, 
+				5));
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, lifeAreasRepository);
 
 		// Act
 		await useCase.Handle(input);
 
 		// Assert
+		await todoTaskRepository.Received(1).ContainsAsync(taskId);
+		await lifeAreasRepository.Received(1).FindTaskLifeAreasById(taskId);
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.LifeAreas.PageSize == pagingParams.PageSize &&
 			dto.LifeAreas.CurrentPage == pagingParams.PageNumber

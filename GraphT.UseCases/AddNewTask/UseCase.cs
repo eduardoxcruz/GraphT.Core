@@ -1,5 +1,6 @@
 ﻿using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
+using GraphT.Model.Services.Repositories;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
@@ -13,11 +14,19 @@ public interface IOutputPort : IPort<OutputDto> { }
 public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
+	private readonly ITodoTaskRepository _todoTaskRepository;
+	private readonly ITaskLogRepository _taskLogRepository;
 	private readonly IUnitOfWork _unitOfWork;
 
-	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(
+		IOutputPort outputPort, 
+		ITodoTaskRepository todoTaskRepository, 
+		ITaskLogRepository taskLogRepository,
+		IUnitOfWork unitOfWork)
 	{
 		_outputPort = outputPort;
+		_todoTaskRepository = todoTaskRepository;
+		_taskLogRepository = taskLogRepository;
 		_unitOfWork = unitOfWork;
 	}
 
@@ -25,7 +34,7 @@ public class UseCase : IInputPort
 	{
 		Guid id = Guid.NewGuid();
 		
-		if ((dto.Id.HasValue) && !(await _unitOfWork.Repository<TodoTask>().ContainsAsync(todoTask => todoTask.Id.Equals(dto.Id!))))
+		if ((dto.Id.HasValue) && !(await _todoTaskRepository.ContainsAsync(dto.Id.Value)))
 		{
 			id = dto.Id.Value;
 		}
@@ -43,11 +52,11 @@ public class UseCase : IInputPort
 		if (dto.Status is not null)
 		{
 			TaskLog taskLog = new(id, DateTimeOffset.UtcNow.AddSeconds(2), dto.Status.Value, TimeSpan.Zero);
-			await _unitOfWork.Repository<TaskLog>().AddAsync(taskLog);
+			await _taskLogRepository.AddAsync(taskLog);
 		}
 		
-		await _unitOfWork.Repository<TaskLog>().AddAsync(createdTaskLog);
-		await _unitOfWork.Repository<TodoTask>().AddAsync(task);
+		await _taskLogRepository.AddAsync(createdTaskLog);
+		await _todoTaskRepository.AddAsync(task);
 		await _unitOfWork.SaveChangesAsync();
 		await _outputPort.Handle(new OutputDto(id));
 	}

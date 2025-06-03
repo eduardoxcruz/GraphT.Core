@@ -1,8 +1,7 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
+﻿using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
 using GraphT.Model.Services;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
@@ -16,11 +15,19 @@ public interface IOutputPort : IPort { }
 public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
+	private readonly ITodoTaskRepository _todoTaskRepository;
+	private readonly ITaskLogRepository _taskLogRepository;
 	private readonly IUnitOfWork _unitOfWork;
 
-	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(
+		IOutputPort outputPort, 
+		ITodoTaskRepository todoTaskRepository,
+		ITaskLogRepository taskLogRepository,
+		IUnitOfWork unitOfWork)
 	{
 		_outputPort = outputPort;
+		_todoTaskRepository = todoTaskRepository;
+		_taskLogRepository = taskLogRepository;
 		_unitOfWork = unitOfWork;
 	}
 
@@ -28,7 +35,7 @@ public class UseCase : IInputPort
 	{
 		if (dto.Id is null) throw new ArgumentException("Task id cannot be null", nameof(dto.Id));
 		
-		TodoTask? task = await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id!);
+		TodoTask? task = await _todoTaskRepository.FindByIdAsync(dto.Id.Value);
 		
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id.Value);
 
@@ -41,14 +48,14 @@ public class UseCase : IInputPort
 		if (dto.Status is not null)
 		{
 			DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-			TaskLog? lastLog = (await _unitOfWork.Repository<TaskLog>().FindAsync(new TaskLastLogSpecification(dto.Id.Value))).FirstOrDefault() ?? 
-				new TaskLog(Guid.Empty, dateTimeOffset, Status.Created, TimeSpan.Zero);
-			(string, TimeSpan) timeSpend = TimeSpendCalculatorService.GetTimeSpend(dto.Id.Value, dto.Status.Value, dateTimeOffset, lastLog);
+			TaskLog? lastLog = (await _taskLogRepository.FindTaskLastLog(dto.Id.Value) ?? 
+				new TaskLog(Guid.Empty, dateTimeOffset, Status.Created, TimeSpan.Zero));
+			(string, TimeSpan) timeSpend = TimeSpendCalculatorService.GetTimeSpend(dto.Status.Value, dateTimeOffset, lastLog);
 			task.Status = dto.Status.Value;
 			task.SetTimeSpend(timeSpend.Item1);
 			TaskLog taskLog = new(task.Id, dateTimeOffset, task.Status, timeSpend.Item2);
 			
-			await _unitOfWork.Repository<TaskLog>().AddAsync(taskLog);
+			await _taskLogRepository.AddAsync(taskLog);
 		}
 		
 		if (dto.StartDateTime.HasValue) task.SetStartDate(dto.StartDateTime.Value);
@@ -57,7 +64,7 @@ public class UseCase : IInputPort
 		
 		if (dto.LimitDateTime.HasValue) task.SetLimitDate(dto.LimitDateTime.Value);
 		
-		await _unitOfWork.Repository<TodoTask>().UpdateAsync(task);
+		await _todoTaskRepository.UpdateAsync(task);
 		await _unitOfWork.SaveChangesAsync();
 		await _outputPort.Handle();
 	}

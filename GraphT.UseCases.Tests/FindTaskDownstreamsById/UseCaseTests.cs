@@ -1,5 +1,6 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Services.Specifications;
+﻿using GraphT.Model.Entities;
+using GraphT.Model.Services.Repositories;
+using GraphT.Model.ValueObjects;
 using GraphT.UseCases.FindTaskDownstreamsById;
 
 using NSubstitute;
@@ -16,27 +17,34 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskDownstreamsRepository taskDownstreamsRepository = Substitute.For<ITaskDownstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
-		TaskAggregate taskDownstream1 = new("Test Downstream 1");
-		TaskAggregate taskDownstream2 = new("Test Downstream 2");
-		testTask.AddDownstreams([taskDownstream1, taskDownstream2]);
+		TodoTask testTask = new("Test Task", id: taskId);
+		TodoTask taskDownstream1 = new("Test Downstream 1");
+		TodoTask taskDownstream2 = new("Test Downstream 2");
+		PagedList<TodoTask> downstreams = new(
+			[ taskDownstream1, taskDownstream2 ], 
+			2, 
+			1, 
+			10
+		);
+		
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
-		repository.FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		todoTaskRepository.ContainsAsync(taskId).Returns(true);
+		taskDownstreamsRepository.FindTaskDownstreamsById(taskId).Returns(downstreams);
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskDownstreamsRepository);
 
 		// Act
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>());
+		await todoTaskRepository.Received(1).ContainsAsync(taskId);
+		await taskDownstreamsRepository.Received(1).FindTaskDownstreamsById(taskId);
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.Downstreams.Count == 2 &&
 			dto.Downstreams.TotalCount == 2 &&
@@ -52,24 +60,31 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskDownstreamsRepository taskDownstreamsRepository = Substitute.For<ITaskDownstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
+		PagedList<TodoTask> emptyDownstreams = new(
+			[], 
+			0, 
+			0, 
+			10
+		);
+		
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
-		repository.FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 1, 10));
+		todoTaskRepository.ContainsAsync(taskId).Returns(true);
+		taskDownstreamsRepository.FindTaskDownstreamsById(taskId).Returns(emptyDownstreams);
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskDownstreamsRepository);
 
 		// Act
 		await useCase.Handle(input);
 
 		// Assert
-		await repository.Received(1).FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>());
+		await todoTaskRepository.Received(1).ContainsAsync(taskId);
+		await taskDownstreamsRepository.Received(1).FindTaskDownstreamsById(taskId);
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.Downstreams.Count == 0 &&
 			dto.Downstreams.TotalCount == 0
@@ -81,23 +96,31 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TaskAggregate> repository = Substitute.For<IRepository<TaskAggregate>>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskDownstreamsRepository taskDownstreamsRepository = Substitute.For<ITaskDownstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TaskAggregate testTask = new("Test Task", id: taskId);
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 5 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		unitOfWork.Repository<TaskAggregate>().Returns(repository);
-		repository.FindAsync(Arg.Any<TaskIncludeDownstreamsSpecification>()).Returns(new PagedList<TaskAggregate>([ testTask ], 1, 2, 5));
+		PagedList<TodoTask> downstreams = new(
+			[], 
+			2, 
+			2, 
+			5
+		);
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		todoTaskRepository.ContainsAsync(taskId).Returns(true);
+		taskDownstreamsRepository.FindTaskDownstreamsById(taskId).Returns(downstreams);
+
+		UseCase useCase = new(outputPort, todoTaskRepository, taskDownstreamsRepository);
 
 		// Act
 		await useCase.Handle(input);
 
 		// Assert
+		await todoTaskRepository.Received(1).ContainsAsync(taskId);
+		await taskDownstreamsRepository.Received(1).FindTaskDownstreamsById(taskId);
 		await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => 
 			dto.Downstreams.PageSize == pagingParams.PageSize &&
 			dto.Downstreams.CurrentPage == pagingParams.PageNumber

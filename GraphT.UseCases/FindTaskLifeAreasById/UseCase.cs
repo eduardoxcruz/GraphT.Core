@@ -1,7 +1,7 @@
-using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
+using GraphT.Model.ValueObjects;
 
 using SeedWork;
 
@@ -14,26 +14,23 @@ public interface IOutputPort : IPort<OutputDto> { }
 public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
-	private readonly IUnitOfWork _unitOfWork;
+	private readonly ITodoTaskRepository _todoTaskRepository;
+	private readonly ILifeAreasRepository _lifeAreasRepository;
 
-	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(IOutputPort outputPort, ITodoTaskRepository todoTaskRepository, ILifeAreasRepository lifeAreasRepository)
 	{
 		_outputPort = outputPort;
-		_unitOfWork = unitOfWork;
+		_todoTaskRepository = todoTaskRepository;
+		_lifeAreasRepository = lifeAreasRepository;
 	}
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TaskIncludeLifeAreasSpecification specification = new(dto.Id);
-		TaskAggregate? task = (await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification)).FirstOrDefault();
-
-		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
+		if (!await _todoTaskRepository.ContainsAsync(dto.Id)) throw new TaskNotFoundException("Task not found", dto.Id);
 		
-		await _outputPort.Handle(new OutputDto() { LifeAreas = new PagedList<LifeArea>(
-			task.LifeAreas.ToList(),
-			task.LifeAreas.Count,
-			dto.PagingParams.PageNumber,
-			dto.PagingParams.PageSize) });
+		PagedList<LifeArea> lifeAreas = await _lifeAreasRepository.FindTaskLifeAreasById(dto.Id);
+		
+		await _outputPort.Handle(new OutputDto { LifeAreas = lifeAreas });
 	}
 }
 
