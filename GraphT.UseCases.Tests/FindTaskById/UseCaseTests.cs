@@ -1,39 +1,35 @@
 ﻿using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
+using GraphT.Model.Services.Repositories;
 using GraphT.UseCases.FindTaskById;
 
 using NSubstitute;
-
-using SeedWork;
 
 namespace GraphT.UseCases.Tests.FindTaskById;
 
 public class UseCaseTests
 {
-	[Fact]
+    [Fact]
     public async Task Handle_WhenTaskExists_ShouldCallOutputPortWithTask()
     {
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
+        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
         Guid taskId = Guid.NewGuid();
         TodoTask existingTask = new("Test task", id: taskId);
         InputDto input = new() { Id = taskId };
 
-        repository.FindByIdAsync(taskId).Returns(existingTask);
-        unitOfWork.Repository<TodoTask>().Returns(repository);
+        todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
 
-        UseCase useCase = new(outputPort, unitOfWork);
+        UseCase useCase = new(outputPort, todoTaskRepository);
 
         // Act
         await useCase.Handle(input);
 
         // Assert
-        unitOfWork.Received(1).Repository<TodoTask>();
-        await repository.Received(1).FindByIdAsync(taskId);
+        await todoTaskRepository.Received(1).FindByIdAsync(taskId);
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto => dto.Task.Id.Equals(taskId)));
     }
 
@@ -42,16 +38,14 @@ public class UseCaseTests
     {
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
+        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
         
         Guid taskId = Guid.NewGuid();
         InputDto input = new() { Id = taskId };
         
-        unitOfWork.Repository<TodoTask>().Returns(repository);
-        repository.FindByIdAsync(taskId).Returns((TodoTask)null!);
+        todoTaskRepository.FindByIdAsync(taskId).Returns((TodoTask)null!);
         
-        UseCase useCase = new(outputPort, unitOfWork);
+        UseCase useCase = new(outputPort, todoTaskRepository);
 
         // Act & Assert
         TaskNotFoundException exception = await Assert.ThrowsAsync<TaskNotFoundException>(

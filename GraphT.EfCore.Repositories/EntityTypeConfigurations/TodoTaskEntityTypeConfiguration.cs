@@ -1,5 +1,4 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
+﻿using GraphT.Model.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -26,9 +25,5 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
         builder.Ignore(todoTask => todoTask.ComplexityLabel);
         builder.Ignore(todoTask => todoTask.PriorityLabel);
         builder.Ignore(todoTask => todoTask.RelevanceLabel);
-
-        builder.HasDiscriminator<string>("TaskType")
-               .HasValue<TodoTask>("BasicTask")
-               .HasValue<TaskAggregate>("FullTask");
     }
 }

@@ -1,7 +1,6 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
+﻿using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
 
 using SeedWork;
 
@@ -14,26 +13,21 @@ public interface IOutputPort : IPort<OutputDto> { }
 public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
-	private readonly IUnitOfWork _unitOfWork;
+	private readonly ITodoTaskRepository _todoTaskRepository;
+	private readonly ITaskUpstreamsRepository _taskUpstreamsRepository;
 
-	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(IOutputPort outputPort, ITodoTaskRepository todoTaskRepository, ITaskUpstreamsRepository taskUpstreamsRepository)
 	{
 		_outputPort = outputPort;
-		_unitOfWork = unitOfWork;
+		_todoTaskRepository = todoTaskRepository;
+		_taskUpstreamsRepository = taskUpstreamsRepository;
 	}
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TaskIncludeUpstreamsSpecification specification = new(dto.Id);
-		TaskAggregate? task = (await _unitOfWork.Repository<TaskAggregate>().FindAsync(specification)).FirstOrDefault();
+		if (!await _todoTaskRepository.ContainsAsync(dto.Id)) throw new TaskNotFoundException("Task not found", dto.Id);
 
-		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id);
-
-		PagedList<TodoTask> upstreams = new(
-			task.Upstreams.ToList(),
-			task.Upstreams.Count,
-			dto.PagingParams.PageNumber,
-			dto.PagingParams.PageSize);
+		PagedList<TodoTask> upstreams = await _taskUpstreamsRepository.FindTaskUpstreamsById(dto.Id);
 
 		await _outputPort.Handle(new OutputDto() { Upstreams = upstreams });
 	}
@@ -49,4 +43,3 @@ public class OutputDto
 {
 	public PagedList<TodoTask> Upstreams { get; set; }
 }
-

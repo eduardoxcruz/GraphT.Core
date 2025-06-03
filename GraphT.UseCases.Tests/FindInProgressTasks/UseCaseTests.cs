@@ -1,6 +1,5 @@
-using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
 using GraphT.Model.ValueObjects;
 using GraphT.UseCases.FindInProgressTasks;
 
@@ -17,8 +16,7 @@ public class UseCaseTests
     {
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
+        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
         TodoTask task1 = new("Task 1", Status.Doing);
         TodoTask task2 = new("Task 2", Status.Doing);
@@ -26,19 +24,16 @@ public class UseCaseTests
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         InputDto input = new() { PagingParams = pagingParams };
 
-        unitOfWork.Repository<TodoTask>().Returns(repository);
-        repository.FindAsync(Arg.Any<TasksWhereStatusIsInProgressSpecification>()).Returns(new PagedList<TodoTask>(tasks, tasks.Count, pagingParams.PageNumber, pagingParams.PageSize));
+        todoTaskRepository.FindTasksInProgress(pagingParams)
+            .Returns(new PagedList<TodoTask>(tasks, tasks.Count, pagingParams.PageNumber, pagingParams.PageSize));
 
-        UseCase useCase = new(outputPort, unitOfWork);
+        UseCase useCase = new(outputPort, todoTaskRepository);
 
         // Act
         await useCase.Handle(input);
 
         // Assert
-        await repository.Received(1).FindAsync(Arg.Is<TasksWhereStatusIsInProgressSpecification>(spec =>
-            spec.PageNumber == pagingParams.PageNumber &&
-            spec.PageSize == pagingParams.PageSize
-        ));
+        await todoTaskRepository.Received(1).FindTasksInProgress(pagingParams);
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto =>
             dto.Tasks.Count == 2 &&
             dto.Tasks.TotalCount == 2 &&
@@ -53,23 +48,21 @@ public class UseCaseTests
     {
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
+        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         InputDto input = new() { PagingParams = pagingParams };
 
-        unitOfWork.Repository<TodoTask>().Returns(repository);
-        repository.FindAsync(Arg.Any<TasksWhereStatusIsInProgressSpecification>())
+        todoTaskRepository.FindTasksInProgress(pagingParams)
             .Returns(new PagedList<TodoTask>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
 
-        UseCase useCase = new(outputPort, unitOfWork);
+        UseCase useCase = new(outputPort, todoTaskRepository);
 
         // Act
         await useCase.Handle(input);
 
         // Assert
-        await repository.Received(1).FindAsync(Arg.Any<TasksWhereStatusIsInProgressSpecification>());
+        await todoTaskRepository.Received(1).FindTasksInProgress(pagingParams);
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(dto =>
             dto.Tasks.Count == 0 &&
             dto.Tasks.TotalCount == 0 &&
@@ -83,25 +76,20 @@ public class UseCaseTests
     {
         // Arrange
         IOutputPort outputPort = Substitute.For<IOutputPort>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        IRepository<TodoTask> repository = Substitute.For<IRepository<TodoTask>>();
+        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
         PagingParams pagingParams = new() { PageNumber = 2, PageSize = 5 };
         InputDto input = new() { PagingParams = pagingParams };
 
-        unitOfWork.Repository<TodoTask>().Returns(repository);
-        repository.FindAsync(Arg.Any<TasksWhereStatusIsInProgressSpecification>())
+        todoTaskRepository.FindTasksInProgress(pagingParams)
             .Returns(new PagedList<TodoTask>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
 
-        UseCase useCase = new(outputPort, unitOfWork);
+        UseCase useCase = new(outputPort, todoTaskRepository);
 
         // Act
         await useCase.Handle(input);
 
         // Assert
-        await repository.Received(1).FindAsync(Arg.Is<TasksWhereStatusIsInProgressSpecification>(spec =>
-            spec.PageNumber == pagingParams.PageNumber &&
-            spec.PageSize == pagingParams.PageSize
-        ));
+        await todoTaskRepository.Received(1).FindTasksInProgress(pagingParams);
     }
 }

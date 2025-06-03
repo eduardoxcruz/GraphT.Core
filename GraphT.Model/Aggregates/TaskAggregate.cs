@@ -3,26 +3,28 @@ using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Aggregates;
 
-public class TaskAggregate(
-	string name
-	, Status? status = null
-	, bool? isFun = null
-	, bool? isProductive = null
-	, Complexity? complexity = null
-	, Priority? priority = null
-	, Guid? id = null)
-	: TodoTask(name, status, isFun, isProductive, complexity, priority, id)
+public class TaskAggregate
 {
-	private HashSet<TodoTask> _upstreams = [];
-	private HashSet<TodoTask> _downstreams = [];
-	private HashSet<LifeArea> _lifeAreas = [];
+	private TodoTask _task;
+	private HashSet<TodoTask> _upstreams;
+	private HashSet<TodoTask> _downstreams;
+	private HashSet<LifeArea> _lifeAreas;
 	
+	public TodoTask Task { get => _task; }
 	public IReadOnlySet<TodoTask> Upstreams => _upstreams;
 	public IReadOnlySet<TodoTask> Downstreams => _downstreams;
 	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
 
-	private TaskAggregate() : this("New Task") { }
-	
+	private TaskAggregate(){ }
+
+	public TaskAggregate(TodoTask task, HashSet<TodoTask> upstreams, HashSet<TodoTask> downstreams, HashSet<LifeArea> lifeAreas)
+	{
+		_task = task;
+		_upstreams = upstreams;
+		_downstreams = downstreams;
+		_lifeAreas = lifeAreas;
+	}
+
 	public void AddUpstream(TodoTask upstream)
 	{
 		ValidateTask(upstream);
@@ -167,7 +169,6 @@ public class TaskAggregate(
 		_lifeAreas.Clear();
 	}
 	
-	// TODO: Implement this
 	private void ValidateLifeArea(LifeArea lifeArea)
 	{
 		if (lifeArea.Id.Equals(Guid.Empty)) throw new ArgumentException("Life Area id cannot be empty");

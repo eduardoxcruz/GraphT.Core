@@ -1,5 +1,4 @@
 ﻿using GraphT.Model.Services;
-using GraphT.Model.Services.Specifications;
 using GraphT.Model.ValueObjects;
 
 using NSubstitute;
@@ -21,7 +20,7 @@ public class TimeSpendCalculatorServiceTests
 		(string, TimeSpan Zero) expected = ("\u26a1 0 day(s) - 0 hours - 0 minutes", TimeSpan.Zero);
 
 		// Act
-		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, newStatus, newDateTime, new TaskLog(Guid.Empty, DateTimeOffset.UtcNow, Status.Created, TimeSpan.Zero));
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(newStatus, newDateTime, new TaskLog(Guid.Empty, DateTimeOffset.UtcNow, Status.Created, TimeSpan.Zero));
 
 		// Assert
 		Assert.Equal(expected, result);
@@ -50,7 +49,7 @@ public class TimeSpendCalculatorServiceTests
 		(string, TimeSpan) expectedResult = ($"{expectedEmoji} {expectedDuration}", expectedTimeSpan);
 
 		// Act
-		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);
@@ -79,7 +78,7 @@ public class TimeSpendCalculatorServiceTests
 		(string, TimeSpan) expectedResult = ($"{expectedEmoji} {expectedTimeSpan.Days} day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
 
 		// Act
-		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);
@@ -101,7 +100,7 @@ public class TimeSpendCalculatorServiceTests
 		(string, TimeSpan expectedTimeSpan) expectedResult = ($"{expectedEmoji} 0 day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
 		
 		// Act
-		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);
@@ -123,7 +122,7 @@ public class TimeSpendCalculatorServiceTests
 		(string, TimeSpan expectedTimeSpan) expectedResult = ($"{expectedEmoji} 0 day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
 
 		// Act
-		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(taskId, finalStatus, finalDateTime, lastLog);
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(finalStatus, finalDateTime, lastLog);
 
 		// Assert
 		Assert.Equal(expectedResult, result);

@@ -1,5 +1,4 @@
-﻿using GraphT.Model.Services.Specifications;
-using GraphT.Model.ValueObjects;
+﻿using GraphT.Model.ValueObjects;
 
 using SeedWork;
 
@@ -8,7 +7,6 @@ namespace GraphT.Model.Services;
 public static class TimeSpendCalculatorService
 {
 	public static (string, TimeSpan) GetTimeSpend(
-		Guid taskId, 
 		Status newStatus, 
 		DateTimeOffset newDateTime, 
 		TaskLog lastLog)

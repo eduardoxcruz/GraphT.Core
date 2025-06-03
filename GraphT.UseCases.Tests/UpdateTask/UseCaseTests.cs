@@ -1,7 +1,6 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
+﻿using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
 using GraphT.Model.ValueObjects;
 using GraphT.UseCases.UpdateTask;
 
@@ -17,9 +16,11 @@ public class UseCaseTests
 	public async Task Handle_WhenIdIsNull_ThrowsArgumentException()
 	{
 		// Arrange
-		IOutputPort? outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		UseCase useCase = new(outputPort, unitOfWork);
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 		InputDto dto = new() { Id = null };
 
 		// Act & Assert
@@ -30,15 +31,15 @@ public class UseCaseTests
 	public async Task Handle_WhenTaskNotFound_ThrowsTaskNotFoundException()
 	{
 		// Arrange
-		IOutputPort? outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TodoTask>? repository = Substitute.For<IRepository<TodoTask>>();
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 
-		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns((TodoTask?)null);
+		todoTaskRepository.FindByIdAsync(taskId).Returns((TodoTask?)null);
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 		InputDto dto = new() { Id = taskId };
 
 		// Act & Assert
@@ -49,9 +50,10 @@ public class UseCaseTests
 	public async Task Handle_WhenOnlyBasicPropertiesUpdated_UpdatesTaskSuccessfully()
 	{
 		// Arrange
-		IOutputPort? outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TodoTask>? repository = Substitute.For<IRepository<TodoTask>>();
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 		TodoTask existingTask = new("Old Name", id: taskId);
 		InputDto dto = new()
@@ -64,15 +66,14 @@ public class UseCaseTests
 			, Priority = Priority.Critical
 		};
 
-		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns(existingTask);
-		UseCase useCase = new(outputPort, unitOfWork);
+		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 
 		// Act
 		await useCase.Handle(dto);
 
 		// Assert
-		await repository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.Name == dto.Name &&
 			t.IsFun == dto.IsFun &&
 			t.IsProductive == dto.IsProductive &&
@@ -95,39 +96,36 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TodoTask> taskRepository = Substitute.For<IRepository<TodoTask>>();
-		IRepository<TaskLog> logRepository = Substitute.For<IRepository<TaskLog>>();
 		Guid taskId = Guid.NewGuid();
 		DateTimeOffset currentTime = DateTimeOffset.UtcNow;
 		TodoTask existingTask = new("Test Task", id: taskId, status: initialStatus);
 		InputDto dto = new() { Id = taskId, Status = newStatus };
 		TimeSpan previousTimeSpent = TimeSpan.FromDays(expectedDays) + TimeSpan.FromHours(expectedHours) + TimeSpan.FromMinutes(expectedMinutes);
 		TaskLog lastLog = new(taskId, currentTime.AddHours(-2), initialStatus, previousTimeSpent);
-		PagedList<TaskLog> logList = new([ lastLog ], 1, 1, 1);
 		
-		logRepository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(logList);
-		taskRepository.FindByIdAsync(taskId).Returns(existingTask);
-		unitOfWork.Repository<TodoTask>().Returns(taskRepository);
-		unitOfWork.Repository<TaskLog>().Returns(logRepository);
-		UseCase useCase = new(outputPort, unitOfWork);
+		taskLogRepository.FindTaskLastLog(taskId).Returns(lastLog);
+		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 		
 		// Act
 		await useCase.Handle(dto);
 		
 		// Assert
-		await taskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.Status == newStatus &&
 			t.DateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
 
-		await logRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
+		await taskLogRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
 			l.TaskId == taskId &&
 			l.Status == newStatus &&
-			l.TimeSpentOnTask!.Value.Days == (previousTimeSpent +  (currentTime - lastLog.DateTime)).Days &&
-			l.TimeSpentOnTask!.Value.Hours == (previousTimeSpent +  (currentTime - lastLog.DateTime)).Hours && 
-			l.TimeSpentOnTask!.Value.Minutes == (previousTimeSpent +  (currentTime - lastLog.DateTime)).Minutes &&
-			l.TimeSpentOnTask!.Value.Seconds == (previousTimeSpent +  (currentTime - lastLog.DateTime)).Seconds
+			l.TimeSpentOnTask!.Value.Days == (previousTimeSpent + (currentTime - lastLog.DateTime)).Days &&
+			l.TimeSpentOnTask!.Value.Hours == (previousTimeSpent + (currentTime - lastLog.DateTime)).Hours && 
+			l.TimeSpentOnTask!.Value.Minutes == (previousTimeSpent + (currentTime - lastLog.DateTime)).Minutes &&
+			l.TimeSpentOnTask!.Value.Seconds == (previousTimeSpent + (currentTime - lastLog.DateTime)).Seconds
 			)
 		);
 
@@ -140,9 +138,9 @@ public class UseCaseTests
 	{
 		// Arrange
 		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TodoTask> taskRepository = Substitute.For<IRepository<TodoTask>>();
-		IRepository<TaskLog> logRepository = Substitute.For<IRepository<TaskLog>>();
 
 		Guid taskId = Guid.NewGuid();
 		Status newStatus = Status.Completed;
@@ -150,22 +148,20 @@ public class UseCaseTests
 		InputDto dto = new() { Id = taskId, Status = newStatus };
 		string expectedTimeSpendString = "\u26a1 0 day(s) - 0 hours - 0 minutes";
 		
-		logRepository.FindAsync(Arg.Any<TaskLastLogSpecification>()).Returns(new PagedList<TaskLog>([], 0, 1, 1));
-		taskRepository.FindByIdAsync(taskId).Returns(existingTask);
-		unitOfWork.Repository<TodoTask>().Returns(taskRepository);
-		unitOfWork.Repository<TaskLog>().Returns(logRepository);
-		UseCase useCase = new(outputPort, unitOfWork);
+		taskLogRepository.FindTaskLastLog(taskId).Returns((TaskLog?)null);
+		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 
 		// Act
 		await useCase.Handle(dto);
 
 		// Assert
-		await taskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.Status == newStatus &&
 			t.DateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
 
-		await logRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
+		await taskLogRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
 			l.TaskId == taskId &&
 			l.Status == newStatus &&
 			l.TimeSpentOnTask == TimeSpan.Zero
@@ -179,9 +175,10 @@ public class UseCaseTests
 	public async Task Handle_WhenDateTimeFieldsUpdated_UpdatesTaskDatesSuccessfully()
 	{
 		// Arrange
-		IOutputPort? outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TodoTask>? repository = Substitute.For<IRepository<TodoTask>>();
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 
 		DateTimeOffset startDate = DateTimeOffset.UtcNow;
@@ -190,10 +187,9 @@ public class UseCaseTests
 
 		TodoTask existingTask = new("Old Name", id: taskId);
 
-		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns(existingTask);
+		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 		InputDto dto = new()
 		{
 			Id = taskId, StartDateTime = startDate, FinishDateTime = finishDate, LimitDateTime = limitDate
@@ -203,7 +199,7 @@ public class UseCaseTests
 		await useCase.Handle(dto);
 
 		// Assert
-		await repository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.Id == taskId &&
 			t.DateTimeInfo.StartDateTime != null &&
 			t.DateTimeInfo.StartDateTime == dto.StartDateTime &&
@@ -220,24 +216,24 @@ public class UseCaseTests
 	public async Task Handle_WhenNoChangesProvided_OnlyUpdatesUnchangedTask()
 	{
 		// Arrange
-		IOutputPort? outputPort = Substitute.For<IOutputPort>();
-		IUnitOfWork? unitOfWork = Substitute.For<IUnitOfWork>();
-		IRepository<TodoTask>? repository = Substitute.For<IRepository<TodoTask>>();
+		IOutputPort outputPort = Substitute.For<IOutputPort>();
+		ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
+		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
+		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 
 		TodoTask existingTask = new("Original Name", id: taskId, status: Status.Paused);
 
-		unitOfWork.Repository<TodoTask>().Returns(repository);
-		repository.FindByIdAsync(taskId).Returns(existingTask);
+		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
 
-		UseCase useCase = new(outputPort, unitOfWork);
+		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 		InputDto dto = new() { Id = taskId };
 
 		// Act
 		await useCase.Handle(dto);
 
 		// Assert
-		await repository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.Name == "Original Name" &&
 			t.Status == Status.Paused
 		));

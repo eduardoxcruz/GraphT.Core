@@ -9,6 +9,7 @@ public class TodoTask : Entity
 {
 	private bool _isFun;
 	private bool _isProductive;
+	private DateTimeInfo _dateTimeInfo;
 
 	public bool IsFun
 	{
@@ -33,8 +34,6 @@ public class TodoTask : Entity
 	public Relevance Relevance { get; private set; }
 	public Status Status { get; set; }
 	public float Progress { get; set; }
-	private DateTimeInfo _dateTimeInfo = new();
-
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public string ComplexityLabel => this.Complexity.GetLabel();
 	public string PriorityLabel => this.Priority.GetLabel();
@@ -49,7 +48,8 @@ public class TodoTask : Entity
 							bool? isProductive = null,
 							Complexity? complexity = null, 
 							Priority? priority = null,
-							Guid? id = null) : base(name, id)
+							Guid? id = null,
+							DateTimeInfo? dateTimeInfo = null ) : base(name, id)
 	{
 		Status = status ?? Status.Backlog;
 		IsFun = isFun ?? false;
@@ -57,6 +57,7 @@ public class TodoTask : Entity
 		Complexity = complexity ?? Complexity.Indefinite;
 		Priority = priority ?? Priority.Distraction;
 		Progress = 0;
+		_dateTimeInfo = dateTimeInfo ?? new DateTimeInfo();
 		UpdateRelevance();
 	}
 

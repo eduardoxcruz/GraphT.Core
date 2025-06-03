@@ -1,7 +1,6 @@
-﻿using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
+﻿using GraphT.Model.Entities;
 using GraphT.Model.Exceptions;
-using GraphT.Model.Services.Specifications;
+using GraphT.Model.Services.Repositories;
 
 using SeedWork;
 
@@ -14,17 +13,17 @@ public interface IOutputPort : IPort<OutputDto> { }
 public class UseCase : IInputPort
 {
 	private readonly IOutputPort _outputPort;
-	private readonly IUnitOfWork _unitOfWork;
+	private readonly ITodoTaskRepository _todoTaskRepository;
 
-	public UseCase(IOutputPort outputPort, IUnitOfWork unitOfWork)
+	public UseCase(IOutputPort outputPort, ITodoTaskRepository todoTaskRepository)
 	{
 		_outputPort = outputPort;
-		_unitOfWork = unitOfWork;
+		_todoTaskRepository = todoTaskRepository;
 	}
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TodoTask? task = await _unitOfWork.Repository<TodoTask>().FindByIdAsync(dto.Id);
+		TodoTask? task = await _todoTaskRepository.FindByIdAsync(dto.Id);
 
 		if (task is null) throw new TaskNotFoundException(dto.Id);
 		
