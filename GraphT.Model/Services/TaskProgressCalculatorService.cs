@@ -1,11 +1,12 @@
 using GraphT.Model.Aggregates;
+using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Services;
 
 public static class TaskProgressCalculatorService
 {
-	public static float GetProgress(HashSet<TaskAggregate> downstreams, bool finishCurrentTask)
+	public static float GetProgress(HashSet<TodoTask> downstreams, bool finishCurrentTask)
 	{
 		int totalDownstreams = downstreams.Count;
 		int backlogTasks = downstreams.Count(task => task.Status is Status.Backlog);
