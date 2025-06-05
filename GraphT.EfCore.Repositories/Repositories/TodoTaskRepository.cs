@@ -78,9 +78,9 @@ public class TodoTaskRepository : ITodoTaskRepository
        return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
 
-    public async ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateAsync(PagingParams pagingParams)
+    public async ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams)
     {
-	    IQueryable<TodoTask> query = _context.TodoTasks.OrderBy(task => task.DateTimeInfo.CreationDateTime).AsNoTracking();
+	    IQueryable<TodoTask> query = _context.TodoTasks.OrderByDescending(task => task.DateTimeInfo.CreationDateTime).AsNoTracking();
 	    int totalCount = await query.CountAsync();
 	    List<TodoTask> results = await query
 		    .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
@@ -89,8 +89,7 @@ public class TodoTaskRepository : ITodoTaskRepository
 	    
 	    return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
-
-
+    
     public async ValueTask AddAsync(TodoTask task)
 	{
 		await _context.TodoTasks.AddAsync(task);
