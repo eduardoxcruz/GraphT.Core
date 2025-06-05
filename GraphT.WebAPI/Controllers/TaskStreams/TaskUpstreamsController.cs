@@ -1,7 +1,10 @@
 using System.Text.Json;
 
+using GraphT.Controllers.AddDownstream;
+using GraphT.Controllers.AddUpstream;
 using GraphT.Controllers.FindTasksWithoutUpstreams;
 using GraphT.Controllers.FindTaskUpstreamsById;
+using GraphT.Controllers.RemoveUpstream;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +19,19 @@ public class TaskUpstreamsController : ControllerBase
 {
 	private readonly IFindTaskUpstreamsByIdController _findTaskUpstreamsByIdController;
 	private readonly IFindTasksWithoutUpstreamsController _findTasksWithoutUpstreamsController;
+	private readonly IAddUpstreamController _addUpstreamController;
+	private readonly IRemoveUpstreamController _removeUpstreamController;
 
-	public TaskUpstreamsController(IFindTaskUpstreamsByIdController findTaskUpstreamsByIdController
-		, IFindTasksWithoutUpstreamsController findTasksWithoutUpstreamsController)
+	public TaskUpstreamsController(
+		IFindTaskUpstreamsByIdController findTaskUpstreamsByIdController, 
+		IFindTasksWithoutUpstreamsController findTasksWithoutUpstreamsController,
+		IAddUpstreamController addUpstreamController,
+		IRemoveUpstreamController removeUpstreamController)
 	{
 		_findTaskUpstreamsByIdController = findTaskUpstreamsByIdController;
 		_findTasksWithoutUpstreamsController = findTasksWithoutUpstreamsController;
+		_addUpstreamController = addUpstreamController;
+		_removeUpstreamController = removeUpstreamController;  
 	}
 
 	[HttpGet("{id}")]
@@ -67,5 +77,21 @@ public class TaskUpstreamsController : ControllerBase
 		Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
 
 		return Ok(result);
+	}
+	
+	[HttpPut("{id:guid}/add")]
+	public async Task<IActionResult> AddUpstream(Guid id, [FromBody] Guid upstreamId)
+	{
+		UseCases.AddUpstream.InputDto input = new() { TaskId = id, UpstreamId = upstreamId};
+		await _addUpstreamController.RunUseCase(input);
+		return NoContent();
+	}
+	
+	[HttpPut("{id:guid}/remove")]
+	public async Task<IActionResult> RemoveUpstream(Guid id, [FromBody] Guid upstreamId)
+	{
+		UseCases.RemoveUpstream.InputDto input = new() { TaskId = id, UpstreamId = upstreamId};
+		await _removeUpstreamController.RunUseCase(input);
+		return NoContent();
 	}
 }
