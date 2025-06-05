@@ -18,6 +18,11 @@ public static class DependencyContainer
 		services.AddScoped<UseCases.DeleteTask.IOutputPort, DeleteTask.Presenter>();
 		services.AddScoped<UseCases.GetTaskEnumsItems.IOutputPort, GetTaskEnumsItems.Presenter>();
 		services.AddScoped<UseCases.FindTasksWithoutUpstreams.IOutputPort, FindTasksWithoutUpstreams.Presenter>();
+		services.AddScoped<UseCases.AddDownstream.IOutputPort, AddDownstream.Presenter>();
+		services.AddScoped<UseCases.AddUpstream.IOutputPort, AddUpstream.Presenter>();
+		services.AddScoped<UseCases.RemoveDownstream.IOutputPort, RemoveDownstream.Presenter>();
+		services.AddScoped<UseCases.RemoveUpstream.IOutputPort, RemoveUpstream.Presenter>();
+		
 
 		return services;
 	}
