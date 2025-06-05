@@ -12,6 +12,7 @@ using GraphT.Controllers.FindTasksWithoutUpstreams;
 using GraphT.Controllers.UpdateTask;
 using GraphT.Controllers.FindTaskUpstreamsById;
 using GraphT.Controllers.GetTaskEnumsItems;
+using GraphT.Controllers.GetTasksOrderedByCreationDateDesc;
 using GraphT.Controllers.RemoveDownstream;
 using GraphT.Controllers.RemoveUpstream;
 
@@ -39,6 +40,7 @@ public static class DependencyContainer
 		services.AddScoped<IAddUpstreamController, AddUpstream.Controller>();
 		services.AddScoped<IRemoveDownstreamController, RemoveDownstream.Controller>();
 		services.AddScoped<IRemoveUpstreamController, RemoveUpstream.Controller>();
+		services.AddScoped<IGetTasksOrderedByCreationDateDescController, GetTasksOrderedByCreationDateDesc.Controller>();
 
 		return services;
 	}
