@@ -1,4 +1,6 @@
-﻿using GraphT.Controllers.AddNewTask;
+﻿using GraphT.Controllers.AddDownstream;
+using GraphT.Controllers.AddNewTask;
+using GraphT.Controllers.AddUpstream;
 using GraphT.Controllers.DeleteTask;
 using GraphT.Controllers.FindFinishedTasks;
 using GraphT.Controllers.FindInProgressTasks;
@@ -10,6 +12,8 @@ using GraphT.Controllers.FindTasksWithoutUpstreams;
 using GraphT.Controllers.UpdateTask;
 using GraphT.Controllers.FindTaskUpstreamsById;
 using GraphT.Controllers.GetTaskEnumsItems;
+using GraphT.Controllers.RemoveDownstream;
+using GraphT.Controllers.RemoveUpstream;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,6 +35,10 @@ public static class DependencyContainer
 		services.AddScoped<IDeleteTaskController, DeleteTask.Controller>();
 		services.AddScoped<IGetTaskEnumsItemsController, GetTaskEnumsItems.Controller>();
 		services.AddScoped<IFindTasksWithoutUpstreamsController, FindTasksWithoutUpstreams.Controller>();
+		services.AddScoped<IAddDownstreamController, AddDownstream.Controller>();
+		services.AddScoped<IAddUpstreamController, AddUpstream.Controller>();
+		services.AddScoped<IRemoveDownstreamController, RemoveDownstream.Controller>();
+		services.AddScoped<IRemoveUpstreamController, RemoveUpstream.Controller>();
 
 		return services;
 	}

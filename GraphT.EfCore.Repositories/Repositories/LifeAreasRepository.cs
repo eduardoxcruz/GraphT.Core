@@ -18,4 +18,14 @@ public class LifeAreasRepository : ILifeAreasRepository
 	{
 		throw new NotImplementedException();
 	}
+
+	public ValueTask AddTaskAsync(Guid lifeAreaId, Guid taskId)
+	{
+		throw new NotImplementedException();
+	}
+
+	public ValueTask RemoveTaskAsync(Guid lifeAreaId, Guid taskId)
+	{
+		throw new NotImplementedException();
+	}
 }

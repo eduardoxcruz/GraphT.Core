@@ -1,4 +1,5 @@
-﻿using GraphT.Model.Entities;
+﻿using GraphT.EfCore.Repositories.Models;
+using GraphT.Model.Entities;
 using GraphT.Model.Services.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -25,5 +26,25 @@ public class TaskDownstreamsRepository : ITaskDownstreamsRepository
 			.ToListAsync();
 
 		return new PagedList<TodoTask>(results, results.Count, 1, results.Count);
+	}
+
+	public async ValueTask AddDownstreamAsync(Guid taskId, Guid downstreamId)
+	{
+		TaskStream stream = new(taskId, downstreamId);
+
+		if (!await _context.TaskStreams.AnyAsync(ts => ts.DownstreamId == downstreamId && ts.UpstreamId == taskId))
+		{
+			await _context.TaskStreams.AddAsync(stream);
+		}
+	}
+
+	public async ValueTask RemoveDownstreamAsync(Guid taskId, Guid downstreamId)
+	{
+		TaskStream stream = new(taskId, downstreamId);
+		
+		if (await _context.TaskStreams.AnyAsync(ts => ts.DownstreamId == downstreamId && ts.UpstreamId == taskId))
+		{
+			_context.TaskStreams.Remove(stream);
+		}
 	}
 }
