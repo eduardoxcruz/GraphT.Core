@@ -22,7 +22,7 @@ public static class DependencyContainer
 		services.AddScoped<UseCases.AddUpstream.IOutputPort, AddUpstream.Presenter>();
 		services.AddScoped<UseCases.RemoveDownstream.IOutputPort, RemoveDownstream.Presenter>();
 		services.AddScoped<UseCases.RemoveUpstream.IOutputPort, RemoveUpstream.Presenter>();
-		
+		services.AddScoped<UseCases.GetTasksOrderedByCreationDateDesc.IOutputPort, GetTasksOrderedByCreationDateDesc.Presenter>();
 
 		return services;
 	}
