@@ -11,6 +11,7 @@ public interface ITodoTaskRepository
 	ValueTask<PagedList<TodoTask>> FindTasksCompletedOrDropped(PagingParams pagingParams);
 	ValueTask<PagedList<TodoTask>> FindTasksInProgress(PagingParams pagingParams);
 	ValueTask<PagedList<TodoTask>> FindTasksReadyToStart(PagingParams pagingParams);
+	ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams);
 	ValueTask AddAsync(TodoTask task);
 	ValueTask AddRangeAsync(IEnumerable<TodoTask> tasks);
 	ValueTask RemoveAsync(TodoTask task);

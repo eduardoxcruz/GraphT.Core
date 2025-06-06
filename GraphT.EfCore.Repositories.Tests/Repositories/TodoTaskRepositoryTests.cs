@@ -1,6 +1,5 @@
 using GraphT.EfCore.Repositories.Models;
 using GraphT.EfCore.Repositories.Repositories;
-using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
@@ -589,11 +588,145 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         await context.SaveChangesAsync();
         PagedList<TodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
 
-        // Assert
-        Assert.NotNull(results);
-        Assert.Single(results);
-        Assert.Equal(taskWithCompleteDownstreams.Id, results.First().Id);
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
-        await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-    }
+		// Assert
+		Assert.NotNull(results);
+		Assert.Single(results);
+		Assert.Equal(taskWithCompleteDownstreams.Id, results.First().Id);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
+	}
+
+	[Fact]
+	public async Task GetTasksOrderedByCreationDateDescAsync_ReturnsTasksOrderedByCreationDateDescending()
+	{
+		// Arrange
+		EfDbContext context = _fixture.CreateContext();
+		TodoTaskRepository repository = new(context);
+		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
+		List<TodoTask> tasks = [];
+		
+		// Act
+		for (int i = 1; i <= 5; i++)
+		{
+			tasks.Add(new TodoTask($"Task {i}"));
+			await Task.Delay(1000);
+		}
+
+		await context.TodoTasks.AddRangeAsync(tasks);
+		await context.SaveChangesAsync();
+		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+
+		// Assert
+		for (int i = 0; i < result.Count - 1; i++)
+		{
+			Assert.True(result[i].DateTimeInfo.CreationDateTime > result[i + 1].DateTimeInfo.CreationDateTime);
+		}
+
+		Assert.NotNull(result);
+		Assert.Equal(5, result.TotalCount);
+		Assert.Equal(5, result.Count);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
+	}
+
+	[Fact]
+	public async Task GetTasksOrderedByCreationDateDescAsync_ReturnsCorrectPagedResults()
+	{
+		// Arrange
+		EfDbContext context = _fixture.CreateContext();
+		TodoTaskRepository repository = new(context);
+		List<TodoTask> tasks = [];
+		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 3 };
+
+		// Act
+		for (int i = 1; i <= 5; i++)
+		{
+			tasks.Add(new TodoTask($"Task {i}"));
+			await Task.Delay(1);
+		}
+
+		await context.TodoTasks.AddRangeAsync(tasks);
+		await context.SaveChangesAsync();
+		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+
+		// Assert
+		Assert.NotNull(result);
+		Assert.Equal(5, result.TotalCount);
+		Assert.Equal(3, result.Count);
+		Assert.Equal(1, result.CurrentPage);
+		Assert.Equal(3, result.PageSize);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
+	}
+
+	[Fact]
+	public async Task GetTasksOrderedByCreationDateDescAsync_ReturnsCorrectSecondPage()
+	{
+		// Arrange
+		EfDbContext context = _fixture.CreateContext();
+		TodoTaskRepository repository = new(context);
+		List<TodoTask> tasks = [];
+		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 3 };
+
+		// Act
+		for (int i = 1; i <= 5; i++)
+		{
+			tasks.Add(new TodoTask($"Task {i}"));
+			await Task.Delay(1);
+		}
+
+		await context.TodoTasks.AddRangeAsync(tasks);
+		await context.SaveChangesAsync();
+		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+
+		// Assert
+		Assert.NotNull(result);
+		Assert.Equal(5, result.TotalCount);
+		Assert.Equal(2, result.Count);
+		Assert.Equal(2, result.CurrentPage);
+		Assert.Equal(3, result.PageSize);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
+	}
+
+	[Fact]
+	public async Task GetTasksOrderedByCreationDateDescAsync_ReturnsEmptyWhenNoTasks()
+	{
+		// Arrange
+		EfDbContext context = _fixture.CreateContext();
+		TodoTaskRepository repository = new(context);
+		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
+
+		// Act
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
+		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+
+		// Assert
+		Assert.NotNull(result);
+		Assert.Equal(0, result.TotalCount);
+		Assert.Empty(result);
+		Assert.Equal(1, result.CurrentPage);
+		Assert.Equal(10, result.PageSize);
+	}
+
+	[Fact]
+	public async Task GetTasksOrderedByCreationDateDescAsync_ReturnsEmptyWhenPageExceedsTotalPages()
+	{
+		// Arrange
+		EfDbContext context = _fixture.CreateContext();
+		TodoTaskRepository repository = new(context);
+		TodoTask task1 = new("Task 1");
+		TodoTask task2 = new("Task 2");
+		PagingParams pagingParams = new() { PageNumber = 3, PageSize = 10 };
+
+		// Act
+		await context.TodoTasks.AddRangeAsync(task1, task2);
+		await context.SaveChangesAsync();
+		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+
+		// Assert
+		Assert.NotNull(result);
+		Assert.Equal(2, result.TotalCount);
+		Assert.Empty(result);
+		Assert.Equal(3, result.CurrentPage);
+		Assert.Equal(10, result.PageSize);
+		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
+	}
 }
