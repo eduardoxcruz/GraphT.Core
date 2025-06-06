@@ -1,10 +1,7 @@
 using System.Diagnostics;
 
 using GraphT.EfCore.Repositories.Repositories;
-using GraphT.Model.Aggregates;
-using GraphT.Model.Entities;
 using GraphT.Model.Services.Repositories;
-using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
