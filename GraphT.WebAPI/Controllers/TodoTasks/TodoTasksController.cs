@@ -1,7 +1,10 @@
+using System.Text.Json;
+
 using GraphT.Controllers.AddNewTask;
 using GraphT.Controllers.DeleteTask;
 using GraphT.Controllers.FindTaskById;
 using GraphT.Controllers.GetTaskEnumsItems;
+using GraphT.Controllers.GetTasksOrderedByCreationDateDesc;
 using GraphT.Controllers.UpdateTask;
 
 using Microsoft.AspNetCore.Mvc;
@@ -18,19 +21,22 @@ public class TodoTasksController : ControllerBase
     private readonly IFindTaskByIdController _findTaskByIdController;
     private readonly IDeleteTaskController _deleteTaskController;
     private readonly IGetTaskEnumsItemsController _getTaskEnumsItemsController;
+    private readonly IGetTasksOrderedByCreationDateDescController _getTasksOrderedByCreationDateDescController;
 
     public TodoTasksController(
 	    IAddNewTaskController addNewTaskController,
 	    IUpdateTaskController updateTaskController,
 	    IFindTaskByIdController findTaskByIdController,
 	    IDeleteTaskController deleteTaskController,
-	    IGetTaskEnumsItemsController getTaskEnumsItemsController)
+	    IGetTaskEnumsItemsController getTaskEnumsItemsController,
+	    IGetTasksOrderedByCreationDateDescController getTasksOrderedByCreationDateDescController)
     {
 	    _addNewTaskController = addNewTaskController;
 	    _updateTaskController = updateTaskController;
 	    _findTaskByIdController = findTaskByIdController;
 	    _deleteTaskController = deleteTaskController;
 	    _getTaskEnumsItemsController = getTaskEnumsItemsController;
+	    _getTasksOrderedByCreationDateDescController = getTasksOrderedByCreationDateDescController;
     }
 
     [HttpGet("enums")]
@@ -67,5 +73,28 @@ public class TodoTasksController : ControllerBase
     {
         await _deleteTaskController.RunUseCase(new UseCases.DeleteTask.InputDto { Id = id });
         return NoContent();
+    }
+    
+    [HttpGet("ordered-by-creation-date-descending")]
+    public async Task<ActionResult<UseCases.GetTasksOrderedByCreationDateDesc.OutputDto>> OrderedByCreationDateDesc(
+	    [FromQuery] int pageNumber = 1, 
+	    [FromQuery] int pageSize = 10)
+    {
+	    UseCases.GetTasksOrderedByCreationDateDesc.OutputDto result = await _getTasksOrderedByCreationDateDescController
+		    .RunUseCase(new UseCases.GetTasksOrderedByCreationDateDesc.InputDto
+	    {
+		    PagingParams = new() { PageNumber = pageNumber, PageSize = pageSize }
+	    });
+	    var metadata = new
+	    {
+		    result.Tasks.TotalCount,
+		    result.Tasks.PageSize,
+		    result.Tasks.CurrentPage,
+		    result.Tasks.TotalPages,
+		    result.Tasks.HasNext,
+		    result.Tasks.HasPrevious
+	    };
+	    Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(metadata));
+	    return Ok(result);
     }
 }
