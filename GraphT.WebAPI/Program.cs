@@ -25,7 +25,8 @@ builder.Services.AddCors(options =>
         policy
             .AllowAnyOrigin()
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .WithExposedHeaders("x-pagination");
     });
 });
 builder.Services.ConfigureSwaggerGen(options =>
