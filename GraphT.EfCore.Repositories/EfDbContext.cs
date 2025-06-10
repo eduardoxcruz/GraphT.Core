@@ -13,6 +13,8 @@ public partial class EfDbContext : DbContext
     public DbSet<TodoTask> TodoTasks { get; set; }
     public DbSet<TaskLog> TaskLogs { get; set; }
     public DbSet<TaskStream> TaskStreams { get; set; }
+    public DbSet<LifeArea> LifeAreas { get; set; }
+    public DbSet<TaskLifeArea> TaskLifeAreas { get; set; }
     
     public EfDbContext(DbContextOptions<EfDbContext> options) : base(options) { }
 
@@ -21,6 +23,8 @@ public partial class EfDbContext : DbContext
         new TodoTaskEntityTypeConfiguration().Configure(modelBuilder.Entity<TodoTask>());
         new TaskLogEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskLog>());
         new TaskStreamEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskStream>());
+        new LifeAreaEntityTypeConfiguration().Configure(modelBuilder.Entity<LifeArea>());
+        new TaskLifeAreaEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskLifeArea>());
         OnModelCreatingPartial(modelBuilder);
     }
 

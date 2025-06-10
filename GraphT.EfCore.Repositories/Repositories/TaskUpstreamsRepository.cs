@@ -32,7 +32,7 @@ public class TaskUpstreamsRepository : ITaskUpstreamsRepository
 	{
 		IQueryable<TodoTask> query = _context.TodoTasks
 			.Where(task => !_context.TaskStreams.Any(ts => ts.DownstreamId == task.Id))
-			.OrderBy(task => task.Name)
+			.OrderByDescending(task => task.DateTimeInfo.CreationDateTime)
 			.AsNoTracking();
 
 		int totalCount = await query.CountAsync();
