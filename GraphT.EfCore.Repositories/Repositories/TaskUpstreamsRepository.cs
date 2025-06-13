@@ -25,6 +25,8 @@ public class TaskUpstreamsRepository : ITaskUpstreamsRepository
 			.AsNoTracking()
 			.ToListAsync();
 
+		await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
+		
 		return new PagedList<TodoTask>(results, results.Count, 1, results.Count);
 	}
 	
@@ -42,6 +44,8 @@ public class TaskUpstreamsRepository : ITaskUpstreamsRepository
 			.Take(pagingParams.PageSize)
 			.ToListAsync();
 
+		await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
+		
 		return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
 	}
 

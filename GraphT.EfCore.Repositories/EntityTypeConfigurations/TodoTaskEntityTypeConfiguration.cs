@@ -25,5 +25,8 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
         builder.Ignore(todoTask => todoTask.ComplexityLabel);
         builder.Ignore(todoTask => todoTask.PriorityLabel);
         builder.Ignore(todoTask => todoTask.RelevanceLabel);
+        builder.Ignore(todoTask => todoTask.UpstreamsCount);
+        builder.Ignore(todoTask => todoTask.DownstreamsCount);
+        builder.Ignore(todoTask => todoTask.LifeAreasCount);
     }
 }

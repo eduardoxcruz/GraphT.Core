@@ -1,4 +1,6 @@
-﻿using GraphT.EfCore.Repositories.Models;
+﻿using System.Reflection;
+
+using GraphT.EfCore.Repositories.Models;
 using GraphT.Model.Entities;
 using GraphT.Model.Services.Repositories;
 using GraphT.Model.ValueObjects;
@@ -20,7 +22,14 @@ public class TodoTaskRepository : ITodoTaskRepository
 
 	public async ValueTask<TodoTask?> FindByIdAsync(Guid id)
 	{
-		return await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id.Equals(id));
+		TodoTask? task = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id.Equals(id));
+        
+		if (task != null)
+		{
+			await StreamsPopulator.PopulateStreamCountsAsync(task, _context);
+		}
+        
+		return task;
 	}
 
 	public async ValueTask<PagedList<TodoTask>> FindTasksCompletedOrDropped(PagingParams pagingParams)
@@ -60,33 +69,41 @@ public class TodoTaskRepository : ITodoTaskRepository
 
     public async ValueTask<PagedList<TodoTask>> FindTasksReadyToStart(PagingParams pagingParams)
     {
-       IQueryable<TodoTask> query = _context.TodoTasks
-          .Where(task => 
-             (task.Status == Status.Ready || task.Status == Status.Paused) &&
-             (!_context.TaskStreams.Any(ts => ts.UpstreamId == task.Id) || task.Progress >= 99))
-          .OrderBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
-          .ThenByDescending(task => task.Priority)
-          .AsNoTracking();
+	    IQueryable<TodoTask> query = _context.TodoTasks
+		    .Where(task => 
+			    (task.Status == Status.Ready || task.Status == Status.Paused) &&
+			    (!_context.TaskStreams.Any(ts => ts.UpstreamId == task.Id) || task.Progress >= 99))
+		    .OrderBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
+		    .ThenByDescending(task => task.Priority)
+		    .AsNoTracking();
 
-       int totalCount = await query.CountAsync();
-       
-       List<TodoTask> results = await query
-          .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
-          .Take(pagingParams.PageSize)
-          .ToListAsync();
-
-       return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
-    }
-
-    public async ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams)
-    {
-	    IQueryable<TodoTask> query = _context.TodoTasks.OrderByDescending(task => task.DateTimeInfo.CreationDateTime).AsNoTracking();
 	    int totalCount = await query.CountAsync();
+        
 	    List<TodoTask> results = await query
 		    .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
 		    .Take(pagingParams.PageSize)
 		    .ToListAsync();
-	    
+
+	    await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
+
+	    return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
+    }
+
+    public async ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams)
+    {
+	    IQueryable<TodoTask> query = _context.TodoTasks
+		    .OrderByDescending(task => task.DateTimeInfo.CreationDateTime)
+		    .AsNoTracking();
+            
+	    int totalCount = await query.CountAsync();
+        
+	    List<TodoTask> results = await query
+		    .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
+		    .Take(pagingParams.PageSize)
+		    .ToListAsync();
+
+	    await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
+        
 	    return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
     
