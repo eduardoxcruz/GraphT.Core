@@ -25,6 +25,8 @@ public class TaskDownstreamsRepository : ITaskDownstreamsRepository
 			.AsNoTracking()
 			.ToListAsync();
 
+		await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
+		
 		return new PagedList<TodoTask>(results, results.Count, 1, results.Count);
 	}
 
