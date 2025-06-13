@@ -10,6 +10,9 @@ public class TodoTask : Entity
 	private bool _isFun;
 	private bool _isProductive;
 	private DateTimeInfo _dateTimeInfo;
+	private uint _upstreamsCount;
+	private uint _downstreamsCount;
+	private uint _lifeAreasCount;
 
 	public bool IsFun
 	{
@@ -34,6 +37,9 @@ public class TodoTask : Entity
 	public Relevance Relevance { get; private set; }
 	public Status Status { get; set; }
 	public float Progress { get; set; }
+	public uint UpstreamsCount => _upstreamsCount;
+	public uint DownstreamsCount => _downstreamsCount;
+	public uint LifeAreasCount => _lifeAreasCount;
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public string ComplexityLabel => this.Complexity.GetLabel();
 	public string PriorityLabel => this.Priority.GetLabel();
@@ -49,7 +55,10 @@ public class TodoTask : Entity
 							Complexity? complexity = null, 
 							Priority? priority = null,
 							Guid? id = null,
-							DateTimeInfo? dateTimeInfo = null ) : base(name, id)
+							DateTimeInfo? dateTimeInfo = null,
+							uint? upstreamsCount = null,
+							uint? downstreamsCount = null,
+							uint? lifeAreasCount = null) : base(name, id)
 	{
 		Status = status ?? Status.Backlog;
 		IsFun = isFun ?? false;
@@ -58,6 +67,9 @@ public class TodoTask : Entity
 		Priority = priority ?? Priority.Distraction;
 		Progress = 0;
 		_dateTimeInfo = dateTimeInfo ?? new DateTimeInfo();
+		_upstreamsCount = upstreamsCount ?? 0;
+		_downstreamsCount = downstreamsCount ?? 0;
+		_lifeAreasCount = lifeAreasCount ?? 0;
 		UpdateRelevance();
 	}
 
