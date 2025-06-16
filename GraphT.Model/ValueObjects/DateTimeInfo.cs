@@ -23,24 +23,27 @@ public struct DateTimeInfo
 
 		if (FinishDateTime.HasValue)
 		{
-			if ((FinishDateTime.Value - LimitDateTime.Value).TotalDays == 0) return "\u2705 On Time!";
+			if ((((LimitDateTime.Value - FinishDateTime.Value).TotalHours >= 0) && (LimitDateTime.Value - FinishDateTime.Value).TotalHours < 24)) return "\u2705 On Time!";
 			
-			int daysDifference = Math.Abs((LimitDateTime.Value - FinishDateTime.Value).Days);
+			double daysDifference = Math.Abs(Math.Round((LimitDateTime.Value - FinishDateTime.Value).TotalDays, 1, MidpointRounding.ToZero));
 			
 			return FinishDateTime.Value > LimitDateTime.Value ? 
 				$"\ud83d\udea8 Late {daysDifference} day(s)!" : 
 				$"\u2b50 Early {daysDifference} day(s)!";
 		}
 		
-		if ((LimitDateTime.Value - now).TotalHours < 24) return "\u26a0 Finish Today!";
+		if (((LimitDateTime.Value - now).TotalHours >= 0) && ((LimitDateTime.Value - now).TotalHours < 24))
+		{
+			return "\u26a0 Finish Today!";
+		}
 		
 		if (now > LimitDateTime)
 		{
-			int daysLate = Math.Abs((LimitDateTime.Value - now).Days);
+			double daysLate = Math.Round((LimitDateTime.Value - now).TotalDays, 1, MidpointRounding.ToZero);
 			return $"\ud83d\udea8 Late {daysLate} day(s)!";
 		}
 		
-		int daysToGo = (LimitDateTime.Value - now).Days;
+		double daysToGo = Math.Round((LimitDateTime.Value - now).TotalDays, 1, MidpointRounding.ToZero);
 		return $"\u23f1 {daysToGo} day(s) to go!";
 	}
 }
