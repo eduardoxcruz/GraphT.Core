@@ -1,25 +1,49 @@
+using Azure.Identity;
+
 using GraphT.IoC;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+	builder.Configuration.AddUserSecrets<Program>();
+}
+
+if (builder.Environment.IsProduction())
+{
+	string? keyVaultUri = builder.Configuration["AzureKeyVault:Uri"];
+	
+	if (!string.IsNullOrEmpty(keyVaultUri))
+	{
+		builder.Configuration.AddAzureKeyVault(
+			new Uri(keyVaultUri),
+			new DefaultAzureCredential()
+		);
+	}
+}
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGraphTServices(builder.Configuration, "GraphT");
+builder.Services.AddGraphTServices(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DefaultPolicy", policy =>
     {
-        policy
-            .WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [])
-            .WithMethods(builder.Configuration.GetSection("Cors:Methods").Get<string[]>() ?? [])
-            .WithHeaders(builder.Configuration.GetSection("Cors:Headers").Get<string[]>() ?? [])
-            .AllowCredentials();
+	    string[]? origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+	    string[]? methods = builder.Configuration.GetSection("Cors:Methods").Get<string[]>();
+	    string[]? headers = builder.Configuration.GetSection("Cors:Headers").Get<string[]>();
+
+	    policy
+		    .WithOrigins(origins ?? Array.Empty<string>())
+		    .WithMethods(methods ?? new[] { "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH" })
+		    .WithHeaders(headers ?? new[] { "Authorization", "Content-Type", "Accept" })
+		    .AllowCredentials();
     });
 
-    // Política de desarrollo (más permisiva)
     options.AddPolicy("DevelopmentPolicy", policy =>
     {
         policy
@@ -29,6 +53,7 @@ builder.Services.AddCors(options =>
             .WithExposedHeaders("x-pagination");
     });
 });
+
 builder.Services.ConfigureSwaggerGen(options =>
 {
 	options.CustomSchemaIds(x => x.FullName);
@@ -48,7 +73,9 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
-else {
+
+if (builder.Environment.IsProduction())
+{
     app.UseCors("DefaultPolicy");
     app.UseExceptionHandler("/error");
 }

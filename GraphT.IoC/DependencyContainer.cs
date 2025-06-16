@@ -10,13 +10,14 @@ namespace GraphT.IoC;
 
 public static class DependencyContainer
 {
-	public static IServiceCollection AddGraphTServices(this IServiceCollection services, IConfiguration configuration, string connectionStringName)
+	public static IServiceCollection AddGraphTServices(this IServiceCollection services, IConfiguration configuration)
 	{
 		services
 			.AddGraphTUseCases()
 			.AddGraphTPresenters()
 			.AddGraphTControllers()
-			.AddGraphTEfCoreRepositories(configuration, connectionStringName);
+			.AddGraphTEfCoreRepositories(configuration);
+		
 		return services;
 	}
 }

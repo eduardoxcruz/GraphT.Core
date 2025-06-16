@@ -16,12 +16,23 @@ public static class DependencyContainer
 {
     public static IServiceCollection AddGraphTEfCoreRepositories(
         this IServiceCollection services,
-        IConfiguration configuration,
-        string connectionString)
+        IConfiguration configuration)
     {
-        services.AddDbContext<EfDbContext>(options => options
-            .UseSqlServer(configuration[$"ConnectionStrings:{connectionString}"])
-            .LogTo(message => Debug.WriteLine(message), LogLevel.Warning));
+	    string? connectionString = configuration["EfDb:ConnectionString"];
+        
+	    if (string.IsNullOrEmpty(connectionString))
+	    {
+		    throw new InvalidOperationException(
+			    "Connection string 'EfDb:ConnectionString' not found. " +
+			    "Configure it using: " +
+			    "dotnet user-secrets set \"EfDb:ConnectionString\" \"your-connection-string\" " +
+			    "or in environment variables."
+		    );
+	    }
+
+	    services.AddDbContext<EfDbContext>(options => options
+		    .UseSqlServer(connectionString)
+		    .LogTo(message => Debug.WriteLine(message), LogLevel.Warning));
 
         services.AddScoped<ILifeAreasRepository, LifeAreasRepository>();
         services.AddScoped<ITaskDownstreamsRepository, TaskDownstreamsRepository>();
