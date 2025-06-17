@@ -32,7 +32,7 @@ The solution is organized into several projects and folders, following Domain-Dr
 1. _Clone the repository_
 
 ```bash
-   git clone https://github.com/yourusername/GraphT.NET.git
+   git clone https://github.com/eduardoxcruz/GraphT.NET.git
    cd GraphT.NET
 ```
 
