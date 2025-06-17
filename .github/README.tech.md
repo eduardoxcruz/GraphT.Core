@@ -70,10 +70,10 @@ _If you want to test with Frontend [(like the Remix.JS frontend)](https://github
     dotnet user-secrets list
 ```
 
-6. _[Apply migrations]_
+6. _Apply migrations_
 
 ```bash
-	cd GraphT.EfCore.Repositories
+	cd GraphT.EfCore
 	dotnet ef migrations add InitialMigration
 	dotnet ef database update
 ```
