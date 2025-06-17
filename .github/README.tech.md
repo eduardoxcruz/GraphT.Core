@@ -12,7 +12,7 @@ The solution is organized into several projects and folders, following Domain-Dr
 
 - **GraphT.Presenters** – Responsible for presenting and transforming data between business logic and the presentation layer (DTOs, view models, etc.).
 
-- **GraphT.EfCore.Repositories** – Repository implementations using Entity Framework Core for persistence in relational databases.
+- **GraphT.EfCore** – Repository implementations using Entity Framework Core for persistence in relational databases.
 
 - **GraphT.IoC** – Dependency injection configuration and inversion of control containers.
 
@@ -98,9 +98,11 @@ Some of these projects are:
 
 - _Model.Tests_
 - _UseCases.Tests_
-- _EfCore.Repositories.Tests_: Be careful, every time you run a test the ```TestDatabaseFixture``` calls next lines. [More info](https://learn.microsoft.com/en-us/ef/core/managing-schemas/ensure-created)
+- _EfCore.Tests_: Be careful, every time you run a test the ```TestDatabaseFixture``` calls next lines. [More info](https://learn.microsoft.com/en-us/ef/core/managing-schemas/ensure-created)
 
 ```csharp
+This deletes your testing database!!!
+
 using (EfDbContext context = CreateContext()){
 	context.Database.EnsureDeleted();
 	context.Database.EnsureCreated();
@@ -181,7 +183,7 @@ You can find much more on how to use this project in our [Wiki](https://github.c
 
 ## License 📄
 
-This project is licensed under the MIT License – see the [LICENSE.md](./LICENSE.md) file for details
+This project is licensed under the MIT License – see the [LICENSE.md](../LICENSE.md) file for details
 
 ---
 
