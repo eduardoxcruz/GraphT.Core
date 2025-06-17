@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-using GraphT.EfCore.Repositories.Repositories;
+using GraphT.EfCore.Repositories;
 using GraphT.Model.Services.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using SeedWork;
 
-namespace GraphT.EfCore.Repositories;
+namespace GraphT.EfCore;
 
 public static class DependencyContainer
 {

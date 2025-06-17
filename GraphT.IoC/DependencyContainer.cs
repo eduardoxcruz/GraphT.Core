@@ -1,5 +1,5 @@
 ﻿using GraphT.Controllers;
-using GraphT.EfCore.Repositories;
+using GraphT.EfCore;
 using GraphT.Presenters;
 using GraphT.UseCases;
 

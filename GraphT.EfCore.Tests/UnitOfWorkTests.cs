@@ -1,10 +1,10 @@
-﻿using GraphT.EfCore.Repositories.Repositories;
+﻿using GraphT.EfCore.Repositories;
 using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphT.EfCore.Repositories.Tests;
+namespace GraphT.EfCore.Tests;
 
 public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 {

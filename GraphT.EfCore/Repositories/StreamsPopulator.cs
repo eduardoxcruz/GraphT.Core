@@ -4,7 +4,7 @@ using GraphT.Model.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphT.EfCore.Repositories.Repositories;
+namespace GraphT.EfCore.Repositories;
 
 public static class StreamsPopulator
 {

@@ -33,9 +33,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.WebAPI", "GraphT.Web
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.Model.Tests", "GraphT.Model.Tests\GraphT.Model.Tests.csproj", "{2606DB1D-0888-40A8-A151-5C2C85893E7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore.Repositories", "GraphT.EfCore.Repositories\GraphT.EfCore.Repositories.csproj", "{2C1A3413-54E8-416E-9980-52554F8DF2BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore", "GraphT.EfCore\GraphT.EfCore.csproj", "{2C1A3413-54E8-416E-9980-52554F8DF2BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore.Repositories.Tests", "GraphT.EfCore.Repositories.Tests\GraphT.EfCore.Repositories.Tests.csproj", "{9DCF1977-F571-4F58-899A-67FBAE4D560B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.EfCore.Tests", "GraphT.EfCore.Tests\GraphT.EfCore.Tests.csproj", "{9DCF1977-F571-4F58-899A-67FBAE4D560B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphT.UseCases.Tests", "GraphT.UseCases.Tests\GraphT.UseCases.Tests.csproj", "{0607F82B-4445-4D41-90E5-9BCB57D2658D}"
 EndProject

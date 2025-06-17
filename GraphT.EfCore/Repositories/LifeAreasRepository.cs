@@ -3,7 +3,7 @@ using GraphT.Model.Services.Repositories;
 
 using SeedWork;
 
-namespace GraphT.EfCore.Repositories.Repositories;
+namespace GraphT.EfCore.Repositories;
 
 public class LifeAreasRepository : ILifeAreasRepository
 {

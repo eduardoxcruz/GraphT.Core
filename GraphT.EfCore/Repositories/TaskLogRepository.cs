@@ -2,7 +2,7 @@
 using GraphT.Model.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphT.EfCore.Repositories.Repositories;
+namespace GraphT.EfCore.Repositories;
 
 public class TaskLogRepository : ITaskLogRepository
 {

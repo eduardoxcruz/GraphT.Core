@@ -1,6 +1,6 @@
 ﻿using SeedWork;
 
-namespace GraphT.EfCore.Repositories;
+namespace GraphT.EfCore;
 
 public class UnitOfWork(EfDbContext context) : IUnitOfWork, IDisposable
 {

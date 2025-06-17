@@ -1,4 +1,4 @@
-﻿using GraphT.EfCore.Repositories.Models;
+﻿using GraphT.EfCore.Models;
 using GraphT.Model.Entities;
 using GraphT.Model.Services.Repositories;
 
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using SeedWork;
 
-namespace GraphT.EfCore.Repositories.Repositories;
+namespace GraphT.EfCore.Repositories;
 
 public class TaskDownstreamsRepository : ITaskDownstreamsRepository
 {

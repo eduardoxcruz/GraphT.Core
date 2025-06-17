@@ -1,5 +1,5 @@
-﻿using GraphT.EfCore.Repositories.EntityTypeConfigurations;
-using GraphT.EfCore.Repositories.Models;
+﻿using GraphT.EfCore.EntityTypeConfigurations;
+using GraphT.EfCore.Models;
 using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace GraphT.EfCore.Repositories;
+namespace GraphT.EfCore;
 
 public partial class EfDbContext : DbContext
 {

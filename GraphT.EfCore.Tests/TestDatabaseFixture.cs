@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphT.EfCore.Repositories.Tests;
+namespace GraphT.EfCore.Tests;
 
 public class TestDatabaseFixture
 {

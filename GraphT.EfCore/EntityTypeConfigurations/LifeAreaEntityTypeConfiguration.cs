@@ -3,7 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace GraphT.EfCore.Repositories.EntityTypeConfigurations;
+namespace GraphT.EfCore.EntityTypeConfigurations;
 
 public class LifeAreaEntityTypeConfiguration : IEntityTypeConfiguration<LifeArea>
 {
