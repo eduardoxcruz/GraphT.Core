@@ -1,22 +1,23 @@
 ﻿using GraphT.Controllers;
+using GraphT.EfCore;
 using GraphT.Presenters;
 using GraphT.UseCases;
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GraphT.IoC
-{
-    public static class DependencyContainer
-    {
-        public static IServiceCollection AddGraphTServices(
-            this IServiceCollection services
-        )
-        {
-            services
-                .AddGraphTUseCases()
-                .AddGraphTPresenters()
-                .AddGraphTControllers();
+namespace GraphT.IoC;
 
-            return services;
-        }
-    }
+public static class DependencyContainer
+{
+	public static IServiceCollection AddGraphTServices(this IServiceCollection services, IConfiguration configuration)
+	{
+		services
+			.AddGraphTUseCases()
+			.AddGraphTPresenters()
+			.AddGraphTControllers()
+			.AddGraphTEfCoreRepositories(configuration);
+		
+		return services;
+	}
 }
