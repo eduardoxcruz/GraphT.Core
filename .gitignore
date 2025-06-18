@@ -491,4 +491,4 @@ riderModule.iml
 .idea/
 
 # Entity Framework Migrations
-GraphT.EfCore.Repositories/Migrations/
+GraphT.EfCore/Migrations/
