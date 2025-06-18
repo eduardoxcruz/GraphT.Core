@@ -17,12 +17,12 @@ public class TaskLifeAreaEntityTypeConfiguration : IEntityTypeConfiguration<Task
 		builder.HasOne(lifeArea => lifeArea.LifeArea)
 			.WithMany()
 			.HasForeignKey(td => td.LifeAreaId)
-			.OnDelete(DeleteBehavior.SetNull);
+			.OnDelete(DeleteBehavior.NoAction);
 		
 		builder.HasOne(lifeArea => lifeArea.Task)
 			.WithMany()
 			.HasForeignKey(td => td.TaskId)
-			.OnDelete(DeleteBehavior.SetNull);
+			.OnDelete(DeleteBehavior.NoAction);
 
 		builder.Property(td => td.CreatedAt);
 		builder.HasIndex(td => td.LifeAreaId).HasDatabaseName("IX_TaskLifeArea_LifeAreaId");
