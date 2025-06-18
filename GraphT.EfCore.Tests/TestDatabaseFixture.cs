@@ -4,10 +4,12 @@ namespace GraphT.EfCore.Tests;
 
 public class TestDatabaseFixture
 {
+	private const string ConnectionStringName = "EfDb:TestingString";
+	
 	private static readonly object _lock = new();
 	private static bool _databaseInitialized;
 	public EfDbContext CreateContext() => new(new DbContextOptionsBuilder<EfDbContext>()
-		.UseSqlServer("Server=localhost;Database=Testing;User Id=sa;Password=DevPassword123_;Encrypt=False")
+		.UseSqlServer(ConnectionStringBuilder.GetConnectionString(ConnectionStringName))
 		.Options);
 
 	public TestDatabaseFixture()
