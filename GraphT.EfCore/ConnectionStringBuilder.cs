@@ -26,8 +26,6 @@ public static class ConnectionStringBuilder
 	{
 		return new ConfigurationBuilder()
 			.SetBasePath(Directory.GetCurrentDirectory())
-			.AddJsonFile("appsettings.json", optional: true)
-			.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
 			.AddUserSecrets<DesignTimeDbContextFactory>()
 			.AddEnvironmentVariables()
 			.Build();
