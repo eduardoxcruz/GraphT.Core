@@ -24,7 +24,7 @@ public class UseCase : IInputPort
 		{
             { "complexities", ConvertEnumToItems<Complexity>() },
             { "priorities", ConvertEnumToItems<Priority>() },
-            { "relevances", ConvertEnumToItems<Relevance>() },
+            { "relevances", ConvertEnumToItems<OldRelevance>() },
             { "statuses", ConvertEnumToItems<Status>() }
         };
 

@@ -26,7 +26,7 @@ public class TodoTask : Entity
 	}
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
-	public Relevance Relevance { get; private set; }
+	public OldRelevance OldRelevance { get; private set; }
 	public Status Status { get; set; }
 	public float Progress { get; set; }
 	public uint UpstreamsCount => _upstreamsCount;
@@ -35,7 +35,7 @@ public class TodoTask : Entity
 	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
 	public string ComplexityLabel => this.Complexity.GetLabel();
 	public string PriorityLabel => this.Priority.GetLabel();
-	public string RelevanceLabel => this.Relevance.GetLabel();
+	public string RelevanceLabel => this.OldRelevance.GetLabel();
 	public string StatusLabel => this.Status.GetLabel();
 
 	private TodoTask() : base("New Task"){ }
@@ -75,12 +75,12 @@ public class TodoTask : Entity
 
 	private void UpdateRelevance()
 	{
-		Relevance = (IsFun, IsProductive) switch
+		OldRelevance = (IsFun, IsProductive) switch
 		{
-			(true, true) => Relevance.Purposeful,
-			(false, true) => Relevance.Necessary,
-			(true, false) => Relevance.Entertaining,
-			(false, false) => Relevance.Superfluous
+			(true, true) => OldRelevance.Purposeful,
+			(false, true) => OldRelevance.Necessary,
+			(true, false) => OldRelevance.Entertaining,
+			(false, false) => OldRelevance.Superfluous
 		};
 	}
 	

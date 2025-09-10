@@ -36,14 +36,14 @@ public class UseCaseTests
         // Verify that each list has the correct number of elements
         if (complexities.Count != Enum.GetValues<Complexity>().Length ||
             priorities.Count != Enum.GetValues<Priority>().Length ||
-            relevances.Count != Enum.GetValues<Relevance>().Length ||
+            relevances.Count != Enum.GetValues<OldRelevance>().Length ||
             statuses.Count != Enum.GetValues<Status>().Length)
             return false;
 
         // Verify that IDs and labels are valid for each enum
         return ValidateEnumItems<Complexity>(complexities) &&
                ValidateEnumItems<Priority>(priorities) &&
-               ValidateEnumItems<Relevance>(relevances) &&
+               ValidateEnumItems<OldRelevance>(relevances) &&
                ValidateEnumItems<Status>(statuses);
     }
 
