@@ -1,0 +1,43 @@
+# Directorios de build y publish
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# Archivos de Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+**/TestResults/
+
+# Archivos de desarrollo
+.vscode/
+.idea/
+*.DotSettings
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+**/Dockerfile*
+**/docker-compose*
+.dockerignore
+
+# Logs
+**/logs/
+*.log
+
+# Archivos temporales
+**/temp/
+**/tmp/
+
+# Archivos de documentación
+README.md
+*.md
