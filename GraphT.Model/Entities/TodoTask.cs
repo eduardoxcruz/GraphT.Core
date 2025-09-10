@@ -17,20 +17,12 @@ public class TodoTask : Entity
 	public bool IsFun
 	{
 		get => _isFun;
-		set
-		{
-			_isFun = value;
-			UpdateRelevance();
-		}
+		set => SetProperty(ref _isFun, value);
 	}
 	public bool IsProductive
 	{
 		get => _isProductive;
-		set
-		{
-			_isProductive = value;
-			UpdateRelevance();
-		}
+		set => SetProperty(ref _isProductive, value);
 	}
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
@@ -73,14 +65,22 @@ public class TodoTask : Entity
 		UpdateRelevance();
 	}
 
+	private void SetProperty(ref bool field, bool value)
+	{
+		if (field == value) return;
+        
+		field = value;
+		UpdateRelevance();
+	}
+
 	private void UpdateRelevance()
 	{
-		this.Relevance = IsFun switch
+		Relevance = (IsFun, IsProductive) switch
 		{
-			true when IsProductive => Relevance.Purposeful,
-			false when IsProductive => Relevance.Necessary,
-			true when !IsProductive => Relevance.Entertaining,
-			_ => Relevance.Superfluous
+			(true, true) => Relevance.Purposeful,
+			(false, true) => Relevance.Necessary,
+			(true, false) => Relevance.Entertaining,
+			(false, false) => Relevance.Superfluous
 		};
 	}
 	
