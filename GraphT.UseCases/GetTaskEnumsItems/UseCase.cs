@@ -22,7 +22,7 @@ public class UseCase : IInputPort
 	{
 		Dictionary<string, List<EnumItemAndLabel>> items = new()
 		{
-            { "complexities", ConvertEnumToItems<Complexity>() },
+            { "complexities", ConvertEnumToItems<OldComplexity>() },
             { "priorities", ConvertEnumToItems<Priority>() },
             { "relevances", ConvertEnumToItems<OldRelevance>() },
             { "statuses", ConvertEnumToItems<Status>() }

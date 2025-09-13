@@ -2,7 +2,7 @@
 
 namespace GraphT.Model.ValueObjects;
 
-public enum Complexity
+public enum OldComplexity
 {
 	[EnumLabel("\ud83e\udd37 Indefinite")]
 	Indefinite = 0,

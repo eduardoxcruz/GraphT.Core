@@ -62,7 +62,7 @@ public class UseCaseTests
 			, Name = "New Name"
 			, IsFun = true
 			, IsProductive = true
-			, Complexity = Complexity.High
+			, Complexity = OldComplexity.High
 			, Priority = Priority.Critical
 		};
 

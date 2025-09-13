@@ -26,7 +26,7 @@ public class UseCaseTests
             Status = Status.Created,
             IsFun = true,
             IsProductive = true,
-            Complexity = Complexity.High,
+            Complexity = OldComplexity.High,
             Priority = Priority.Urgent
         };
 
