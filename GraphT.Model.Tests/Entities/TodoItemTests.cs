@@ -86,9 +86,12 @@ public class TodoItemTests
 		Assert.False(idProperty.CanWrite, "Id should not be publicly writable");
 	}
 
+	[Fact]
 	public void TodoItem_ShouldHaveRelevance_WhenCreated()
 	{
+		TodoItem todo = new("Test");
 		
+		Assert.Equal(todo.Relevance, Relevance.Superfluous);
 	}
 
 	[Fact]
@@ -128,8 +131,10 @@ public class TodoItemTests
 	}
 	
 	[Fact]
-	public void TodoItem_ShouldHaveComplexity_WhenCreated()
+	public void TodoItem_ShouldHave_ComplexityIndefinite_WhenCreated()
 	{
+		TodoItem item = new("Test");
 		
+		Assert.Equal(item.Complexity, Complexity.Indefinite);
 	}
 }

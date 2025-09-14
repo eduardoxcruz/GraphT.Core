@@ -9,6 +9,7 @@ public class TodoItem
 	public bool IsFun { get; set; }
 	public bool IsProductive { get; set; }
 	public Relevance Relevance => new(IsFun, IsProductive);
+	public Complexity Complexity { get; set; }
 	
 	public TodoItem(string name)
 	{
@@ -17,5 +18,6 @@ public class TodoItem
 		
 		Id = Guid.NewGuid();
 		Name = name;
+		Complexity = Complexity.Indefinite;
 	}
 }
