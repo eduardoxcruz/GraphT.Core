@@ -25,7 +25,7 @@ public class UseCase : IInputPort
             { "complexities", ConvertEnumToItems<OldComplexity>() },
             { "priorities", ConvertEnumToItems<OldPriority>() },
             { "relevances", ConvertEnumToItems<OldRelevance>() },
-            { "statuses", ConvertEnumToItems<Status>() }
+            { "statuses", ConvertEnumToItems<OldStatus>() }
         };
 
 		await _outputPort.Handle(new OutputDto(items));

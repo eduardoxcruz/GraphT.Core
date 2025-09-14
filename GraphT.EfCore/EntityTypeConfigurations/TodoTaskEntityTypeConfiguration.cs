@@ -14,7 +14,7 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
         builder.Property(todoTask => todoTask.Name).HasColumnOrder(1);
         builder.Property(todoTask => todoTask.IsFun).HasColumnOrder(2);
         builder.Property(todoTask => todoTask.IsProductive).HasColumnOrder(3);
-        builder.Property(todoTask => todoTask.Status).HasColumnOrder(4);
+        builder.Property(todoTask => todoTask.OldStatus).HasColumnOrder(4);
         builder.Property(todoTask => todoTask.Complexity).HasColumnOrder(5);
         builder.Property(todoTask => todoTask.Priority).HasColumnOrder(6);
         builder.Property(todoTask => todoTask.OldRelevance).HasColumnOrder(7);

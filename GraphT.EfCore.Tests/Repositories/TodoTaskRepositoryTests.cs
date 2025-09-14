@@ -56,10 +56,10 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 		List<TodoTask> tasks =
 		[
 			new("Task 1"), 
-			new("Task 2", Status.Ready), 
-			new("Task 3", Status.Paused), 
-			new("Task 4", Status.Dropped), 
-			new("Task 5", Status.Completed)
+			new("Task 2", OldStatus.Ready), 
+			new("Task 3", OldStatus.Paused), 
+			new("Task 4", OldStatus.Dropped), 
+			new("Task 5", OldStatus.Completed)
 		];
 
 		await repository.AddRangeAsync(tasks);
@@ -124,10 +124,10 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 		List<TodoTask> tasks =
 		[
 			new("Task 1"), 
-			new("Task 2", Status.Ready), 
-			new("Task 3", Status.Paused), 
-			new("Task 4", Status.Dropped), 
-			new("Task 5", Status.Completed)
+			new("Task 2", OldStatus.Ready), 
+			new("Task 3", OldStatus.Paused), 
+			new("Task 4", OldStatus.Dropped), 
+			new("Task 5", OldStatus.Completed)
 		];
 
 		await context.TodoTasks.AddRangeAsync(tasks);
@@ -222,8 +222,8 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		List<TodoTask> tasks = new()
 		{
 			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", Status.Ready), 
-			new TodoTask("Task 3", Status.Paused)
+			new TodoTask("Task 2", OldStatus.Ready), 
+			new TodoTask("Task 3", OldStatus.Paused)
 		};
 
 		await context.TodoTasks.AddRangeAsync(tasks);
@@ -254,11 +254,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         List<TodoTask> tasks = [
-            new("Task 1", Status.Completed),
-            new("Task 2", Status.Dropped),
-            new("Task 3", Status.Doing),
-            new("Task 4", Status.Ready),
-            new("Task 5", Status.Backlog)
+            new("Task 1", OldStatus.Completed),
+            new("Task 2", OldStatus.Dropped),
+            new("Task 3", OldStatus.Doing),
+            new("Task 4", OldStatus.Ready),
+            new("Task 5", OldStatus.Backlog)
         ];
 
         await context.TodoTasks.AddRangeAsync(tasks);
@@ -269,7 +269,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         Assert.NotNull(results);
         Assert.Equal(2, results.TotalCount);
         Assert.Equal(2, results.Count);
-        Assert.All(results, task => Assert.True(task.Status is Status.Completed or Status.Dropped));
+        Assert.All(results, task => Assert.True(task.OldStatus is OldStatus.Completed or OldStatus.Dropped));
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
 
@@ -281,10 +281,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task 1", Status.Completed);
-        TodoTask secondTask = new("Task 2", Status.Dropped);
-        TodoTask thirdTask = new("Task 3", Status.Completed);
-        TodoTask fourthTask = new("Task 4", Status.Dropped);
+        TodoTask firstTask = new("Task 1", OldStatus.Completed);
+        TodoTask secondTask = new("Task 2", OldStatus.Dropped);
+        TodoTask thirdTask = new("Task 3", OldStatus.Completed);
+        TodoTask fourthTask = new("Task 4", OldStatus.Dropped);
         List<TodoTask> tasks = [
             thirdTask,
             firstTask,
@@ -319,11 +319,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 2, PageSize = 2 };
         List<TodoTask> tasks = [
-            new("Task 1", Status.Completed),
-            new("Task 2", Status.Dropped),
-            new("Task 3", Status.Completed),
-            new("Task 4", Status.Dropped),
-            new("Task 5", Status.Completed)
+            new("Task 1", OldStatus.Completed),
+            new("Task 2", OldStatus.Dropped),
+            new("Task 3", OldStatus.Completed),
+            new("Task 4", OldStatus.Dropped),
+            new("Task 5", OldStatus.Completed)
         ];
 
         await context.TodoTasks.AddRangeAsync(tasks);
@@ -350,8 +350,8 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		List<TodoTask> tasks =
 		[
-			new("Task 1", Status.Completed), new("Task 2", Status.Dropped), new("Task 3", Status.Doing)
-			, new("Task 4", Status.Ready), new("Task 5", Status.Backlog)
+			new("Task 1", OldStatus.Completed), new("Task 2", OldStatus.Dropped), new("Task 3", OldStatus.Doing)
+			, new("Task 4", OldStatus.Ready), new("Task 5", OldStatus.Backlog)
 		];
 
 		await context.TodoTasks.AddRangeAsync(tasks);
@@ -362,7 +362,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		Assert.NotNull(results);
 		Assert.Equal(1, results.TotalCount);
 		Assert.Single(results);
-		Assert.All(results, task => Assert.True(task.Status is Status.Doing));
+		Assert.All(results, task => Assert.True(task.OldStatus is OldStatus.Doing));
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
 	}
 
@@ -374,10 +374,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         List<TodoTask> tasks = [
-            new("Task Low", Status.Doing) { Priority = OldPriority.Distraction },
-            new("Task Medium", Status.Doing) { Priority = OldPriority.Consider },
-            new("Task Medium", Status.Doing) { Priority = OldPriority.Urgent },
-            new("Task High", Status.Doing) { Priority = OldPriority.Critical }
+            new("Task Low", OldStatus.Doing) { Priority = OldPriority.Distraction },
+            new("Task Medium", OldStatus.Doing) { Priority = OldPriority.Consider },
+            new("Task Medium", OldStatus.Doing) { Priority = OldPriority.Urgent },
+            new("Task High", OldStatus.Doing) { Priority = OldPriority.Critical }
         ];
 
         await context.TodoTasks.AddRangeAsync(tasks);
@@ -401,10 +401,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", Status.Doing) { Priority = OldPriority.Urgent };
-        TodoTask secondTask = new("Task Soon", Status.Doing) { Priority = OldPriority.Urgent };
-        TodoTask thirdTask = new("Task Later", Status.Doing) { Priority = OldPriority.Urgent };
-        TodoTask fourthTask = new("Task Later", Status.Doing) { Priority = OldPriority.Urgent };
+        TodoTask firstTask = new("Task Soon", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        TodoTask secondTask = new("Task Soon", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        TodoTask thirdTask = new("Task Later", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        TodoTask fourthTask = new("Task Later", OldStatus.Doing) { Priority = OldPriority.Urgent };
         List<TodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
@@ -441,8 +441,8 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 2 };
 		List<TodoTask> tasks =
 		[
-			new("Task 1", Status.Doing), new("Task 2", Status.Doing), new("Task 3", Status.Doing)
-			, new("Task 4", Status.Doing), new("Task 5", Status.Doing)
+			new("Task 1", OldStatus.Doing), new("Task 2", OldStatus.Doing), new("Task 3", OldStatus.Doing)
+			, new("Task 4", OldStatus.Doing), new("Task 5", OldStatus.Doing)
 		];
 
 		await context.TodoTasks.AddRangeAsync(tasks);
@@ -468,11 +468,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         List<TodoTask> tasks = [
-            new("Task 1", Status.Ready),
-            new("Task 2", Status.Paused),
-            new("Task 3", Status.Doing),
-            new("Task 4", Status.Completed),
-            new("Task 5", Status.Backlog)
+            new("Task 1", OldStatus.Ready),
+            new("Task 2", OldStatus.Paused),
+            new("Task 3", OldStatus.Doing),
+            new("Task 4", OldStatus.Completed),
+            new("Task 5", OldStatus.Backlog)
         ];
 
         await context.TodoTasks.AddRangeAsync(tasks);
@@ -483,7 +483,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         Assert.NotNull(results);
         Assert.Equal(2, results.TotalCount);
         Assert.Equal(2, results.Count);
-        Assert.All(results, task => Assert.True(task.Status is Status.Ready or Status.Paused));
+        Assert.All(results, task => Assert.True(task.OldStatus is OldStatus.Ready or OldStatus.Paused));
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
     }
@@ -496,10 +496,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", Status.Ready) { Priority = OldPriority.Distraction };
-        TodoTask secondTask = new("Task Soon", Status.Ready) { Priority = OldPriority.Consider };
-        TodoTask thirdTask = new("Task Later", Status.Ready) { Priority = OldPriority.Urgent };
-        TodoTask fourthTask = new("Task Later", Status.Ready) { Priority = OldPriority.Critical };
+        TodoTask firstTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Distraction };
+        TodoTask secondTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Consider };
+        TodoTask thirdTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        TodoTask fourthTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Critical };
         List<TodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
@@ -534,10 +534,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", Status.Ready) { Priority = OldPriority.Urgent };
-        TodoTask secondTask = new("Task Soon", Status.Ready) { Priority = OldPriority.Urgent };
-        TodoTask thirdTask = new("Task Later", Status.Ready) { Priority = OldPriority.Urgent };
-        TodoTask fourthTask = new("Task Later", Status.Ready) { Priority = OldPriority.Urgent };
+        TodoTask firstTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        TodoTask secondTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        TodoTask thirdTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        TodoTask fourthTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
         List<TodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
@@ -574,10 +574,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         
-        TodoTask taskWithIncompleteDownstreams = new("Main Task 1", Status.Ready);
-        TodoTask taskWithCompleteDownstreams = new("Main Task 2", Status.Ready);
-        TodoTask downstream1 = new("Downstream 1", Status.Doing);
-        TodoTask downstream2 = new("Downstream 2", Status.Completed);
+        TodoTask taskWithIncompleteDownstreams = new("Main Task 1", OldStatus.Ready);
+        TodoTask taskWithCompleteDownstreams = new("Main Task 2", OldStatus.Ready);
+        TodoTask downstream1 = new("Downstream 1", OldStatus.Doing);
+        TodoTask downstream2 = new("Downstream 2", OldStatus.Completed);
         TaskStream stream1 = new(taskWithIncompleteDownstreams.Id, downstream1.Id);
         TaskStream stream2 = new(taskWithCompleteDownstreams.Id, downstream2.Id);;
         

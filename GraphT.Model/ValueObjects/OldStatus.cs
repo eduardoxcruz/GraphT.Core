@@ -2,7 +2,7 @@
 
 namespace GraphT.Model.ValueObjects;
 
-public enum Status
+public enum OldStatus
 {
 	[EnumLabel("\u270c Created")]
 	Created = 0,

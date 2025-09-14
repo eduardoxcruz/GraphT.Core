@@ -49,11 +49,11 @@ public class UseCase : IInputPort
 		{
 			DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
 			TaskLog? lastLog = (await _taskLogRepository.FindTaskLastLog(dto.Id.Value) ?? 
-				new TaskLog(Guid.Empty, dateTimeOffset, Status.Created, TimeSpan.Zero));
+				new TaskLog(Guid.Empty, dateTimeOffset, OldStatus.Created, TimeSpan.Zero));
 			(string, TimeSpan) timeSpend = TimeSpendCalculatorService.GetTimeSpend(dto.Status.Value, dateTimeOffset, lastLog);
-			task.Status = dto.Status.Value;
+			task.OldStatus = dto.Status.Value;
 			task.SetTimeSpend(timeSpend.Item1);
-			TaskLog taskLog = new(task.Id, dateTimeOffset, task.Status, timeSpend.Item2);
+			TaskLog taskLog = new(task.Id, dateTimeOffset, task.OldStatus, timeSpend.Item2);
 			
 			await _taskLogRepository.AddAsync(taskLog);
 		}
@@ -74,7 +74,7 @@ public class InputDto
 {
 	public Guid? Id { get; set; }
 	public string? Name { get; set; }
-	public Status? Status { get; set; }
+	public OldStatus? Status { get; set; }
 	public bool? IsFun { get; set; }
 	public bool? IsProductive { get; set; }
 	public OldComplexity? Complexity { get; set; }

@@ -46,7 +46,7 @@ public class UseCase : IInputPort
 		
 		if (dto.LimitDateTime.HasValue) task.SetLimitDate(dto.LimitDateTime.Value);
 		
-		TaskLog createdTaskLog = new(id, DateTimeOffset.UtcNow, Status.Created, TimeSpan.Zero);
+		TaskLog createdTaskLog = new(id, DateTimeOffset.UtcNow, OldStatus.Created, TimeSpan.Zero);
 		
 		if (dto.Status is not null)
 		{
@@ -65,7 +65,7 @@ public class InputDto
 {
 	public Guid? Id { get; set; }
 	public string? Name { get; set; }
-	public Status? Status { get; set; }
+	public OldStatus? Status { get; set; }
 	public bool? IsFun { get; set; }
 	public bool? IsProductive { get; set; }
 	public OldComplexity? Complexity { get; set; }

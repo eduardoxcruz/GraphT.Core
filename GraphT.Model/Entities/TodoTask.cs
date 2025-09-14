@@ -27,7 +27,7 @@ public class TodoTask : Entity
 	public OldComplexity Complexity { get; set; }
 	public OldPriority Priority { get; set; }
 	public OldRelevance OldRelevance { get; private set; }
-	public Status Status { get; set; }
+	public OldStatus OldStatus { get; set; }
 	public float Progress { get; set; }
 	public uint UpstreamsCount => _upstreamsCount;
 	public uint DownstreamsCount => _downstreamsCount;
@@ -36,12 +36,12 @@ public class TodoTask : Entity
 	public string ComplexityLabel => this.Complexity.GetLabel();
 	public string PriorityLabel => this.Priority.GetLabel();
 	public string RelevanceLabel => this.OldRelevance.GetLabel();
-	public string StatusLabel => this.Status.GetLabel();
+	public string StatusLabel => this.OldStatus.GetLabel();
 
 	private TodoTask() : base("New Task"){ }
 
 	public TodoTask(string name, 
-							Status? status = null,
+							OldStatus? status = null,
 							bool? isFun = null, 
 							bool? isProductive = null,
 							OldComplexity? complexity = null, 
@@ -52,7 +52,7 @@ public class TodoTask : Entity
 							uint? downstreamsCount = null,
 							uint? lifeAreasCount = null) : base(name, id)
 	{
-		Status = status ?? Status.Backlog;
+		OldStatus = status ?? OldStatus.Backlog;
 		IsFun = isFun ?? false;
 		IsProductive = isProductive ?? false;
 		Complexity = complexity ?? OldComplexity.Indefinite;

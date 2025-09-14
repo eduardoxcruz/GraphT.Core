@@ -35,7 +35,7 @@ public class TodoTaskRepository : ITodoTaskRepository
 	public async ValueTask<PagedList<TodoTask>> FindTasksCompletedOrDropped(PagingParams pagingParams)
     {
        IQueryable<TodoTask> query = _context.TodoTasks
-          .Where(task => task.Status == Status.Completed || task.Status == Status.Dropped)
+          .Where(task => task.OldStatus == OldStatus.Completed || task.OldStatus == OldStatus.Dropped)
           .OrderByDescending(task => task.DateTimeInfo.FinishDateTime)
           .AsNoTracking();
 
@@ -52,7 +52,7 @@ public class TodoTaskRepository : ITodoTaskRepository
     public async ValueTask<PagedList<TodoTask>> FindTasksInProgress(PagingParams pagingParams)
     {
        IQueryable<TodoTask> query = _context.TodoTasks
-          .Where(task => task.Status == Status.Doing)
+          .Where(task => task.OldStatus == OldStatus.Doing)
           .OrderByDescending(task => task.Priority)
           .ThenBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
           .AsNoTracking();
@@ -71,7 +71,7 @@ public class TodoTaskRepository : ITodoTaskRepository
     {
 	    IQueryable<TodoTask> query = _context.TodoTasks
 		    .Where(task => 
-			    (task.Status == Status.Ready || task.Status == Status.Paused) &&
+			    (task.OldStatus == OldStatus.Ready || task.OldStatus == OldStatus.Paused) &&
 			    (!_context.TaskStreams.Any(ts => ts.UpstreamId == task.Id) || task.Progress >= 99))
 		    .OrderBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
 		    .ThenByDescending(task => task.Priority)

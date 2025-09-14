@@ -18,8 +18,8 @@ public class UseCaseTests
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
-        TodoTask task1 = new("Task 1", Status.Ready);
-        TodoTask task2 = new("Task 2", Status.Ready);
+        TodoTask task1 = new("Task 1", OldStatus.Ready);
+        TodoTask task2 = new("Task 2", OldStatus.Ready);
         List<TodoTask> tasks = [task1, task2];
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         InputDto input = new() { PagingParams = pagingParams };

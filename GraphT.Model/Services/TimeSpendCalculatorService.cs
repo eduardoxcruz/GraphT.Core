@@ -7,13 +7,13 @@ namespace GraphT.Model.Services;
 public static class TimeSpendCalculatorService
 {
 	public static (string, TimeSpan) GetTimeSpend(
-		Status newStatus, 
+		OldStatus newOldStatus, 
 		DateTimeOffset newDateTime, 
 		TaskLog lastLog)
 	{
 		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		
-		if ((lastLog.Status is Status.Doing) && (newStatus is not Status.Doing))
+		if ((lastLog.OldStatus is OldStatus.Doing) && (newOldStatus is not OldStatus.Doing))
 		{
 			timeSpend = lastLog.TimeSpentOnTask!.Value + (newDateTime - lastLog.DateTime);
 		}

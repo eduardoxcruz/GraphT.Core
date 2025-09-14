@@ -37,14 +37,14 @@ public class UseCaseTests
         if (complexities.Count != Enum.GetValues<OldComplexity>().Length ||
             priorities.Count != Enum.GetValues<OldPriority>().Length ||
             relevances.Count != Enum.GetValues<OldRelevance>().Length ||
-            statuses.Count != Enum.GetValues<Status>().Length)
+            statuses.Count != Enum.GetValues<OldStatus>().Length)
             return false;
 
         // Verify that IDs and labels are valid for each enum
         return ValidateEnumItems<OldComplexity>(complexities) &&
                ValidateEnumItems<OldPriority>(priorities) &&
                ValidateEnumItems<OldRelevance>(relevances) &&
-               ValidateEnumItems<Status>(statuses);
+               ValidateEnumItems<OldStatus>(statuses);
     }
 
     private static bool ValidateEnumItems<TEnum>(List<EnumItemAndLabel> items) where TEnum : struct, Enum

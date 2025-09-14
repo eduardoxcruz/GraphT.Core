@@ -40,9 +40,9 @@ public class TaskProgressCalculatorServiceTests
         // Arrange
         HashSet<TodoTask> downstreams =
         [
-	        new("Task 1", status: Status.Backlog), 
-	        new("Task 2", status: Status.Backlog), 
-	        new("Task 3", status: Status.Backlog)
+	        new("Task 1", status: OldStatus.Backlog), 
+	        new("Task 2", status: OldStatus.Backlog), 
+	        new("Task 3", status: OldStatus.Backlog)
         ];
         bool finishCurrentTask = false;
         float expectedProgress = 0f;
@@ -60,9 +60,9 @@ public class TaskProgressCalculatorServiceTests
         // Arrange
         HashSet<TodoTask> downstreams =
         [
-	        new("Task 1", status: Status.Completed), 
-	        new("Task 2", status: Status.Dropped), 
-	        new("Task 3", status: Status.Completed)
+	        new("Task 1", status: OldStatus.Completed), 
+	        new("Task 2", status: OldStatus.Dropped), 
+	        new("Task 3", status: OldStatus.Completed)
         ];
         bool finishCurrentTask = false;
         float expectedProgress = 99f;
@@ -80,9 +80,9 @@ public class TaskProgressCalculatorServiceTests
         // Arrange
         HashSet<TodoTask> downstreams =
         [
-	        new("Task 1", status: Status.Completed), 
-	        new("Task 2", status: Status.Dropped), 
-	        new("Task 3", status: Status.Completed)
+	        new("Task 1", status: OldStatus.Completed), 
+	        new("Task 2", status: OldStatus.Dropped), 
+	        new("Task 3", status: OldStatus.Completed)
         ];
         bool finishCurrentTask = true;
         float expectedProgress = 100f;
@@ -109,13 +109,13 @@ public class TaskProgressCalculatorServiceTests
         // Agregar tareas completadas
         for (int i = 0; i < completedTasks; i++)
         {
-            downstreams.Add(new TodoTask($"Completed Task {i}", status: Status.Completed));
+            downstreams.Add(new TodoTask($"Completed Task {i}", status: OldStatus.Completed));
         }
         
         // Agregar tareas en progreso
         for (int i = 0; i < (totalTasks - completedTasks); i++)
         {
-            downstreams.Add(new TodoTask($"In Progress Task {i}", status: Status.Doing));
+            downstreams.Add(new TodoTask($"In Progress Task {i}", status: OldStatus.Doing));
         }
 
         bool finishCurrentTask = false;

@@ -23,7 +23,7 @@ public class UseCaseTests
         InputDto input = new()
         {
             Name = "Test Task",
-            Status = Status.Created,
+            Status = OldStatus.Created,
             IsFun = true,
             IsProductive = true,
             Complexity = OldComplexity.High,
