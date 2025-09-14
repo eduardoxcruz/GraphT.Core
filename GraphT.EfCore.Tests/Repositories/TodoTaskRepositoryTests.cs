@@ -619,7 +619,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		// Assert
 		for (int i = 0; i < result.Count - 1; i++)
 		{
-			Assert.True(result[i].DateTimeInfo.CreationDateTime > result[i + 1].DateTimeInfo.CreationDateTime);
+			Assert.True(result[i].OldDateTimeInfo.CreationDateTime > result[i + 1].OldDateTimeInfo.CreationDateTime);
 		}
 
 		Assert.NotNull(result);

@@ -36,7 +36,7 @@ public class TodoTaskRepository : ITodoTaskRepository
     {
        IQueryable<TodoTask> query = _context.TodoTasks
           .Where(task => task.OldStatus == OldStatus.Completed || task.OldStatus == OldStatus.Dropped)
-          .OrderByDescending(task => task.DateTimeInfo.FinishDateTime)
+          .OrderByDescending(task => task.OldDateTimeInfo.FinishDateTime)
           .AsNoTracking();
 
        int totalCount = await query.CountAsync();
@@ -54,7 +54,7 @@ public class TodoTaskRepository : ITodoTaskRepository
        IQueryable<TodoTask> query = _context.TodoTasks
           .Where(task => task.OldStatus == OldStatus.Doing)
           .OrderByDescending(task => task.Priority)
-          .ThenBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
+          .ThenBy(task => task.OldDateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
           .AsNoTracking();
 
        int totalCount = await query.CountAsync();
@@ -73,7 +73,7 @@ public class TodoTaskRepository : ITodoTaskRepository
 		    .Where(task => 
 			    (task.OldStatus == OldStatus.Ready || task.OldStatus == OldStatus.Paused) &&
 			    (!_context.TaskStreams.Any(ts => ts.UpstreamId == task.Id) || task.Progress >= 99))
-		    .OrderBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
+		    .OrderBy(task => task.OldDateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
 		    .ThenByDescending(task => task.Priority)
 		    .AsNoTracking();
 
@@ -92,7 +92,7 @@ public class TodoTaskRepository : ITodoTaskRepository
     public async ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams)
     {
 	    IQueryable<TodoTask> query = _context.TodoTasks
-		    .OrderByDescending(task => task.DateTimeInfo.CreationDateTime)
+		    .OrderByDescending(task => task.OldDateTimeInfo.CreationDateTime)
 		    .AsNoTracking();
             
 	    int totalCount = await query.CountAsync();

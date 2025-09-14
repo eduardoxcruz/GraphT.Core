@@ -19,7 +19,7 @@ public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask
         builder.Property(todoTask => todoTask.Priority).HasColumnOrder(6);
         builder.Property(todoTask => todoTask.OldRelevance).HasColumnOrder(7);
         builder.Property(todoTask => todoTask.Progress).HasColumnOrder(8);
-        builder.ComplexProperty(todoTask => todoTask.DateTimeInfo);
+        builder.ComplexProperty(todoTask => todoTask.OldDateTimeInfo);
 
         builder.Ignore(todoTask => todoTask.StatusLabel);
         builder.Ignore(todoTask => todoTask.ComplexityLabel);

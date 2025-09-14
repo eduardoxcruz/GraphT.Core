@@ -108,9 +108,9 @@ public class UseCaseTests
         // Assert
         await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
             t.Name == input.Name &&
-            t.DateTimeInfo.StartDateTime == input.StartDateTime &&
-            t.DateTimeInfo.FinishDateTime == input.FinishDateTime &&
-            t.DateTimeInfo.LimitDateTime == input.LimitDateTime
+            t.OldDateTimeInfo.StartDateTime == input.StartDateTime &&
+            t.OldDateTimeInfo.FinishDateTime == input.FinishDateTime &&
+            t.OldDateTimeInfo.LimitDateTime == input.LimitDateTime
         ));
         await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();

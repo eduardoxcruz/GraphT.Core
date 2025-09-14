@@ -9,7 +9,7 @@ public class TodoTask : Entity
 {
 	private bool _isFun;
 	private bool _isProductive;
-	private DateTimeInfo _dateTimeInfo;
+	private OldDateTimeInfo _oldDateTimeInfo;
 	private uint _upstreamsCount;
 	private uint _downstreamsCount;
 	private uint _lifeAreasCount;
@@ -32,7 +32,7 @@ public class TodoTask : Entity
 	public uint UpstreamsCount => _upstreamsCount;
 	public uint DownstreamsCount => _downstreamsCount;
 	public uint LifeAreasCount => _lifeAreasCount;
-	public DateTimeInfo DateTimeInfo => _dateTimeInfo;
+	public OldDateTimeInfo OldDateTimeInfo => _oldDateTimeInfo;
 	public string ComplexityLabel => this.Complexity.GetLabel();
 	public string PriorityLabel => this.Priority.GetLabel();
 	public string RelevanceLabel => this.OldRelevance.GetLabel();
@@ -47,7 +47,7 @@ public class TodoTask : Entity
 							OldComplexity? complexity = null, 
 							OldPriority? priority = null,
 							Guid? id = null,
-							DateTimeInfo? dateTimeInfo = null,
+							OldDateTimeInfo? dateTimeInfo = null,
 							uint? upstreamsCount = null,
 							uint? downstreamsCount = null,
 							uint? lifeAreasCount = null) : base(name, id)
@@ -58,7 +58,7 @@ public class TodoTask : Entity
 		Complexity = complexity ?? OldComplexity.Indefinite;
 		Priority = priority ?? OldPriority.Distraction;
 		Progress = 0;
-		_dateTimeInfo = dateTimeInfo ?? new DateTimeInfo();
+		_oldDateTimeInfo = dateTimeInfo ?? new OldDateTimeInfo();
 		_upstreamsCount = upstreamsCount ?? 0;
 		_downstreamsCount = downstreamsCount ?? 0;
 		_lifeAreasCount = lifeAreasCount ?? 0;
@@ -86,31 +86,31 @@ public class TodoTask : Entity
 	
 	public void SetStartDate(DateTimeOffset startDate)
 	{
-		if (_dateTimeInfo.FinishDateTime is not null && startDate > _dateTimeInfo.FinishDateTime)
+		if (_oldDateTimeInfo.FinishDateTime is not null && startDate > _oldDateTimeInfo.FinishDateTime)
 		{
 			throw new ArgumentException("Start date cannot be after of finish date");
 		}
 		
-		_dateTimeInfo.StartDateTime = startDate;
+		_oldDateTimeInfo.StartDateTime = startDate;
 	}
 
 	public void SetFinishDate(DateTimeOffset finishDate)
 	{
-		if (_dateTimeInfo.StartDateTime is not null && finishDate < _dateTimeInfo.StartDateTime)
+		if (_oldDateTimeInfo.StartDateTime is not null && finishDate < _oldDateTimeInfo.StartDateTime)
 		{
 			throw new ArgumentException("Finish date cannot be before start date");
 		}
 
-		_dateTimeInfo.FinishDateTime = finishDate;
+		_oldDateTimeInfo.FinishDateTime = finishDate;
 	}
 
 	public void SetLimitDate(DateTimeOffset limitDate)
 	{
-		_dateTimeInfo.LimitDateTime = limitDate;
+		_oldDateTimeInfo.LimitDateTime = limitDate;
 	}
 	
 	public void SetTimeSpend(string timeSpend)
 	{
-		_dateTimeInfo.TimeSpend = timeSpend;
+		_oldDateTimeInfo.TimeSpend = timeSpend;
 	}
 }

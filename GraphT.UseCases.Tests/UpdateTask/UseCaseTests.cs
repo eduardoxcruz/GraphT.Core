@@ -116,7 +116,7 @@ public class UseCaseTests
 		// Assert
 		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.OldStatus == newOldStatus &&
-			t.DateTimeInfo.TimeSpend == expectedTimeSpendString
+			t.OldDateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
 
 		await taskLogRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
@@ -158,7 +158,7 @@ public class UseCaseTests
 		// Assert
 		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.OldStatus == newOldStatus &&
-			t.DateTimeInfo.TimeSpend == expectedTimeSpendString
+			t.OldDateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
 
 		await taskLogRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
@@ -201,12 +201,12 @@ public class UseCaseTests
 		// Assert
 		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
 			t.Id == taskId &&
-			t.DateTimeInfo.StartDateTime != null &&
-			t.DateTimeInfo.StartDateTime == dto.StartDateTime &&
-			t.DateTimeInfo.FinishDateTime != null &&
-			t.DateTimeInfo.FinishDateTime == dto.FinishDateTime &&
-			t.DateTimeInfo.LimitDateTime != null &&
-			t.DateTimeInfo.LimitDateTime == dto.LimitDateTime
+			t.OldDateTimeInfo.StartDateTime != null &&
+			t.OldDateTimeInfo.StartDateTime == dto.StartDateTime &&
+			t.OldDateTimeInfo.FinishDateTime != null &&
+			t.OldDateTimeInfo.FinishDateTime == dto.FinishDateTime &&
+			t.OldDateTimeInfo.LimitDateTime != null &&
+			t.OldDateTimeInfo.LimitDateTime == dto.LimitDateTime
 		));
 		await unitOfWork.Received(1).SaveChangesAsync();
 		await outputPort.Received(1).Handle();

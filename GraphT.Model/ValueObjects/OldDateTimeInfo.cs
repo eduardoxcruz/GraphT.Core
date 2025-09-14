@@ -1,6 +1,6 @@
 ﻿namespace GraphT.Model.ValueObjects;
 
-public struct DateTimeInfo
+public struct OldDateTimeInfo
 {
 	public DateTimeOffset CreationDateTime { get; private set; }
 	public DateTimeOffset? StartDateTime { get; set; }
@@ -9,7 +9,7 @@ public struct DateTimeInfo
 	public string TimeSpend { get; set; }
 	public readonly string Punctuality => GetPunctuality();
 
-	public DateTimeInfo()
+	public OldDateTimeInfo()
 	{
 		CreationDateTime = DateTimeOffset.Now;
 		TimeSpend = $"\u23f0 0 day(s) - 0 hours - 0 minutes";
