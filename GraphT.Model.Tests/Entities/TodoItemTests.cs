@@ -145,4 +145,12 @@ public class TodoItemTests
 		
 		Assert.Equal(item.Priority, Priority.Distraction);
 	}
+	
+	[Fact]
+	public void TodoItem_ShouldHave_StatusCreated_WhenCreated()
+	{
+		TodoItem item = new("Test");
+		
+		Assert.Equal(item.Status, Status.Created);
+	}
 }

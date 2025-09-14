@@ -11,6 +11,7 @@ public class TodoItem
 	public Relevance Relevance => new(IsFun, IsProductive);
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
+	public Status Status { get; set; }
 	
 	public TodoItem(string name)
 	{
@@ -21,5 +22,6 @@ public class TodoItem
 		Name = name;
 		Complexity = Complexity.Indefinite;
 		Priority = Priority.Distraction;
+		Status = Status.Created;
 	}
 }
