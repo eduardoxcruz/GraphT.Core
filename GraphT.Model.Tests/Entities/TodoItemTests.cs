@@ -137,4 +137,12 @@ public class TodoItemTests
 		
 		Assert.Equal(item.Complexity, Complexity.Indefinite);
 	}
+	
+	[Fact]
+	public void TodoItem_ShouldHave_PriorityDistraction_WhenCreated()
+	{
+		TodoItem item = new("Test");
+		
+		Assert.Equal(item.Priority, Priority.Distraction);
+	}
 }
