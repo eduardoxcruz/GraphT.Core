@@ -1,15 +1,15 @@
 ﻿namespace GraphT.Model.ValueObjects;
 
-public class TaskLog
+public class OldTaskLog
 {
 	public readonly Guid TaskId;
 	public readonly DateTimeOffset DateTime;
 	public readonly OldStatus OldStatus;
 	public readonly TimeSpan? TimeSpentOnTask;
 
-	private TaskLog() { }
+	private OldTaskLog() { }
 
-	public TaskLog(Guid taskId, DateTimeOffset dateTime, OldStatus oldStatus, TimeSpan? timeSpend = null)
+	public OldTaskLog(Guid taskId, DateTimeOffset dateTime, OldStatus oldStatus, TimeSpan? timeSpend = null)
 	{
 		TaskId = taskId;
 		DateTime = dateTime;

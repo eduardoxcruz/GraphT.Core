@@ -104,7 +104,7 @@ public class UseCaseTests
 		TodoTask existingTask = new("Test Task", id: taskId, status: initialOldStatus);
 		InputDto dto = new() { Id = taskId, Status = newOldStatus };
 		TimeSpan previousTimeSpent = TimeSpan.FromDays(expectedDays) + TimeSpan.FromHours(expectedHours) + TimeSpan.FromMinutes(expectedMinutes);
-		TaskLog lastLog = new(taskId, currentTime.AddHours(-2), initialOldStatus, previousTimeSpent);
+		OldTaskLog lastLog = new(taskId, currentTime.AddHours(-2), initialOldStatus, previousTimeSpent);
 		
 		taskLogRepository.FindTaskLastLog(taskId).Returns(lastLog);
 		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
@@ -119,7 +119,7 @@ public class UseCaseTests
 			t.OldDateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
 
-		await taskLogRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
+		await taskLogRepository.Received(1).AddAsync(Arg.Is<OldTaskLog>(l =>
 			l.TaskId == taskId &&
 			l.OldStatus == newOldStatus &&
 			l.TimeSpentOnTask!.Value.Days == (previousTimeSpent + (currentTime - lastLog.DateTime)).Days &&
@@ -148,7 +148,7 @@ public class UseCaseTests
 		InputDto dto = new() { Id = taskId, Status = newOldStatus };
 		string expectedTimeSpendString = "\u26a1 0 day(s) - 0 hours - 0 minutes";
 		
-		taskLogRepository.FindTaskLastLog(taskId).Returns((TaskLog?)null);
+		taskLogRepository.FindTaskLastLog(taskId).Returns((OldTaskLog?)null);
 		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
 		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 
@@ -161,7 +161,7 @@ public class UseCaseTests
 			t.OldDateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
 
-		await taskLogRepository.Received(1).AddAsync(Arg.Is<TaskLog>(l =>
+		await taskLogRepository.Received(1).AddAsync(Arg.Is<OldTaskLog>(l =>
 			l.TaskId == taskId &&
 			l.OldStatus == newOldStatus &&
 			l.TimeSpentOnTask == TimeSpan.Zero

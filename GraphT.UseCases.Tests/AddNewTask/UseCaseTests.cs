@@ -43,7 +43,7 @@ public class UseCaseTests
             t.Complexity == input.Complexity && 
             t.Priority == input.Priority
         ));
-        await taskLogRepository.Received(2).AddAsync(Arg.Any<TaskLog>());
+        await taskLogRepository.Received(2).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
     }
@@ -74,7 +74,7 @@ public class UseCaseTests
 
         // Assert
         await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => t.Id == input.Id && t.Name == input.Name));
-        await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
+        await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id == input.Id));
     }
@@ -112,7 +112,7 @@ public class UseCaseTests
             t.OldDateTimeInfo.FinishDateTime == input.FinishDateTime &&
             t.OldDateTimeInfo.LimitDateTime == input.LimitDateTime
         ));
-        await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
+        await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
     }

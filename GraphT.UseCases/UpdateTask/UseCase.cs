@@ -48,14 +48,14 @@ public class UseCase : IInputPort
 		if (dto.Status is not null)
 		{
 			DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-			TaskLog? lastLog = (await _taskLogRepository.FindTaskLastLog(dto.Id.Value) ?? 
-				new TaskLog(Guid.Empty, dateTimeOffset, OldStatus.Created, TimeSpan.Zero));
+			OldTaskLog? lastLog = (await _taskLogRepository.FindTaskLastLog(dto.Id.Value) ?? 
+				new OldTaskLog(Guid.Empty, dateTimeOffset, OldStatus.Created, TimeSpan.Zero));
 			(string, TimeSpan) timeSpend = TimeSpendCalculatorService.GetTimeSpend(dto.Status.Value, dateTimeOffset, lastLog);
 			task.OldStatus = dto.Status.Value;
 			task.SetTimeSpend(timeSpend.Item1);
-			TaskLog taskLog = new(task.Id, dateTimeOffset, task.OldStatus, timeSpend.Item2);
+			OldTaskLog oldTaskLog = new(task.Id, dateTimeOffset, task.OldStatus, timeSpend.Item2);
 			
-			await _taskLogRepository.AddAsync(taskLog);
+			await _taskLogRepository.AddAsync(oldTaskLog);
 		}
 		
 		if (dto.StartDateTime.HasValue) task.SetStartDate(dto.StartDateTime.Value);

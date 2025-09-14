@@ -9,7 +9,7 @@ public static class TimeSpendCalculatorService
 	public static (string, TimeSpan) GetTimeSpend(
 		OldStatus newOldStatus, 
 		DateTimeOffset newDateTime, 
-		TaskLog lastLog)
+		OldTaskLog lastLog)
 	{
 		TimeSpan timeSpend = lastLog.TimeSpentOnTask!.Value;
 		

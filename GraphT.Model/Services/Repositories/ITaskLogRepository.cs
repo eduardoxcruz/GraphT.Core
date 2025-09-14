@@ -6,10 +6,10 @@ namespace GraphT.Model.Services.Repositories;
 
 public interface ITaskLogRepository
 {
-	ValueTask<TaskLog?> FindTaskLastLog(Guid taskId);
-	ValueTask AddAsync(TaskLog task);
-	ValueTask AddRangeAsync(IEnumerable<TaskLog> taskLogs);
-	ValueTask RemoveAsync(TaskLog task);
-	ValueTask RemoveRangeAsync(IEnumerable<TaskLog> taskLogs);
+	ValueTask<OldTaskLog?> FindTaskLastLog(Guid taskId);
+	ValueTask AddAsync(OldTaskLog oldTask);
+	ValueTask AddRangeAsync(IEnumerable<OldTaskLog> taskLogs);
+	ValueTask RemoveAsync(OldTaskLog oldTask);
+	ValueTask RemoveRangeAsync(IEnumerable<OldTaskLog> taskLogs);
 	
 }

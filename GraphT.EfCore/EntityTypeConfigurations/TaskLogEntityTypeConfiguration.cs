@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GraphT.EfCore.EntityTypeConfigurations;
 
-public class TaskLogEntityTypeConfiguration : IEntityTypeConfiguration<TaskLog>
+public class TaskLogEntityTypeConfiguration : IEntityTypeConfiguration<OldTaskLog>
 {
-	public void Configure(EntityTypeBuilder<TaskLog> builder)
+	public void Configure(EntityTypeBuilder<OldTaskLog> builder)
 	{
 		builder.HasKey(t => new { t.TaskId, t.DateTime, Status = t.OldStatus});
 		builder.Property(t => t.TaskId).HasColumnOrder(0);

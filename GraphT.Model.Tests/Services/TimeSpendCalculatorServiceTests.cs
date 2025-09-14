@@ -20,7 +20,7 @@ public class TimeSpendCalculatorServiceTests
 		(string, TimeSpan Zero) expected = ("\u26a1 0 day(s) - 0 hours - 0 minutes", TimeSpan.Zero);
 
 		// Act
-		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(newOldStatus, newDateTime, new TaskLog(Guid.Empty, DateTimeOffset.UtcNow, OldStatus.Created, TimeSpan.Zero));
+		(string, TimeSpan) result = TimeSpendCalculatorService.GetTimeSpend(newOldStatus, newDateTime, new OldTaskLog(Guid.Empty, DateTimeOffset.UtcNow, OldStatus.Created, TimeSpan.Zero));
 
 		// Assert
 		Assert.Equal(expected, result);
@@ -40,7 +40,7 @@ public class TimeSpendCalculatorServiceTests
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-timeDifferenceMinutes);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
 
-		TaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.Zero);
+		OldTaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.Zero);
 		TimeSpan expectedTimeSpan = finalDateTime - initialDateTime;
 		string expectedEmoji = "\u26a1";
 
@@ -68,7 +68,7 @@ public class TimeSpendCalculatorServiceTests
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-1);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
 
-		TaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.FromMilliseconds(timeSpentOnTask));
+		OldTaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.FromMilliseconds(timeSpentOnTask));
 		TimeSpan expectedTimeSpan = (finalDateTime - initialDateTime) + lastLog.TimeSpentOnTask!.Value;
 
 		string expectedEmoji = "\u23f0";
@@ -94,7 +94,7 @@ public class TimeSpendCalculatorServiceTests
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddHours(-2);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
 
-		TaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.Zero);
+		OldTaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.Zero);
 		TimeSpan expectedTimeSpan = finalDateTime - initialDateTime;
 		string expectedEmoji = "\u23f0";
 		(string, TimeSpan expectedTimeSpan) expectedResult = ($"{expectedEmoji} 0 day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);
@@ -116,7 +116,7 @@ public class TimeSpendCalculatorServiceTests
 		DateTimeOffset initialDateTime = DateTimeOffset.UtcNow.AddMinutes(-59);
 		DateTimeOffset finalDateTime = DateTimeOffset.UtcNow;
 
-		TaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.Zero);
+		OldTaskLog lastLog = new(taskId, initialDateTime, initialOldStatus, TimeSpan.Zero);
 		TimeSpan expectedTimeSpan = finalDateTime - initialDateTime;
 		string expectedEmoji = "\u23f0";
 		(string, TimeSpan expectedTimeSpan) expectedResult = ($"{expectedEmoji} 0 day(s) - {expectedTimeSpan.Hours} hours - {expectedTimeSpan.Minutes} minutes", expectedTimeSpan);

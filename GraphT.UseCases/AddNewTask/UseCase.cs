@@ -46,15 +46,15 @@ public class UseCase : IInputPort
 		
 		if (dto.LimitDateTime.HasValue) task.SetLimitDate(dto.LimitDateTime.Value);
 		
-		TaskLog createdTaskLog = new(id, DateTimeOffset.UtcNow, OldStatus.Created, TimeSpan.Zero);
+		OldTaskLog createdOldTaskLog = new(id, DateTimeOffset.UtcNow, OldStatus.Created, TimeSpan.Zero);
 		
 		if (dto.Status is not null)
 		{
-			TaskLog taskLog = new(id, DateTimeOffset.UtcNow.AddSeconds(2), dto.Status.Value, TimeSpan.Zero);
-			await _taskLogRepository.AddAsync(taskLog);
+			OldTaskLog oldTaskLog = new(id, DateTimeOffset.UtcNow.AddSeconds(2), dto.Status.Value, TimeSpan.Zero);
+			await _taskLogRepository.AddAsync(oldTaskLog);
 		}
 		
-		await _taskLogRepository.AddAsync(createdTaskLog);
+		await _taskLogRepository.AddAsync(createdOldTaskLog);
 		await _todoTaskRepository.AddAsync(task);
 		await _unitOfWork.SaveChangesAsync();
 		await _outputPort.Handle(new OutputDto(id));
