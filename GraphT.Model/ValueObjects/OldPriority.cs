@@ -2,7 +2,7 @@
 
 namespace GraphT.Model.ValueObjects;
 
-public enum Priority
+public enum OldPriority
 {
 	[EnumLabel("\ud83d\udecc Distraction")]
 	Distraction = 0,

@@ -69,7 +69,7 @@ public class InputDto
 	public bool? IsFun { get; set; }
 	public bool? IsProductive { get; set; }
 	public OldComplexity? Complexity { get; set; }
-	public Priority? Priority { get; set; }
+	public OldPriority? Priority { get; set; }
 	public DateTimeOffset? StartDateTime { get; set; }
 	public DateTimeOffset? FinishDateTime { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }

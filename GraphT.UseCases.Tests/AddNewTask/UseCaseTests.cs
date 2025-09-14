@@ -27,7 +27,7 @@ public class UseCaseTests
             IsFun = true,
             IsProductive = true,
             Complexity = OldComplexity.High,
-            Priority = Priority.Urgent
+            Priority = OldPriority.Urgent
         };
 
         UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);

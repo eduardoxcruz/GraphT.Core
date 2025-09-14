@@ -63,7 +63,7 @@ public class UseCaseTests
 			, IsFun = true
 			, IsProductive = true
 			, Complexity = OldComplexity.High
-			, Priority = Priority.Critical
+			, Priority = OldPriority.Critical
 		};
 
 		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);

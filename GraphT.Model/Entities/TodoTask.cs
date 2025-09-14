@@ -25,7 +25,7 @@ public class TodoTask : Entity
 		set => SetProperty(ref _isProductive, value);
 	}
 	public OldComplexity Complexity { get; set; }
-	public Priority Priority { get; set; }
+	public OldPriority Priority { get; set; }
 	public OldRelevance OldRelevance { get; private set; }
 	public Status Status { get; set; }
 	public float Progress { get; set; }
@@ -45,7 +45,7 @@ public class TodoTask : Entity
 							bool? isFun = null, 
 							bool? isProductive = null,
 							OldComplexity? complexity = null, 
-							Priority? priority = null,
+							OldPriority? priority = null,
 							Guid? id = null,
 							DateTimeInfo? dateTimeInfo = null,
 							uint? upstreamsCount = null,
@@ -56,7 +56,7 @@ public class TodoTask : Entity
 		IsFun = isFun ?? false;
 		IsProductive = isProductive ?? false;
 		Complexity = complexity ?? OldComplexity.Indefinite;
-		Priority = priority ?? Priority.Distraction;
+		Priority = priority ?? OldPriority.Distraction;
 		Progress = 0;
 		_dateTimeInfo = dateTimeInfo ?? new DateTimeInfo();
 		_upstreamsCount = upstreamsCount ?? 0;
