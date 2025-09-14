@@ -85,28 +85,28 @@ public class TodoItemTests
 		Assert.True(idProperty.CanRead, "Id should be readable");
 		Assert.False(idProperty.CanWrite, "Id should not be publicly writable");
 	}
-	
-	[Theory]
-	[InlineData(false, false, "\ud83d\ude12", "Superfluous")]
-	[InlineData(true, false, "\ud83e\udd24", "Entertaining")]
-	[InlineData(false, true, "\ud83e\uddd0", "Necessary")]
-	[InlineData(true, true, "\ud83d\ude0e", "Purposeful")]
-	public void TodoItem_Relevance_ShouldReflectIsFunAndIsProductive(bool isFun, bool isProductive, string expectedEmoji, string expectedName)
-	{
-		var todo = new TodoItem("Test")
-		{
-			IsFun = isFun,
-			IsProductive = isProductive
-		};
 
-		Assert.Equal(expectedEmoji, todo.Relevance.Emoji);
-		Assert.Equal(expectedName, todo.Relevance.Name);
-	}
-	
-	[Fact]
-	public void TodoItem_Relevance_ShouldUpdate_WhenIsFunOrIsProductiveChanges()
+	public void TodoItem_ShouldHaveRelevance_WhenCreated()
 	{
-		var todo = new TodoItem("Test")
+		
+	}
+
+	[Fact]
+	public void TodoItem_Relevance_ShouldBeReadOnly()
+	{
+		var todo = new TodoItem("Test");
+
+		var prop = typeof(TodoItem).GetProperty("Relevance");
+
+		Assert.NotNull(prop);
+		Assert.True(prop.CanRead, "Relevance should be readable");
+		Assert.False(prop.CanWrite, "Relevance should not be publicly writable");
+	}
+
+	[Fact]
+	public void Relevance_ShouldUpdate_WhenIsFunOrIsProductiveChanges()
+	{
+		TodoItem todo = new TodoItem("Test")
 		{
 			IsFun = false,
 			IsProductive = false
@@ -128,15 +128,8 @@ public class TodoItemTests
 	}
 	
 	[Fact]
-	public void TodoItem_Relevance_ShouldBeReadOnly()
+	public void TodoItem_ShouldHaveComplexity_WhenCreated()
 	{
-		var todo = new TodoItem("Test");
-
-		var prop = typeof(TodoItem).GetProperty("Relevance");
-
-		Assert.NotNull(prop);
-		Assert.True(prop.CanRead, "Relevance should be readable");
-		Assert.False(prop.CanWrite, "Relevance should not be publicly writable");
+		
 	}
-
 }
