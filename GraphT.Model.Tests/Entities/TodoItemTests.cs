@@ -8,6 +8,15 @@ namespace GraphT.Model.Tests.Entities;
 public class TodoItemTests
 {
 	[Fact]
+	public void CreateTodo_ShouldCreateWithDefaultName_WhenNameNotProvided()
+	{
+		TodoItem todo = new();
+		
+		Assert.Equal("New Todo Task", todo.Name);
+		Assert.NotEqual(Guid.Empty, todo.Id);
+	}
+	
+	[Fact]
 	public void CreateTodo_ShouldHaveName_WhenCreated()
 	{
 		string name = "Test";
@@ -152,5 +161,219 @@ public class TodoItemTests
 		TodoItem item = new("Test");
 		
 		Assert.Equal(item.Status, Status.Created);
+	}
+
+	[Fact]
+	public void Status_OnlyChangedVia_SetStatus()
+	{
+		TodoItem todo = new();
+		Status expected = Status.Backlog;
+		
+		todo.SetStatus(expected);
+		
+		Assert.Equal(expected, todo.Status);
+		Assert.True(typeof(TodoItem).GetProperty("Status").SetMethod.IsPrivate);
+	}
+
+	[Fact]
+	public void TodoItem_ShouldHave_LimitDateTime()
+	{
+		Assert.NotNull(typeof(TodoItem).GetProperty("LimitDateTime"));
+	}
+
+	[Fact]
+	public void LimitDateTime_OnlyChangedVia_SetLimitDateTime()
+	{
+		TodoItem todo = new("Test");
+		DateTimeOffset expected = DateTimeOffset.Now;
+		todo.SetLimitDateTime(expected);
+		
+		Assert.Equal(expected, todo.LimitDateTime);
+		Assert.True(typeof(TodoItem).GetProperty("LimitDateTime").SetMethod.IsPrivate);
+		Assert.NotNull(typeof(TodoItem).GetMethod("SetLimitDateTime"));
+	}
+
+	[Fact]
+	public void TodoItem_ShouldHave_TimeSpend()
+	{
+		Assert.True(false);
+	}
+
+	[Fact]
+	public void TodoItem_ShouldHave_ReadonlyPunctuality()
+	{
+		Assert.NotNull(typeof(TodoItem).GetProperty("Punctuality"));
+		Assert.False(typeof(TodoItem).GetProperty("Punctuality").CanWrite);
+	}
+
+	[Fact]
+	public void Punctuality_ReturnsNoTargetWhenLimitDateTimeNotSet()
+	{
+		TodoItem todo = new();
+		
+		Assert.Equal("\u26a0 No Target", todo.Punctuality);
+	}
+
+	[Theory]
+	[InlineData(-2, 0, 0, 0)]
+	[InlineData(-1, -1, 0, 0)]
+	[InlineData(-1, 0, -1, 0)]
+	[InlineData(-1, 0, 0, -1)]
+	public void Punctuality_ReturnsEarlyDaysWhenFinishedBeforeLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	{
+		TodoItem todo = new("Test");
+		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		
+		todo.SetLimitDateTime(limitDateTime);
+		todo.SetStatus(
+			limitDateTime
+				.AddDays(daysDifference)
+				.AddHours(hoursDifference)
+				.AddMinutes(minutesDifference)
+				.AddSeconds(secondsDifference), 
+			Status.Completed);
+		
+		Assert.Equal($"\u2b50 Early {Math.Abs(daysDifference)} day(s) - {Math.Abs(hoursDifference)} hours(s) - {Math.Abs(minutesDifference)} minute(s) - {Math.Abs(secondsDifference)} second(s)!", todo.Punctuality);
+	}
+
+	[Theory]
+	[InlineData(-1, 0, 0, 0)]
+	[InlineData(0, -1, 0, 0)]
+	[InlineData(0, 0, -1, 0)]
+	[InlineData(0, 0, 0, -1)]
+	[InlineData(0, 0, 0, 0)]
+	public void Punctuality_ReturnsOnTimeWhenFinishedOnLimitDateOrWithin24Hours(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	{
+		TodoItem todo = new("Test");
+		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		
+		todo.SetLimitDateTime(limitDateTime);
+		todo.SetStatus(
+			limitDateTime
+				.AddDays(daysDifference)
+				.AddHours(hoursDifference)
+				.AddMinutes(minutesDifference)
+				.AddSeconds(secondsDifference), 
+			Status.Completed);
+		
+		Assert.Equal("\u2705 On Time!", todo.Punctuality);
+	}
+
+	[Theory]
+	[InlineData(0, 0, 0, 1)]
+	[InlineData(0, 0, 1, 0)]
+	[InlineData(0, 1, 0, 0)]
+	[InlineData(1, 0, 0, 0)]
+	public void Punctuality_ReturnsLateDaysWhenFinishedAfterLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	{
+		TodoItem todo = new("Test");
+		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		
+		todo.SetLimitDateTime(limitDateTime);
+		todo.SetStatus(
+			limitDateTime
+				.AddDays(daysDifference)
+				.AddHours(hoursDifference)
+				.AddMinutes(minutesDifference)
+				.AddSeconds(secondsDifference), 
+			Status.Completed);
+		
+		Assert.Equal($"\ud83d\udea8 Late {Math.Abs(daysDifference)} day(s) - {Math.Abs(hoursDifference)} hours(s) - {Math.Abs(minutesDifference)} minute(s) - {Math.Abs(secondsDifference)} second(s)!", todo.Punctuality);
+	}
+
+	[Theory]
+	[InlineData(2, 0, 0, 0)]
+	[InlineData(1, 1, 0, 0)]
+	[InlineData(1, 0, 1, 0)]
+	[InlineData(1, 0, 0, 1)]
+	public void Punctuality_ReturnsDaysToGoWhenCurrentDateIsBeforeLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	{
+		string expected =
+			$"\u23f1 {Math.Abs(daysDifference)} day(s) - {Math.Abs(hoursDifference)} hours(s) - {Math.Abs(minutesDifference)} minute(s) - {Math.Abs(secondsDifference)} second(s) To Go!";
+		TodoItem todo = new();
+		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		
+		todo.SetLimitDateTime(limitDateTime
+			.AddDays(daysDifference)
+			.AddHours(hoursDifference)
+			.AddMinutes(minutesDifference)
+			.AddSeconds(secondsDifference));
+		
+		Assert.Equal(expected, todo.Punctuality);
+	}
+
+	[Theory]
+	[InlineData(1, 0, 0, 0)]
+	[InlineData(0, 1, 0, 0)]
+	[InlineData(0, 0, 1, 0)]
+	[InlineData(0, 0, 0, 1)]
+	[InlineData(0, 0, 0, 0)]
+	public void Punctuality_ReturnsFinishTodayWhenLimitDateIsTodayOrWithin24Hours(double daysDifference,
+		double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	{
+		TodoItem todo = new();
+		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		
+		todo.SetLimitDateTime(limitDateTime
+			.AddDays(daysDifference)
+			.AddHours(hoursDifference)
+			.AddMinutes(minutesDifference)
+			.AddSeconds(secondsDifference));
+		
+		Assert.Equal($"\u26a0 Finish Today!", todo.Punctuality);
+	}
+
+	[Theory]
+	[InlineData(0, 0, 0, -1)]
+	[InlineData(0, 0, -1, 0)]
+	[InlineData(0, -1, 0, 0)]
+	[InlineData(-1, 0, 0, 0)]
+	public void Punctuality_ReturnsDaysLateWhenCurrentDateIsAfterLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	{
+		string expected =
+			$"\ud83d\udea8 Late {Math.Abs(daysDifference)} day(s) - {Math.Abs(hoursDifference)} hours(s) - {Math.Abs(minutesDifference)} minute(s) - {Math.Abs(secondsDifference)} second(s)!";
+		TodoItem todo = new();
+		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		
+		todo.SetLimitDateTime(limitDateTime
+			.AddDays(daysDifference)
+			.AddHours(hoursDifference)
+			.AddMinutes(minutesDifference)
+			.AddSeconds(secondsDifference));
+		
+		Assert.Equal(expected, todo.Punctuality);
+	}
+	
+	[Fact]
+	public void TodoItem_ShouldHaveReadonly_ListOfStatusChangelogs()
+	{
+		Assert.NotNull(typeof(TodoItem).GetProperty("StatusChangelogs"));
+		Assert.False(typeof(TodoItem).GetProperty("StatusChangelogs").CanWrite);
+	}
+
+	[Fact]
+	public void TodoItem_ShouldAddStatusCreated_ToStatusChangelogWhenCreated()
+	{
+		TodoItem todo = new();
+		Status expectedStatus = Status.Created;
+		StatusChangelog log = todo.StatusChangelogs[0];
+		
+		Assert.True(todo.StatusChangelogs.Count != 0);
+		Assert.True(todo.StatusChangelogs.Count == 1);
+		Assert.Equal(expectedStatus, log.Status);
+	}
+	
+	[Fact]
+	public void ChangeStatus_ShouldAddStatusChangelog()
+	{
+		TodoItem todo = new();
+		Status expectedStatus = Status.Backlog;
+		
+		todo.SetStatus(expectedStatus);
+		StatusChangelog log = todo.StatusChangelogs[1];
+		
+		Assert.True(todo.StatusChangelogs.Count != 0);
+		Assert.True(todo.StatusChangelogs.Count == 2);
+		Assert.Equal(expectedStatus, log.Status);
 	}
 }
