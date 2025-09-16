@@ -1,0 +1,53 @@
+using GraphT.Model.ValueObjects;
+
+namespace GraphT.Model.Entities;
+
+public class TodoTask
+{
+	private HashSet<TodoItem> _parents = new();
+	private HashSet<TodoItem> _children = new();
+	
+	public TodoItem Item { get; }
+	public TimeSpan ElapsedTime => GetElapsedTime();
+	public string ElapsedTimeFormatted => ElapsedTime.ToElapsedTime();
+	public IReadOnlySet<TodoItem> Parents => _parents;
+	public IReadOnlySet<TodoItem> Children => _children;
+	
+	private TodoTask() {}
+	
+	public TodoTask(TodoItem item)
+	{
+		Item = item;
+	}
+	
+	public void SetParents(IEnumerable<TodoItem> parents)
+	{
+		_parents = parents.ToHashSet();
+	}
+	
+	public void SetChildren(IEnumerable<TodoItem> children)
+	{
+		_children = children.ToHashSet();
+	}
+
+	private TimeSpan GetElapsedTime()
+	{
+		TimeSpan elapsedTime = TimeSpan.Zero;
+		LinkedListNode<StatusChangelog> log = Item.StatusChangeLogs.First!;
+
+		while (log is not null)
+		{
+			if (log.Previous is null || !Equals(log.Previous.Value.Status, Status.CurrentlyDoing))
+			{
+				log = log.Next;
+				continue;
+			}
+
+			TimeSpan temporal = log.Value.ChangeDateTime - log.Previous.Value.ChangeDateTime;
+			elapsedTime += temporal;
+			log = log.Next;
+		}
+		
+		return elapsedTime;
+	}
+}
