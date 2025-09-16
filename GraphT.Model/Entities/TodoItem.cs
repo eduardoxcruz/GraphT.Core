@@ -14,9 +14,7 @@ public class TodoItem
 	public Status Status { get; private set; }
 	public DateTimeOffset? LimitDateTime { get; private set; }
 	public string Punctuality => GetPunctuality();
-	
-	public List<StatusChangelog> _statusChangeLogs;
-	public IReadOnlyList<StatusChangelog> StatusChangelogs => _statusChangeLogs;
+	public LinkedList<StatusChangelog> StatusChangeLogs { get; private set; }
 
 	public TodoItem() : this("New Todo Task") { }
 
@@ -30,7 +28,8 @@ public class TodoItem
 		Complexity = Complexity.Indefinite;
 		Priority = Priority.Distraction;
 		Status = Status.Created;
-		_statusChangeLogs = [ new StatusChangelog(DateTimeOffset.Now, Status) ];
+		StatusChangeLogs = new LinkedList<StatusChangelog>();
+		StatusChangeLogs.AddFirst(new StatusChangelog(DateTimeOffset.Now, Status.Created));
 	}
 
 	public void SetStatus(Status status)
@@ -40,7 +39,7 @@ public class TodoItem
 	
 	public void SetStatus(DateTimeOffset dateTime, Status status)
 	{
-		_statusChangeLogs.Add(new StatusChangelog(dateTime, status));
+		StatusChangeLogs.AddLast(new StatusChangelog(dateTime, status));
 		
 		Status = status;
 	}
@@ -54,9 +53,7 @@ public class TodoItem
 	{
 		if (LimitDateTime is null) return "\u26a0 No Target";
 
-		StatusChangelog lastLog = _statusChangeLogs
-			.OrderByDescending(c => c.CreationDateTime)
-			.First();
+		StatusChangelog lastLog = StatusChangeLogs.Last!.Value;
 
 		bool lastLogIsCompletedOrDropped = Equals(lastLog.Status, Status.Completed) || Equals(lastLog.Status, Status.Dropped);
 

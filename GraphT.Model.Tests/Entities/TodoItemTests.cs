@@ -17,7 +17,7 @@ public class TodoItemTests
 	}
 	
 	[Fact]
-	public void CreateTodo_ShouldHaveName_WhenCreated()
+	public void Todo_ShouldHaveName_WhenCreated()
 	{
 		string name = "Test";
 		
@@ -84,7 +84,7 @@ public class TodoItemTests
 	}
 	
 	[Fact]
-	public void TodoItem_Id_ShouldBeReadOnly()
+	public void Id_ShouldBeReadOnly()
 	{
 		TodoItem todo = new("Test");
 
@@ -191,12 +191,6 @@ public class TodoItemTests
 		Assert.Equal(expected, todo.LimitDateTime);
 		Assert.True(typeof(TodoItem).GetProperty("LimitDateTime").SetMethod.IsPrivate);
 		Assert.NotNull(typeof(TodoItem).GetMethod("SetLimitDateTime"));
-	}
-
-	[Fact]
-	public void TodoItem_ShouldHave_TimeSpend()
-	{
-		Assert.True(false);
 	}
 
 	[Fact]
@@ -345,10 +339,11 @@ public class TodoItemTests
 	}
 	
 	[Fact]
-	public void TodoItem_ShouldHaveReadonly_ListOfStatusChangelogs()
+	public void TodoItem_ShouldHaveReadonly_LinkedListOfStatusChangelogs()
 	{
-		Assert.NotNull(typeof(TodoItem).GetProperty("StatusChangelogs"));
-		Assert.False(typeof(TodoItem).GetProperty("StatusChangelogs").CanWrite);
+		Assert.NotNull(typeof(TodoItem).GetProperty("StatusChangeLogs"));
+		Assert.True(typeof(TodoItem).GetProperty("StatusChangeLogs").SetMethod.IsPrivate);
+		Assert.True(typeof(TodoItem).GetProperty("StatusChangeLogs").PropertyType == typeof(LinkedList<StatusChangelog>));
 	}
 
 	[Fact]
@@ -356,10 +351,10 @@ public class TodoItemTests
 	{
 		TodoItem todo = new();
 		Status expectedStatus = Status.Created;
-		StatusChangelog log = todo.StatusChangelogs[0];
+		StatusChangelog log = todo.StatusChangeLogs.First();
 		
-		Assert.True(todo.StatusChangelogs.Count != 0);
-		Assert.True(todo.StatusChangelogs.Count == 1);
+		Assert.True(todo.StatusChangeLogs.Count != 0);
+		Assert.True(todo.StatusChangeLogs.Count == 1);
 		Assert.Equal(expectedStatus, log.Status);
 	}
 	
@@ -370,10 +365,10 @@ public class TodoItemTests
 		Status expectedStatus = Status.Backlog;
 		
 		todo.SetStatus(expectedStatus);
-		StatusChangelog log = todo.StatusChangelogs[1];
+		StatusChangelog log = todo.StatusChangeLogs.Last();
 		
-		Assert.True(todo.StatusChangelogs.Count != 0);
-		Assert.True(todo.StatusChangelogs.Count == 2);
+		Assert.True(todo.StatusChangeLogs.Count != 0);
+		Assert.True(todo.StatusChangeLogs.Count == 2);
 		Assert.Equal(expectedStatus, log.Status);
 	}
 }
