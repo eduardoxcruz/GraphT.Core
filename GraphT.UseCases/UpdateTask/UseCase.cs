@@ -35,7 +35,7 @@ public class UseCase : IInputPort
 	{
 		if (dto.Id is null) throw new ArgumentException("Task id cannot be null", nameof(dto.Id));
 		
-		TodoTask? task = await _todoTaskRepository.FindByIdAsync(dto.Id.Value);
+		OldTodoTask? task = await _todoTaskRepository.FindByIdAsync(dto.Id.Value);
 		
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id.Value);
 

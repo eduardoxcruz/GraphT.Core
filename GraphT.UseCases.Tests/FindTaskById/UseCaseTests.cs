@@ -17,7 +17,7 @@ public class UseCaseTests
         ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
         Guid taskId = Guid.NewGuid();
-        TodoTask existingTask = new("Test task", id: taskId);
+        OldTodoTask existingTask = new("Test task", id: taskId);
         InputDto input = new() { Id = taskId };
 
         todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
@@ -42,7 +42,7 @@ public class UseCaseTests
         Guid taskId = Guid.NewGuid();
         InputDto input = new() { Id = taskId };
         
-        todoTaskRepository.FindByIdAsync(taskId).Returns((TodoTask)null!);
+        todoTaskRepository.FindByIdAsync(taskId).Returns((OldTodoTask)null!);
         
         UseCase useCase = new(outputPort, todoTaskRepository);
 

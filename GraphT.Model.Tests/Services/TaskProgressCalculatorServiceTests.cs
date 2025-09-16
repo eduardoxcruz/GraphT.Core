@@ -38,7 +38,7 @@ public class TaskProgressCalculatorServiceTests
     public void GetProgress_AllTasksInBacklog_ReturnsZero()
     {
         // Arrange
-        HashSet<TodoTask> downstreams =
+        HashSet<OldTodoTask> downstreams =
         [
 	        new("Task 1", status: OldStatus.Backlog), 
 	        new("Task 2", status: OldStatus.Backlog), 
@@ -58,7 +58,7 @@ public class TaskProgressCalculatorServiceTests
     public void GetProgress_AllTasksCompletedOrDropped_Returns99()
     {
         // Arrange
-        HashSet<TodoTask> downstreams =
+        HashSet<OldTodoTask> downstreams =
         [
 	        new("Task 1", status: OldStatus.Completed), 
 	        new("Task 2", status: OldStatus.Dropped), 
@@ -78,7 +78,7 @@ public class TaskProgressCalculatorServiceTests
     public void GetProgress_AllTasksCompletedOrDroppedAndFinishCurrentTask_Returns100()
     {
         // Arrange
-        HashSet<TodoTask> downstreams =
+        HashSet<OldTodoTask> downstreams =
         [
 	        new("Task 1", status: OldStatus.Completed), 
 	        new("Task 2", status: OldStatus.Dropped), 
@@ -104,18 +104,18 @@ public class TaskProgressCalculatorServiceTests
         float expectedProgress)
     {
         // Arrange
-        HashSet<TodoTask> downstreams = [];
+        HashSet<OldTodoTask> downstreams = [];
         
         // Agregar tareas completadas
         for (int i = 0; i < completedTasks; i++)
         {
-            downstreams.Add(new TodoTask($"Completed Task {i}", status: OldStatus.Completed));
+            downstreams.Add(new OldTodoTask($"Completed Task {i}", status: OldStatus.Completed));
         }
         
         // Agregar tareas en progreso
         for (int i = 0; i < (totalTasks - completedTasks); i++)
         {
-            downstreams.Add(new TodoTask($"In Progress Task {i}", status: OldStatus.Doing));
+            downstreams.Add(new OldTodoTask($"In Progress Task {i}", status: OldStatus.Doing));
         }
 
         bool finishCurrentTask = false;

@@ -17,7 +17,7 @@ public class UnitOfWorkTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		UnitOfWork unitOfWork = new(context);
-		TodoTask task = new("Test Task");
+		OldTodoTask task = new("Test Task");
 		OldTaskLog log = new(task.Id, DateTimeOffset.UtcNow, OldStatus.Created);
 		TodoTaskRepository todoTaskRepository = new(context);
 		TaskLogRepository taskLogRepository = new(context);

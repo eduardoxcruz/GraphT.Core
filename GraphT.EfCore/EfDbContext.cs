@@ -11,7 +11,7 @@ namespace GraphT.EfCore;
 
 public partial class EfDbContext : DbContext
 {
-    public DbSet<TodoTask> TodoTasks { get; set; }
+    public DbSet<OldTodoTask> TodoTasks { get; set; }
     public DbSet<OldTaskLog> TaskLogs { get; set; }
     public DbSet<TaskStream> TaskStreams { get; set; }
     public DbSet<LifeArea> LifeAreas { get; set; }
@@ -21,7 +21,7 @@ public partial class EfDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        new TodoTaskEntityTypeConfiguration().Configure(modelBuilder.Entity<TodoTask>());
+        new TodoTaskEntityTypeConfiguration().Configure(modelBuilder.Entity<OldTodoTask>());
         new TaskLogEntityTypeConfiguration().Configure(modelBuilder.Entity<OldTaskLog>());
         new TaskStreamEntityTypeConfiguration().Configure(modelBuilder.Entity<TaskStream>());
         new LifeAreaEntityTypeConfiguration().Configure(modelBuilder.Entity<LifeArea>());

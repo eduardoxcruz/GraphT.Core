@@ -5,7 +5,7 @@ namespace GraphT.Model.Services;
 
 public static class TaskProgressCalculatorService
 {
-	public static float GetProgress(HashSet<TodoTask> downstreams, bool finishCurrentTask)
+	public static float GetProgress(HashSet<OldTodoTask> downstreams, bool finishCurrentTask)
 	{
 		int totalDownstreams = downstreams.Count;
 		int backlogTasks = downstreams.Count(task => task.OldStatus is OldStatus.Backlog);

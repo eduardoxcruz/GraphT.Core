@@ -5,7 +5,7 @@ using SeedWork;
 
 namespace GraphT.Model.Entities;
 
-public class TodoTask : Entity
+public class OldTodoTask : Entity
 {
 	private bool _isFun;
 	private bool _isProductive;
@@ -38,9 +38,9 @@ public class TodoTask : Entity
 	public string RelevanceLabel => this.OldRelevance.GetLabel();
 	public string StatusLabel => this.OldStatus.GetLabel();
 
-	private TodoTask() : base("New Task"){ }
+	private OldTodoTask() : base("New Task"){ }
 
-	public TodoTask(string name, 
+	public OldTodoTask(string name, 
 							OldStatus? status = null,
 							bool? isFun = null, 
 							bool? isProductive = null,

@@ -17,9 +17,9 @@ public class TaskDownstreamsRepository : ITaskDownstreamsRepository
 		_context = context;
 	}
 
-	public async ValueTask<PagedList<TodoTask>> FindTaskDownstreamsById(Guid id)
+	public async ValueTask<PagedList<OldTodoTask>> FindTaskDownstreamsById(Guid id)
 	{
-		List<TodoTask> results = await _context.TaskStreams
+		List<OldTodoTask> results = await _context.TaskStreams
 			.Where(td => td.UpstreamId == id)
 			.Select(td => td.Downstream)
 			.AsNoTracking()
@@ -27,7 +27,7 @@ public class TaskDownstreamsRepository : ITaskDownstreamsRepository
 
 		await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
 		
-		return new PagedList<TodoTask>(results, results.Count, 1, results.Count);
+		return new PagedList<OldTodoTask>(results, results.Count, 1, results.Count);
 	}
 
 	public async ValueTask AddDownstreamAsync(Guid taskId, Guid downstreamId)

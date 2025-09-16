@@ -20,7 +20,7 @@ public class UseCaseTests
         IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
         
         Guid taskId = Guid.NewGuid();
-        TodoTask existingTask = new("Test Task", id: taskId);
+        OldTodoTask existingTask = new("Test Task", id: taskId);
         InputDto input = new() { Id = taskId };
 
         todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
@@ -57,7 +57,7 @@ public class UseCaseTests
         );
         
         Assert.Equal(taskId, exception.Id);
-        await todoTaskRepository.DidNotReceive().RemoveAsync(Arg.Any<TodoTask>());
+        await todoTaskRepository.DidNotReceive().RemoveAsync(Arg.Any<OldTodoTask>());
         await unitOfWork.DidNotReceive().SaveChangesAsync();
         await outputPort.DidNotReceive().Handle();
     }

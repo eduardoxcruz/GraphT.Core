@@ -38,7 +38,7 @@ public class UseCase : IInputPort
 			id = dto.Id.Value;
 		}
 		
-		TodoTask task = new(dto.Name ?? "New Task", dto.Status, dto.IsFun, dto.IsProductive, dto.Complexity, dto.Priority, id);
+		OldTodoTask task = new(dto.Name ?? "New Task", dto.Status, dto.IsFun, dto.IsProductive, dto.Complexity, dto.Priority, id);
 		
 		if (dto.StartDateTime.HasValue) task.SetStartDate(dto.StartDateTime.Value);
 

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GraphT.EfCore.EntityTypeConfigurations;
 
-public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<TodoTask>
+public class TodoTaskEntityTypeConfiguration : IEntityTypeConfiguration<OldTodoTask>
 {
-    public void Configure(EntityTypeBuilder<TodoTask> builder)
+    public void Configure(EntityTypeBuilder<OldTodoTask> builder)
     {
         builder.HasIndex(todoTask => todoTask.Id);
         builder.Property(todoTask => todoTask.Id).HasColumnOrder(0);

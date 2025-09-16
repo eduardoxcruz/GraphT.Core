@@ -20,11 +20,11 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 	    // Arrange
 	    EfDbContext context = _fixture.CreateContext();
 	    TaskUpstreamsRepository repository = new(context);
-	    TodoTask mainTask = new("Main Task");
-	    TodoTask downstream1 = new("Downstream 1");
-	    TodoTask downstream2 = new("Downstream 2");
-	    TodoTask downstream3 = new("Downstream 3");
-	    TodoTask downstream4 = new("Downstream 4");
+	    OldTodoTask mainTask = new("Main Task");
+	    OldTodoTask downstream1 = new("Downstream 1");
+	    OldTodoTask downstream2 = new("Downstream 2");
+	    OldTodoTask downstream3 = new("Downstream 3");
+	    OldTodoTask downstream4 = new("Downstream 4");
 
 	    // Act
 	    TaskStream stream = new(downstream1.Id, mainTask.Id);
@@ -34,7 +34,7 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 	    await context.TodoTasks.AddRangeAsync(mainTask, downstream1, downstream2, downstream3, downstream4);
 	    await context.TaskStreams.AddRangeAsync(stream, stream2, stream3, stream4);
 	    await context.SaveChangesAsync();
-	    PagedList<TodoTask> results = await repository.FindTaskUpstreamsById(mainTask.Id);
+	    PagedList<OldTodoTask> results = await repository.FindTaskUpstreamsById(mainTask.Id);
 
 	    // Assert
 	    Assert.NotNull(results);
@@ -54,12 +54,12 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 	    // Arrange
 	    EfDbContext context = _fixture.CreateContext();
 	    TaskUpstreamsRepository repository = new(context);
-	    TodoTask mainTask = new("Main Task");
+	    OldTodoTask mainTask = new("Main Task");
 
 	    // Act
 	    await context.TodoTasks.AddAsync(mainTask);
 	    await context.SaveChangesAsync();
-	    PagedList<TodoTask> results = await repository.FindTaskUpstreamsById(mainTask.Id);
+	    PagedList<OldTodoTask> results = await repository.FindTaskUpstreamsById(mainTask.Id);
 
 	    // Assert
 	    Assert.NotNull(results);
@@ -77,7 +77,7 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 	    Guid nonExistentId = Guid.NewGuid();
 
 	    // Act
-	    PagedList<TodoTask> results = await repository.FindTaskUpstreamsById(nonExistentId);
+	    PagedList<OldTodoTask> results = await repository.FindTaskUpstreamsById(nonExistentId);
 
 	    // Assert
 	    Assert.NotNull(results);
@@ -92,8 +92,8 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TaskUpstreamsRepository repository = new(context);
-		TodoTask mainTask = new("Main Task");
-		TodoTask upstreamTask = new("Upstream Task");
+		OldTodoTask mainTask = new("Main Task");
+		OldTodoTask upstreamTask = new("Upstream Task");
 		
 		// Act
 		await context.TodoTasks.AddRangeAsync(mainTask, upstreamTask);
@@ -118,9 +118,9 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TaskUpstreamsRepository repository = new(context);
-		TodoTask mainTask = new("Main Task");
-		TodoTask upstreamTask1 = new("Upstream Task 1");
-		TodoTask upstreamTask2 = new("Upstream Task 2");
+		OldTodoTask mainTask = new("Main Task");
+		OldTodoTask upstreamTask1 = new("Upstream Task 1");
+		OldTodoTask upstreamTask2 = new("Upstream Task 2");
 
 		// Act
 		await context.TodoTasks.AddRangeAsync(mainTask, upstreamTask1, upstreamTask2);
@@ -143,8 +143,8 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TaskUpstreamsRepository repository = new(context);
-		TodoTask mainTask = new("Main Task");
-		TodoTask upstreamTask = new("Upstream Task");
+		OldTodoTask mainTask = new("Main Task");
+		OldTodoTask upstreamTask = new("Upstream Task");
 		TaskStream stream = new(upstreamTask.Id, mainTask.Id);
 
 		// Act
@@ -188,9 +188,9 @@ public class TaskUpstreamsRepositoryTests: IClassFixture<TestDatabaseFixture>
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TaskUpstreamsRepository repository = new(context);
-		TodoTask mainTask = new("Main Task");
-		TodoTask upstreamTask1 = new("Upstream Task 1");
-		TodoTask upstreamTask2 = new("Upstream Task 2");
+		OldTodoTask mainTask = new("Main Task");
+		OldTodoTask upstreamTask1 = new("Upstream Task 1");
+		OldTodoTask upstreamTask2 = new("Upstream Task 2");
 		TaskStream stream1 = new(upstreamTask1.Id, mainTask.Id);
 		TaskStream stream2 = new(upstreamTask2.Id, mainTask.Id);
 

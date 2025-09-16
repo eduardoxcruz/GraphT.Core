@@ -37,7 +37,7 @@ public class UseCaseTests
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 
-		todoTaskRepository.FindByIdAsync(taskId).Returns((TodoTask?)null);
+		todoTaskRepository.FindByIdAsync(taskId).Returns((OldTodoTask?)null);
 
 		UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
 		InputDto dto = new() { Id = taskId };
@@ -55,7 +55,7 @@ public class UseCaseTests
 		ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
-		TodoTask existingTask = new("Old Name", id: taskId);
+		OldTodoTask existingTask = new("Old Name", id: taskId);
 		InputDto dto = new()
 		{
 			Id = taskId
@@ -73,7 +73,7 @@ public class UseCaseTests
 		await useCase.Handle(dto);
 
 		// Assert
-		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<OldTodoTask>(t =>
 			t.Name == dto.Name &&
 			t.IsFun == dto.IsFun &&
 			t.IsProductive == dto.IsProductive &&
@@ -101,7 +101,7 @@ public class UseCaseTests
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 		DateTimeOffset currentTime = DateTimeOffset.UtcNow;
-		TodoTask existingTask = new("Test Task", id: taskId, status: initialOldStatus);
+		OldTodoTask existingTask = new("Test Task", id: taskId, status: initialOldStatus);
 		InputDto dto = new() { Id = taskId, Status = newOldStatus };
 		TimeSpan previousTimeSpent = TimeSpan.FromDays(expectedDays) + TimeSpan.FromHours(expectedHours) + TimeSpan.FromMinutes(expectedMinutes);
 		OldTaskLog lastLog = new(taskId, currentTime.AddHours(-2), initialOldStatus, previousTimeSpent);
@@ -114,7 +114,7 @@ public class UseCaseTests
 		await useCase.Handle(dto);
 		
 		// Assert
-		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<OldTodoTask>(t =>
 			t.OldStatus == newOldStatus &&
 			t.OldDateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
@@ -144,7 +144,7 @@ public class UseCaseTests
 
 		Guid taskId = Guid.NewGuid();
 		OldStatus newOldStatus = OldStatus.Completed;
-		TodoTask existingTask = new("New Task", id: taskId, status: OldStatus.Ready);
+		OldTodoTask existingTask = new("New Task", id: taskId, status: OldStatus.Ready);
 		InputDto dto = new() { Id = taskId, Status = newOldStatus };
 		string expectedTimeSpendString = "\u26a1 0 day(s) - 0 hours - 0 minutes";
 		
@@ -156,7 +156,7 @@ public class UseCaseTests
 		await useCase.Handle(dto);
 
 		// Assert
-		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<OldTodoTask>(t =>
 			t.OldStatus == newOldStatus &&
 			t.OldDateTimeInfo.TimeSpend == expectedTimeSpendString
 		));
@@ -185,7 +185,7 @@ public class UseCaseTests
 		DateTimeOffset finishDate = DateTimeOffset.UtcNow.AddDays(1);
 		DateTimeOffset limitDate = DateTimeOffset.UtcNow.AddDays(2);
 
-		TodoTask existingTask = new("Old Name", id: taskId);
+		OldTodoTask existingTask = new("Old Name", id: taskId);
 
 		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
 
@@ -199,7 +199,7 @@ public class UseCaseTests
 		await useCase.Handle(dto);
 
 		// Assert
-		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<OldTodoTask>(t =>
 			t.Id == taskId &&
 			t.OldDateTimeInfo.StartDateTime != null &&
 			t.OldDateTimeInfo.StartDateTime == dto.StartDateTime &&
@@ -222,7 +222,7 @@ public class UseCaseTests
 		IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 		Guid taskId = Guid.NewGuid();
 
-		TodoTask existingTask = new("Original Name", id: taskId, status: OldStatus.Paused);
+		OldTodoTask existingTask = new("Original Name", id: taskId, status: OldStatus.Paused);
 
 		todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
 
@@ -233,7 +233,7 @@ public class UseCaseTests
 		await useCase.Handle(dto);
 
 		// Assert
-		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<TodoTask>(t =>
+		await todoTaskRepository.Received(1).UpdateAsync(Arg.Is<OldTodoTask>(t =>
 			t.Name == "Original Name" &&
 			t.OldStatus == OldStatus.Paused
 		));

@@ -20,11 +20,11 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		TodoTask task = new("Test Task");
+		OldTodoTask task = new("Test Task");
 
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
-		TodoTask? result = await repository.FindByIdAsync(task.Id);
+		OldTodoTask? result = await repository.FindByIdAsync(task.Id);
 
 		Assert.NotNull(result);
 		Assert.Equal(task.Id, result.Id);
@@ -37,11 +37,11 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		TodoTask task = new("New Task");
+		OldTodoTask task = new("New Task");
 
 		await repository.AddAsync(task);
 		await context.SaveChangesAsync();
-		TodoTask? addedTask = await context.TodoTasks.FindAsync(task.Id);
+		OldTodoTask? addedTask = await context.TodoTasks.FindAsync(task.Id);
 
 		Assert.NotNull(addedTask);
 		Assert.Equal(task.Id, addedTask.Id);
@@ -53,7 +53,7 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		List<TodoTask> tasks =
+		List<OldTodoTask> tasks =
 		[
 			new("Task 1"), 
 			new("Task 2", OldStatus.Ready), 
@@ -65,9 +65,9 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 		await repository.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
 
-		foreach (TodoTask todoTask in tasks)
+		foreach (OldTodoTask todoTask in tasks)
 		{
-			TodoTask? addedTask = await context.TodoTasks.FindAsync(todoTask.Id);
+			OldTodoTask? addedTask = await context.TodoTasks.FindAsync(todoTask.Id);
 			
 			Assert.NotNull(addedTask);
 			Assert.Equal(todoTask.Id, addedTask.Id);
@@ -81,13 +81,13 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		TodoTask task = new("Task to Remove");
+		OldTodoTask task = new("Task to Remove");
 
 		await context.TodoTasks.AddAsync(task);
 		await context.SaveChangesAsync();
 		await repository.RemoveAsync(task);
 		await context.SaveChangesAsync();
-		TodoTask? removedTask = await context.TodoTasks.FindAsync(task.Id);
+		OldTodoTask? removedTask = await context.TodoTasks.FindAsync(task.Id);
 
 		Assert.Null(removedTask);
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
@@ -98,9 +98,9 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		TodoTask task = new("Task to Remove");
-		TodoTask upstreamTask = new("Task to Remove");
-		TodoTask downstreamTask = new("Task to Remove");
+		OldTodoTask task = new("Task to Remove");
+		OldTodoTask upstreamTask = new("Task to Remove");
+		OldTodoTask downstreamTask = new("Task to Remove");
 		TaskStream upstream = new(upstreamTask.Id, task.Id);
 		TaskStream downstream = new(task.Id, downstreamTask.Id);
 		
@@ -109,7 +109,7 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 		await context.SaveChangesAsync();
 		await repository.RemoveAsync(task);
 		await context.SaveChangesAsync();
-		TodoTask? removedTask = await context.TodoTasks.FindAsync(task.Id);
+		OldTodoTask? removedTask = await context.TodoTasks.FindAsync(task.Id);
 
 		Assert.Null(removedTask);
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskStreams]");
@@ -121,7 +121,7 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		List<TodoTask> tasks =
+		List<OldTodoTask> tasks =
 		[
 			new("Task 1"), 
 			new("Task 2", OldStatus.Ready), 
@@ -135,9 +135,9 @@ public class TodoTaskRepositoryTests : IClassFixture<TestDatabaseFixture>
 		await repository.RemoveRangeAsync(tasks);
 		await context.SaveChangesAsync();
 
-		foreach (TodoTask todoTask in tasks)
+		foreach (OldTodoTask todoTask in tasks)
 		{
-			TodoTask? removedTask = await context.TodoTasks.FindAsync(todoTask.Id);
+			OldTodoTask? removedTask = await context.TodoTasks.FindAsync(todoTask.Id);
 			
 			Assert.Null(removedTask);
 		}
@@ -150,11 +150,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 {
     EfDbContext context = _fixture.CreateContext();
     TodoTaskRepository repository = new(context);
-    TodoTask task1 = new("Task 1 to Remove");
-    TodoTask task2 = new("Task 2 to Remove");
-    TodoTask upstreamTask = new("Upstream Task");
-    TodoTask downstreamTask = new("Downstream Task");
-    TodoTask independentTask = new("Independent Task");
+    OldTodoTask task1 = new("Task 1 to Remove");
+    OldTodoTask task2 = new("Task 2 to Remove");
+    OldTodoTask upstreamTask = new("Upstream Task");
+    OldTodoTask downstreamTask = new("Downstream Task");
+    OldTodoTask independentTask = new("Independent Task");
     TaskStream upstream1 = new(upstreamTask.Id, task1.Id);
     TaskStream downstream1 = new(task1.Id, downstreamTask.Id);
     TaskStream upstream2 = new(upstreamTask.Id, task2.Id);
@@ -199,7 +199,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		TodoTask task = new("Task to Update");
+		OldTodoTask task = new("Task to Update");
 		string newName = "New task name";
 
 		await context.TodoTasks.AddAsync(task);
@@ -207,7 +207,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		task.Name = newName;
 		await repository.UpdateAsync(task);
 		await context.SaveChangesAsync();
-		TodoTask? updatedTask = await context.TodoTasks.FindAsync(task.Id);
+		OldTodoTask? updatedTask = await context.TodoTasks.FindAsync(task.Id);
 
 		Assert.NotNull(updatedTask);
 		Assert.Equal(newName, updatedTask.Name);
@@ -219,11 +219,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		List<TodoTask> tasks = new()
+		List<OldTodoTask> tasks = new()
 		{
-			new TodoTask("Task 1"), 
-			new TodoTask("Task 2", OldStatus.Ready), 
-			new TodoTask("Task 3", OldStatus.Paused)
+			new OldTodoTask("Task 1"), 
+			new OldTodoTask("Task 2", OldStatus.Ready), 
+			new OldTodoTask("Task 3", OldStatus.Paused)
 		};
 
 		await context.TodoTasks.AddRangeAsync(tasks);
@@ -233,9 +233,9 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		tasks[2].Name = "Task 6";
 		await repository.UpdateRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		TodoTask? firstUpdated = await context.TodoTasks.FindAsync(tasks[0].Id);
-		TodoTask? secondUpdated = await context.TodoTasks.FindAsync(tasks[1].Id);
-		TodoTask? thirdUpdated = await context.TodoTasks.FindAsync(tasks[2].Id);
+		OldTodoTask? firstUpdated = await context.TodoTasks.FindAsync(tasks[0].Id);
+		OldTodoTask? secondUpdated = await context.TodoTasks.FindAsync(tasks[1].Id);
+		OldTodoTask? thirdUpdated = await context.TodoTasks.FindAsync(tasks[2].Id);
 
 		Assert.NotNull(firstUpdated);
 		Assert.NotNull(secondUpdated);
@@ -253,7 +253,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         EfDbContext context = _fixture.CreateContext();
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
-        List<TodoTask> tasks = [
+        List<OldTodoTask> tasks = [
             new("Task 1", OldStatus.Completed),
             new("Task 2", OldStatus.Dropped),
             new("Task 3", OldStatus.Doing),
@@ -263,7 +263,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksCompletedOrDropped(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksCompletedOrDropped(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -281,11 +281,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task 1", OldStatus.Completed);
-        TodoTask secondTask = new("Task 2", OldStatus.Dropped);
-        TodoTask thirdTask = new("Task 3", OldStatus.Completed);
-        TodoTask fourthTask = new("Task 4", OldStatus.Dropped);
-        List<TodoTask> tasks = [
+        OldTodoTask firstTask = new("Task 1", OldStatus.Completed);
+        OldTodoTask secondTask = new("Task 2", OldStatus.Dropped);
+        OldTodoTask thirdTask = new("Task 3", OldStatus.Completed);
+        OldTodoTask fourthTask = new("Task 4", OldStatus.Dropped);
+        List<OldTodoTask> tasks = [
             thirdTask,
             firstTask,
             fourthTask,
@@ -299,7 +299,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksCompletedOrDropped(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksCompletedOrDropped(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -318,7 +318,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         EfDbContext context = _fixture.CreateContext();
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 2, PageSize = 2 };
-        List<TodoTask> tasks = [
+        List<OldTodoTask> tasks = [
             new("Task 1", OldStatus.Completed),
             new("Task 2", OldStatus.Dropped),
             new("Task 3", OldStatus.Completed),
@@ -328,7 +328,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksCompletedOrDropped(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksCompletedOrDropped(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -348,7 +348,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
-		List<TodoTask> tasks =
+		List<OldTodoTask> tasks =
 		[
 			new("Task 1", OldStatus.Completed), new("Task 2", OldStatus.Dropped), new("Task 3", OldStatus.Doing)
 			, new("Task 4", OldStatus.Ready), new("Task 5", OldStatus.Backlog)
@@ -356,7 +356,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> results = await repository.FindTasksInProgress(pagingParams);
+		PagedList<OldTodoTask> results = await repository.FindTasksInProgress(pagingParams);
 
 		// Assert
 		Assert.NotNull(results);
@@ -373,7 +373,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         EfDbContext context = _fixture.CreateContext();
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
-        List<TodoTask> tasks = [
+        List<OldTodoTask> tasks = [
             new("Task Low", OldStatus.Doing) { Priority = OldPriority.Distraction },
             new("Task Medium", OldStatus.Doing) { Priority = OldPriority.Consider },
             new("Task Medium", OldStatus.Doing) { Priority = OldPriority.Urgent },
@@ -382,7 +382,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksInProgress(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksInProgress(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -401,11 +401,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", OldStatus.Doing) { Priority = OldPriority.Urgent };
-        TodoTask secondTask = new("Task Soon", OldStatus.Doing) { Priority = OldPriority.Urgent };
-        TodoTask thirdTask = new("Task Later", OldStatus.Doing) { Priority = OldPriority.Urgent };
-        TodoTask fourthTask = new("Task Later", OldStatus.Doing) { Priority = OldPriority.Urgent };
-        List<TodoTask> tasks = [
+        OldTodoTask firstTask = new("Task Soon", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        OldTodoTask secondTask = new("Task Soon", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        OldTodoTask thirdTask = new("Task Later", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        OldTodoTask fourthTask = new("Task Later", OldStatus.Doing) { Priority = OldPriority.Urgent };
+        List<OldTodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
             fourthTask,
@@ -420,7 +420,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         // Act
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksInProgress(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksInProgress(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -439,7 +439,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 2 };
-		List<TodoTask> tasks =
+		List<OldTodoTask> tasks =
 		[
 			new("Task 1", OldStatus.Doing), new("Task 2", OldStatus.Doing), new("Task 3", OldStatus.Doing)
 			, new("Task 4", OldStatus.Doing), new("Task 5", OldStatus.Doing)
@@ -447,7 +447,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> results = await repository.FindTasksInProgress(pagingParams);
+		PagedList<OldTodoTask> results = await repository.FindTasksInProgress(pagingParams);
 
 		// Assert
 		Assert.NotNull(results);
@@ -467,7 +467,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         EfDbContext context = _fixture.CreateContext();
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
-        List<TodoTask> tasks = [
+        List<OldTodoTask> tasks = [
             new("Task 1", OldStatus.Ready),
             new("Task 2", OldStatus.Paused),
             new("Task 3", OldStatus.Doing),
@@ -477,7 +477,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -496,11 +496,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Distraction };
-        TodoTask secondTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Consider };
-        TodoTask thirdTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
-        TodoTask fourthTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Critical };
-        List<TodoTask> tasks = [
+        OldTodoTask firstTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Distraction };
+        OldTodoTask secondTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Consider };
+        OldTodoTask thirdTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        OldTodoTask fourthTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Critical };
+        List<OldTodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
 	        fourthTask,
@@ -514,7 +514,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -534,11 +534,11 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TodoTask firstTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Urgent };
-        TodoTask secondTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Urgent };
-        TodoTask thirdTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
-        TodoTask fourthTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
-        List<TodoTask> tasks = [
+        OldTodoTask firstTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        OldTodoTask secondTask = new("Task Soon", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        OldTodoTask thirdTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        OldTodoTask fourthTask = new("Task Later", OldStatus.Ready) { Priority = OldPriority.Urgent };
+        List<OldTodoTask> tasks = [
 	        thirdTask,
 	        firstTask,
             fourthTask,
@@ -553,7 +553,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         // Act
         await context.TodoTasks.AddRangeAsync(tasks);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
 
         // Assert
         Assert.NotNull(results);
@@ -574,10 +574,10 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         TodoTaskRepository repository = new(context);
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         
-        TodoTask taskWithIncompleteDownstreams = new("Main Task 1", OldStatus.Ready);
-        TodoTask taskWithCompleteDownstreams = new("Main Task 2", OldStatus.Ready);
-        TodoTask downstream1 = new("Downstream 1", OldStatus.Doing);
-        TodoTask downstream2 = new("Downstream 2", OldStatus.Completed);
+        OldTodoTask taskWithIncompleteDownstreams = new("Main Task 1", OldStatus.Ready);
+        OldTodoTask taskWithCompleteDownstreams = new("Main Task 2", OldStatus.Ready);
+        OldTodoTask downstream1 = new("Downstream 1", OldStatus.Doing);
+        OldTodoTask downstream2 = new("Downstream 2", OldStatus.Completed);
         TaskStream stream1 = new(taskWithIncompleteDownstreams.Id, downstream1.Id);
         TaskStream stream2 = new(taskWithCompleteDownstreams.Id, downstream2.Id);;
         
@@ -586,7 +586,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
         await context.TodoTasks.AddRangeAsync(taskWithIncompleteDownstreams, taskWithCompleteDownstreams, downstream1, downstream2);
         await context.TaskStreams.AddRangeAsync(stream1, stream2);
         await context.SaveChangesAsync();
-        PagedList<TodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
+        PagedList<OldTodoTask> results = await repository.FindTasksReadyToStart(pagingParams);
 
 		// Assert
 		Assert.NotNull(results);
@@ -603,18 +603,18 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
-		List<TodoTask> tasks = [];
+		List<OldTodoTask> tasks = [];
 		
 		// Act
 		for (int i = 1; i <= 5; i++)
 		{
-			tasks.Add(new TodoTask($"Task {i}"));
+			tasks.Add(new OldTodoTask($"Task {i}"));
 			await Task.Delay(1000);
 		}
 
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+		PagedList<OldTodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
 
 		// Assert
 		for (int i = 0; i < result.Count - 1; i++)
@@ -634,19 +634,19 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		List<TodoTask> tasks = [];
+		List<OldTodoTask> tasks = [];
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 3 };
 
 		// Act
 		for (int i = 1; i <= 5; i++)
 		{
-			tasks.Add(new TodoTask($"Task {i}"));
+			tasks.Add(new OldTodoTask($"Task {i}"));
 			await Task.Delay(1);
 		}
 
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+		PagedList<OldTodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
 
 		// Assert
 		Assert.NotNull(result);
@@ -663,19 +663,19 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		List<TodoTask> tasks = [];
+		List<OldTodoTask> tasks = [];
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 3 };
 
 		// Act
 		for (int i = 1; i <= 5; i++)
 		{
-			tasks.Add(new TodoTask($"Task {i}"));
+			tasks.Add(new OldTodoTask($"Task {i}"));
 			await Task.Delay(1);
 		}
 
 		await context.TodoTasks.AddRangeAsync(tasks);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+		PagedList<OldTodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
 
 		// Assert
 		Assert.NotNull(result);
@@ -696,7 +696,7 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 
 		// Act
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TodoTasks]");
-		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+		PagedList<OldTodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
 
 		// Assert
 		Assert.NotNull(result);
@@ -712,14 +712,14 @@ public async Task RemoveRangeAsync_RemovesRelatedStreamsAndTaskRangeFromContext(
 		// Arrange
 		EfDbContext context = _fixture.CreateContext();
 		TodoTaskRepository repository = new(context);
-		TodoTask task1 = new("Task 1");
-		TodoTask task2 = new("Task 2");
+		OldTodoTask task1 = new("Task 1");
+		OldTodoTask task2 = new("Task 2");
 		PagingParams pagingParams = new() { PageNumber = 3, PageSize = 10 };
 
 		// Act
 		await context.TodoTasks.AddRangeAsync(task1, task2);
 		await context.SaveChangesAsync();
-		PagedList<TodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
+		PagedList<OldTodoTask> result = await repository.GetTasksOrderedByCreationDateDescAsync(pagingParams);
 
 		// Assert
 		Assert.NotNull(result);

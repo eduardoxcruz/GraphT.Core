@@ -28,7 +28,7 @@ public class UseCase : IInputPort
         if (!await _todoTaskRepository.ContainsAsync(dto.Id))
             throw new TaskNotFoundException("Task not found", dto.Id);
 
-        PagedList<TodoTask> downstreams = await _taskDownstreamsRepository.FindTaskDownstreamsById(dto.Id);
+        PagedList<OldTodoTask> downstreams = await _taskDownstreamsRepository.FindTaskDownstreamsById(dto.Id);
 
         await _outputPort.Handle(new OutputDto() { Downstreams = downstreams });
     }
@@ -42,5 +42,5 @@ public class InputDto
 
 public class OutputDto
 {
-    public PagedList<TodoTask> Downstreams { get; set; }
+    public PagedList<OldTodoTask> Downstreams { get; set; }
 }

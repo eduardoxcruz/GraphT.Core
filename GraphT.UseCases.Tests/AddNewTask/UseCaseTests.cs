@@ -36,7 +36,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
             t.Name == input.Name && 
             t.IsFun == input.IsFun && 
             t.IsProductive == input.IsProductive && 
@@ -73,7 +73,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => t.Id == input.Id && t.Name == input.Name));
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => t.Id == input.Id && t.Name == input.Name));
         await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id == input.Id));
@@ -106,7 +106,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
             t.Name == input.Name &&
             t.OldDateTimeInfo.StartDateTime == input.StartDateTime &&
             t.OldDateTimeInfo.FinishDateTime == input.FinishDateTime &&
@@ -134,7 +134,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
             t.Name == "New Task"
         ));
         await unitOfWork.Received(1).SaveChangesAsync();

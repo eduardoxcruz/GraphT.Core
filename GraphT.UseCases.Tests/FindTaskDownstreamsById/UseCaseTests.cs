@@ -21,10 +21,10 @@ public class UseCaseTests
 		ITaskDownstreamsRepository taskDownstreamsRepository = Substitute.For<ITaskDownstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TodoTask testTask = new("Test Task", id: taskId);
-		TodoTask taskDownstream1 = new("Test Downstream 1");
-		TodoTask taskDownstream2 = new("Test Downstream 2");
-		PagedList<TodoTask> downstreams = new(
+		OldTodoTask testTask = new("Test Task", id: taskId);
+		OldTodoTask taskDownstream1 = new("Test Downstream 1");
+		OldTodoTask taskDownstream2 = new("Test Downstream 2");
+		PagedList<OldTodoTask> downstreams = new(
 			[ taskDownstream1, taskDownstream2 ], 
 			2, 
 			1, 
@@ -64,7 +64,7 @@ public class UseCaseTests
 		ITaskDownstreamsRepository taskDownstreamsRepository = Substitute.For<ITaskDownstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		PagedList<TodoTask> emptyDownstreams = new(
+		PagedList<OldTodoTask> emptyDownstreams = new(
 			[], 
 			0, 
 			0, 
@@ -103,7 +103,7 @@ public class UseCaseTests
 		PagingParams pagingParams = new() { PageNumber = 2, PageSize = 5 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
-		PagedList<TodoTask> downstreams = new(
+		PagedList<OldTodoTask> downstreams = new(
 			[], 
 			2, 
 			2, 
