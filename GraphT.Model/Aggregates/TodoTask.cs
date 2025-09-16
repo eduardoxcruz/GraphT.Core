@@ -1,6 +1,7 @@
+using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
-namespace GraphT.Model.Entities;
+namespace GraphT.Model.Aggregates;
 
 public class TodoTask
 {

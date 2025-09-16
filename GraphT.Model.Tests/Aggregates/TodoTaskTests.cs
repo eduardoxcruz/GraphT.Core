@@ -1,3 +1,4 @@
+using GraphT.Model.Aggregates;
 using GraphT.Model.Entities;
 using GraphT.Model.ValueObjects;
 
