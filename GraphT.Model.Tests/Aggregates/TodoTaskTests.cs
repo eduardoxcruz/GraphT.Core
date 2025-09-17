@@ -137,4 +137,50 @@ public class TodoTaskTests
 		
 		Assert.Equal("\u23f0 3 day(s) - 4 hour(s) - 16 minute(s) - 5 second(s)", task.ElapsedTimeFormatted);
 	}
+
+	[Fact]
+	public void TodoTask_ShouldHave_Progress()
+	{
+		Assert.NotNull(typeof(TodoTask).GetProperty("Progress"));
+	}
+	
+	[Fact]
+	public void Progress_ShouldBeReadOnly()
+	{
+		Assert.False(typeof(TodoTask).GetProperty("Progress").CanWrite);
+	}
+
+	[Theory]
+	[InlineData(1)]
+	[InlineData(2)]
+	[InlineData(5)]
+	[InlineData(10)]
+	[InlineData(50)]
+	[InlineData(100)]
+	[InlineData(1000)]
+	public void Progress_ShouldBe_Calculated_From_CompletedChildren(int maxChildren)
+	{
+		TodoTask task = new(new TodoItem());
+		List<TodoItem> children = [];
+
+		for (int i = 1; i <= maxChildren; i++)
+		{
+			TodoItem child = new($"Child {i}");
+			Random random = new();
+			
+			if (random.Next(0, 2) == 1)
+			{
+				child.SetStatus(DateTimeOffset.Now, Status.Completed);
+			}
+			
+			children.Add(child);
+		}
+		
+		int childrenCompleted = children.Count(t => Equals(t.Status, Status.Completed));
+		double expected = ((childrenCompleted * 100) / maxChildren);
+		
+		task.SetChildren(children);
+		
+		Assert.Equal(expected, task.Progress);
+	}
 }

@@ -11,6 +11,7 @@ public class TodoTask
 	public TodoItem Item { get; }
 	public TimeSpan ElapsedTime => GetElapsedTime();
 	public string ElapsedTimeFormatted => ElapsedTime.ToElapsedTime();
+	public double Progress => GetProgress();
 	public IReadOnlySet<TodoItem> Parents => _parents;
 	public IReadOnlySet<TodoItem> Children => _children;
 	
@@ -50,5 +51,12 @@ public class TodoTask
 		}
 		
 		return elapsedTime;
+	}
+
+	private double GetProgress()
+	{
+		int totalChildren = _children.Count;
+		int completedChildren = _children.Count(t => Equals(t.Status, Status.Completed));
+		return (completedChildren * 100) / totalChildren;
 	}
 }
