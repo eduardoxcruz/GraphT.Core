@@ -6,6 +6,7 @@ public class TodoTask
 {
 	private HashSet<TodoTask> _parents;
 	private HashSet<TodoTask> _children;
+	private HashSet<LifeArea> _lifeAreas;
 	
 	public Guid Id { get; }
 	public string Name { get; set; }
@@ -23,6 +24,7 @@ public class TodoTask
 	public double Progress => GetProgress();
 	public IReadOnlySet<TodoTask> Parents => _parents;
 	public IReadOnlySet<TodoTask> Children => _children;
+	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
 	
 	public TodoTask() : this("New Todo Task") {}
 	
@@ -39,6 +41,7 @@ public class TodoTask
 		StatusChangeLogs.AddFirst(new StatusChangelog(DateTimeOffset.Now, Status.Created));
 		_parents = [];
 		_children = [];
+		_lifeAreas = [];
 	}
 	
 	public void SetStatus(Status status)
@@ -144,5 +147,10 @@ public class TodoTask
 		if (completedChildren == _children.Count) return 99;
 		
 		return (completedChildren * 100) / totalChildren;
+	}
+
+	public void AddLifeAreas(HashSet<LifeArea> lifeAreas)
+	{
+		_lifeAreas = _lifeAreas.UnionBy(lifeAreas, la => la.Name).ToHashSet();
 	}
 }

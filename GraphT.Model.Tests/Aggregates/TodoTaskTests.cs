@@ -587,4 +587,31 @@ public class TodoTaskTests
 		
 		Assert.Equal(0, task.Progress);
 	}
+
+	[Fact]
+	public void TodoTask_ShouldHave_MultipleLifeAreas()
+	{
+		Assert.NotNull(typeof(TodoTask).GetProperty("LifeAreas"));
+		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(IReadOnlySet<LifeArea>));
+	}
+	
+	[Fact]
+	public void LifeAreas_ShouldBeReadOnly()
+	{
+		Assert.False(typeof(TodoTask).GetProperty("LifeAreas").CanWrite);
+	}
+
+	[Fact]
+	public void LifeAreas_OnlyAddedVia_AddLifeArea()
+	{
+		LifeArea la1 = new("Life Area 1");
+		LifeArea la2 = new("Life Area 2");
+		TodoTask task = new();
+		
+		task.AddLifeAreas([ la1, la2 ]);
+		
+		Assert.True(task.LifeAreas.Count != 0);
+		Assert.Contains(la1, task.LifeAreas);
+		Assert.Contains(la2, task.LifeAreas);
+	}
 }
