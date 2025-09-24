@@ -93,4 +93,13 @@ public class StatusTests
 		
 		Assert.Equal(Status.Completed, statuses.Max());
 	}
+	
+	[Fact]
+	public void Status_ShouldBeEquatable_ViaIndex()
+	{
+		Status status1 = Status.Created;
+		Status status2 = Status.Created;
+		
+		Assert.True(status1 == status2);
+	}
 }

@@ -1,6 +1,6 @@
 namespace GraphT.Model.ValueObjects;
 
-public struct Status : IComparable<Status>
+public readonly struct Status : IComparable<Status>, IEquatable<Status>
 {
 	public int Index { get; }
 	public string Name { get; }
@@ -31,5 +31,29 @@ public struct Status : IComparable<Status>
 	public int CompareTo(Status other)
 	{
 		return Index.CompareTo(other.Index);
+	}
+
+	public bool Equals(Status other)
+	{
+		return Index == other.Index;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is Status other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return Index;
+	}
+	public static bool operator ==(Status left, Status right)
+	{
+		return left.Equals(right);
+	}
+
+	public static bool operator !=(Status left, Status right)
+	{
+		return !(left == right);
 	}
 }
