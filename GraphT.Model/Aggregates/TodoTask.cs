@@ -100,14 +100,14 @@ public class TodoTask
 		return $"\u23f1 {Math.Abs(timeDifference.Days)} day(s) - {Math.Abs(timeDifference.Hours)} hours(s) - {Math.Abs(timeDifference.Minutes)} minute(s) - {Math.Abs(timeDifference.Add(TimeSpan.FromMilliseconds(10)).Seconds)} second(s) To Go!";
 	}
 	
-	public void SetParents(IEnumerable<TodoTask> parents)
+	public void AddParents(HashSet<TodoTask> parents)
 	{
-		_parents = parents.ToHashSet();
+		_parents = _parents.UnionBy(parents, t => t.Id).ToHashSet();
 	}
 	
-	public void SetChildren(IEnumerable<TodoTask> children)
+	public void AddChildren(HashSet<TodoTask> children)
 	{
-		_children = children.ToHashSet();
+		_children = _children.UnionBy(children, t => t.Id).ToHashSet();
 	}
 
 	private TimeSpan GetElapsedTime()

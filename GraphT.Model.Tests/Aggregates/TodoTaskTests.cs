@@ -386,14 +386,14 @@ public class TodoTaskTests
 	}
 	
 	[Fact]
-	public void Parents_OnlyChangedVia_SetParents()
+	public void Parents_OnlyAddedVia_AddParents()
 	{
 		TodoTask parent1 = new("Parent 1");
 		TodoTask parent2 = new("Parent 2");
 		TodoTask parent3 = new("Parent 3");
 		TodoTask task = new();
 
-		task.SetParents([ parent1, parent2, parent3 ]);
+		task.AddParents([ parent1, parent2, parent3 ]);
 		
 		Assert.True(task.Parents.Count != 0);
 		Assert.Contains(parent1, task.Parents);
@@ -415,21 +415,21 @@ public class TodoTaskTests
 	}
 
 	[Fact]
-	public void Children_OnlyChangedVia_SetChildren()
+	public void Children_OnlyAddedVia_AddChildren()
 	{
 		TodoTask child1 = new("Parent 1");
 		TodoTask child2 = new("Parent 2");
 		TodoTask child3 = new("Parent 3");
 		TodoTask task = new();
 
-		task.SetChildren([ child1, child2, child3 ]);
+		task.AddChildren([ child1, child2, child3 ]);
 		
 		Assert.True(task.Children.Count != 0);
 		Assert.Contains(child1, task.Children);
 		Assert.Contains(child2, task.Children);
 		Assert.Contains(child3, task.Children);
 	}
-
+	
 	[Fact]
 	public void TodoTask_ShouldHave_ElapsedTime()
 	{
@@ -509,7 +509,7 @@ public class TodoTaskTests
 	public void Progress_ShouldBe_Calculated_From_CompletedChildren(int maxChildren)
 	{
 		TodoTask task = new();
-		List<TodoTask> children = [];
+		HashSet<TodoTask> children = [];
 
 		for (int i = 1; i <= maxChildren; i++)
 		{
@@ -527,7 +527,7 @@ public class TodoTaskTests
 		int childrenCompleted = children.Count(t => Equals(t.Status, Status.Completed));
 		double expected = ((childrenCompleted * 100) / maxChildren);
 		
-		task.SetChildren(children);
+		task.AddChildren(children);
 		
 		Assert.Equal(expected, task.Progress);
 	}
