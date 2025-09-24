@@ -1,6 +1,6 @@
 namespace GraphT.Model.ValueObjects;
 
-public struct LifeArea
+public readonly struct LifeArea : IEquatable<LifeArea>
 {
 	public string Name { get; }
 
@@ -13,5 +13,29 @@ public struct LifeArea
 	public LifeArea(string name)
 	{
 		Name = name;
+	}
+
+	public bool Equals(LifeArea other)
+	{
+		return Name == other.Name;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is LifeArea other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return Name.GetHashCode();
+	}
+	public static bool operator ==(LifeArea left, LifeArea right)
+	{
+		return left.Equals(right);
+	}
+
+	public static bool operator !=(LifeArea left, LifeArea right)
+	{
+		return !(left == right);
 	}
 }

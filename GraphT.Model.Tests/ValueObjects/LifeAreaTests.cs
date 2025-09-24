@@ -15,4 +15,11 @@ public class LifeAreaTests
 		Assert.Contains(expected,typeof(LifeArea).GetProperties().Select(p => p.Name));  
 		Assert.True(typeof(LifeArea).GetProperty(expected).PropertyType == typeof(string));
 	}
+
+	[Fact]
+	public void LifeArea_ShouldBeEquatable_ViaName()
+	{
+		Assert.Equal(new LifeArea("Name"), new LifeArea("Name"));
+		Assert.NotEqual(new LifeArea("Name"), new LifeArea("Name2"));
+	}
 }
