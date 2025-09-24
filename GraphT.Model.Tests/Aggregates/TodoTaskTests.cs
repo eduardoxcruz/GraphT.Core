@@ -499,7 +499,6 @@ public class TodoTaskTests
 	}
 
 	[Theory]
-	[InlineData(1)]
 	[InlineData(2)]
 	[InlineData(5)]
 	[InlineData(10)]
@@ -514,21 +513,78 @@ public class TodoTaskTests
 		for (int i = 1; i <= maxChildren; i++)
 		{
 			TodoTask child = new($"Child {i}");
-			Random random = new();
-			
-			if (random.Next(0, 2) == 1)
+
+			if (i < maxChildren)
 			{
-				child.SetStatus(DateTimeOffset.Now, Status.Completed);
+				Random random = new();
+			
+				if (random.Next(0, 2) == 1)
+				{
+					child.SetStatus(random.Next(0, 2) == 1 ? Status.Completed : Status.Dropped);
+				}
 			}
 			
 			children.Add(child);
 		}
 		
-		int childrenCompleted = children.Count(t => Equals(t.Status, Status.Completed));
+		int childrenCompleted = children.Count(t => t.Status.Index > 4);
 		double expected = ((childrenCompleted * 100) / maxChildren);
 		
 		task.AddChildren(children);
 		
 		Assert.Equal(expected, task.Progress);
+	}
+	
+	[Fact]
+	public void Progress_ShouldBe99_WhenAllChildrenAreCompletedOrDropped_ButCurrentTaskNotMarkedAsFinishedOrDropped()
+	{
+		TodoTask task = new();
+		HashSet<TodoTask> children = [];
+
+		for (int i = 1; i <= 10; i++)
+		{
+			TodoTask child = new($"Child {i}");
+			
+			Random random = new();
+
+			child.SetStatus(random.Next(0, 2) == 1 ? Status.Completed : Status.Dropped);
+
+			children.Add(child);
+		}
+		
+		task.AddChildren(children);
+		
+		Assert.Equal(99, task.Progress);
+	}
+	
+	[Fact]
+	public void Progress_ShouldBe100_When_CurrentTaskIsCompletedOrDropped()
+	{
+		TodoTask completed = new();
+		TodoTask dropped = new();
+		HashSet<TodoTask> children = [];
+
+		for (int i = 1; i <= 10; i++)
+		{
+			TodoTask child = new($"Child {i}");
+			child.SetStatus(DateTimeOffset.Now, Status.ReadyToStart);
+			children.Add(child);
+		}
+		
+		completed.AddChildren(children);
+		dropped.AddChildren(children);
+		completed.SetStatus(Status.Completed);
+		dropped.SetStatus(Status.Dropped);
+		
+		Assert.Equal(100, completed.Progress);
+		Assert.Equal(100, dropped.Progress);
+	}
+
+	[Fact]
+	public void Progress_ShouldBe0_When_NoChildrenAndTaskIsNotCompletedNorDropped()
+	{
+		TodoTask task = new();
+		
+		Assert.Equal(0, task.Progress);
 	}
 }

@@ -134,7 +134,15 @@ public class TodoTask
 	private double GetProgress()
 	{
 		int totalChildren = _children.Count;
-		int completedChildren = _children.Count(t => Equals(t.Status, Status.Completed));
+		
+		if (Status.Index > 4) return 100;
+
+		if (totalChildren == 0) return 0;
+		
+		int completedChildren = _children.Count(t => t.Status.Index > 4);
+		
+		if (completedChildren == _children.Count) return 99;
+		
 		return (completedChildren * 100) / totalChildren;
 	}
 }
