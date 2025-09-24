@@ -70,6 +70,7 @@ public class StatusTests
 		Assert.Equal("Dropped", Status.Dropped.Name);
 		Assert.Equal("Completed", Status.Completed.Name);
 	}
+	
 	[Fact]
 	public void Status_ShouldHave_EmojiForEveryOption()
 	{
@@ -80,5 +81,16 @@ public class StatusTests
 		Assert.Equal("\u23f8", Status.Paused.Emoji);
 		Assert.Equal("\ud83d\uddd1", Status.Dropped.Emoji);
 		Assert.Equal("\u2705", Status.Completed.Emoji);
+	}
+
+	[Fact]
+	public void CompareStatus_ShouldBe_ViaIndex()
+	{
+		List<Status> statuses = [];
+
+		statuses.Add(Status.Created);
+		statuses.Add(Status.Completed);
+		
+		Assert.Equal(Status.Completed, statuses.Max());
 	}
 }

@@ -1,6 +1,6 @@
 namespace GraphT.Model.ValueObjects;
 
-public struct Status
+public struct Status : IComparable<Status>
 {
 	public int Index { get; }
 	public string Name { get; }
@@ -26,5 +26,10 @@ public struct Status
 		Index = index;
 		Name = name;
 		Emoji = emoji;
+	}
+
+	public int CompareTo(Status other)
+	{
+		return Index.CompareTo(other.Index);
 	}
 }
