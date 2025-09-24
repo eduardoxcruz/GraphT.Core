@@ -5,8 +5,8 @@ namespace GraphT.Model.Aggregates;
 
 public class TodoTask
 {
-	private HashSet<TodoItem> _parents = new();
-	private HashSet<TodoItem> _children = new();
+	private HashSet<TodoItem> _parents;
+	private HashSet<TodoItem> _children;
 	
 	public TodoItem Item { get; }
 	public TimeSpan ElapsedTime => GetElapsedTime();
@@ -20,6 +20,8 @@ public class TodoTask
 	public TodoTask(TodoItem item)
 	{
 		Item = item;
+		_parents = [];
+		_children = [];
 	}
 	
 	public void SetParents(IEnumerable<TodoItem> parents)
