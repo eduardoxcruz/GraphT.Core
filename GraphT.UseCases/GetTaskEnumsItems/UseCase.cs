@@ -22,10 +22,10 @@ public class UseCase : IInputPort
 	{
 		Dictionary<string, List<EnumItemAndLabel>> items = new()
 		{
-            { "complexities", ConvertEnumToItems<Complexity>() },
-            { "priorities", ConvertEnumToItems<Priority>() },
-            { "relevances", ConvertEnumToItems<Relevance>() },
-            { "statuses", ConvertEnumToItems<Status>() }
+            { "complexities", ConvertEnumToItems<OldComplexity>() },
+            { "priorities", ConvertEnumToItems<OldPriority>() },
+            { "relevances", ConvertEnumToItems<OldRelevance>() },
+            { "statuses", ConvertEnumToItems<OldStatus>() }
         };
 
 		await _outputPort.Handle(new OutputDto(items));

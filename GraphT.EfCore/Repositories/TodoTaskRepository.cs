@@ -20,9 +20,9 @@ public class TodoTaskRepository : ITodoTaskRepository
 		_context = context;
 	}
 
-	public async ValueTask<TodoTask?> FindByIdAsync(Guid id)
+	public async ValueTask<OldTodoTask?> FindByIdAsync(Guid id)
 	{
-		TodoTask? task = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id.Equals(id));
+		OldTodoTask? task = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id.Equals(id));
         
 		if (task != null)
 		{
@@ -32,92 +32,92 @@ public class TodoTaskRepository : ITodoTaskRepository
 		return task;
 	}
 
-	public async ValueTask<PagedList<TodoTask>> FindTasksCompletedOrDropped(PagingParams pagingParams)
+	public async ValueTask<PagedList<OldTodoTask>> FindTasksCompletedOrDropped(PagingParams pagingParams)
     {
-       IQueryable<TodoTask> query = _context.TodoTasks
-          .Where(task => task.Status == Status.Completed || task.Status == Status.Dropped)
-          .OrderByDescending(task => task.DateTimeInfo.FinishDateTime)
+       IQueryable<OldTodoTask> query = _context.TodoTasks
+          .Where(task => task.OldStatus == OldStatus.Completed || task.OldStatus == OldStatus.Dropped)
+          .OrderByDescending(task => task.OldDateTimeInfo.FinishDateTime)
           .AsNoTracking();
 
        int totalCount = await query.CountAsync();
        
-       List<TodoTask> results = await query
+       List<OldTodoTask> results = await query
           .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
           .Take(pagingParams.PageSize)
           .ToListAsync();
 
-       return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
+       return new PagedList<OldTodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
 
-    public async ValueTask<PagedList<TodoTask>> FindTasksInProgress(PagingParams pagingParams)
+    public async ValueTask<PagedList<OldTodoTask>> FindTasksInProgress(PagingParams pagingParams)
     {
-       IQueryable<TodoTask> query = _context.TodoTasks
-          .Where(task => task.Status == Status.Doing)
+       IQueryable<OldTodoTask> query = _context.TodoTasks
+          .Where(task => task.OldStatus == OldStatus.Doing)
           .OrderByDescending(task => task.Priority)
-          .ThenBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
+          .ThenBy(task => task.OldDateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
           .AsNoTracking();
 
        int totalCount = await query.CountAsync();
        
-       List<TodoTask> results = await query
+       List<OldTodoTask> results = await query
           .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
           .Take(pagingParams.PageSize)
           .ToListAsync();
 
-       return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
+       return new PagedList<OldTodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
 
-    public async ValueTask<PagedList<TodoTask>> FindTasksReadyToStart(PagingParams pagingParams)
+    public async ValueTask<PagedList<OldTodoTask>> FindTasksReadyToStart(PagingParams pagingParams)
     {
-	    IQueryable<TodoTask> query = _context.TodoTasks
+	    IQueryable<OldTodoTask> query = _context.TodoTasks
 		    .Where(task => 
-			    (task.Status == Status.Ready || task.Status == Status.Paused) &&
+			    (task.OldStatus == OldStatus.Ready || task.OldStatus == OldStatus.Paused) &&
 			    (!_context.TaskStreams.Any(ts => ts.UpstreamId == task.Id) || task.Progress >= 99))
-		    .OrderBy(task => task.DateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
+		    .OrderBy(task => task.OldDateTimeInfo.LimitDateTime ?? DateTimeOffset.MaxValue)
 		    .ThenByDescending(task => task.Priority)
 		    .AsNoTracking();
 
 	    int totalCount = await query.CountAsync();
         
-	    List<TodoTask> results = await query
+	    List<OldTodoTask> results = await query
 		    .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
 		    .Take(pagingParams.PageSize)
 		    .ToListAsync();
 
 	    await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
 
-	    return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
+	    return new PagedList<OldTodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
 
-    public async ValueTask<PagedList<TodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams)
+    public async ValueTask<PagedList<OldTodoTask>> GetTasksOrderedByCreationDateDescAsync(PagingParams pagingParams)
     {
-	    IQueryable<TodoTask> query = _context.TodoTasks
-		    .OrderByDescending(task => task.DateTimeInfo.CreationDateTime)
+	    IQueryable<OldTodoTask> query = _context.TodoTasks
+		    .OrderByDescending(task => task.OldDateTimeInfo.CreationDateTime)
 		    .AsNoTracking();
             
 	    int totalCount = await query.CountAsync();
         
-	    List<TodoTask> results = await query
+	    List<OldTodoTask> results = await query
 		    .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
 		    .Take(pagingParams.PageSize)
 		    .ToListAsync();
 
 	    await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
         
-	    return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
+	    return new PagedList<OldTodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
     }
     
-    public async ValueTask AddAsync(TodoTask task)
+    public async ValueTask AddAsync(OldTodoTask task)
 	{
 		await _context.TodoTasks.AddAsync(task);
 	}
 
-	public async ValueTask AddRangeAsync(IEnumerable<TodoTask> tasks)
+	public async ValueTask AddRangeAsync(IEnumerable<OldTodoTask> tasks)
 	{
 		await _context.TodoTasks.AddRangeAsync(tasks);
 	}
 
-	public async ValueTask RemoveAsync(TodoTask task)
+	public async ValueTask RemoveAsync(OldTodoTask task)
 	{
 		_context.TaskStreams.RemoveRange(_context.TaskStreams.Where(ts => ts.UpstreamId == task.Id));
 		_context.TaskStreams.RemoveRange(_context.TaskStreams.Where(ts => ts.DownstreamId == task.Id));
@@ -125,9 +125,9 @@ public class TodoTaskRepository : ITodoTaskRepository
 		await Task.CompletedTask;
 	}
 
-	public async ValueTask RemoveRangeAsync(IEnumerable<TodoTask> tasks)
+	public async ValueTask RemoveRangeAsync(IEnumerable<OldTodoTask> tasks)
 	{
-		IEnumerable<TodoTask> todoTasks = tasks as TodoTask[] ?? tasks.ToArray();
+		IEnumerable<OldTodoTask> todoTasks = tasks as OldTodoTask[] ?? tasks.ToArray();
 		HashSet<Guid> taskIds = todoTasks.Select(t => t.Id).ToHashSet(); // HashSet para mejor rendimiento en Contains
     
 		IQueryable<TaskStream> relatedTaskStreams = _context.TaskStreams
@@ -139,15 +139,15 @@ public class TodoTaskRepository : ITodoTaskRepository
 		await Task.CompletedTask;
 	}
 
-	public ValueTask UpdateAsync(TodoTask TodoTask)
+	public ValueTask UpdateAsync(OldTodoTask oldTodoTask)
 	{
-		_context.TodoTasks.Attach(TodoTask);
-		_context.Entry(TodoTask).State = EntityState.Modified;
+		_context.TodoTasks.Attach(oldTodoTask);
+		_context.Entry(oldTodoTask).State = EntityState.Modified;
 		
 		return ValueTask.CompletedTask;
 	}
 
-	public async ValueTask UpdateRangeAsync(IEnumerable<TodoTask> tasks)
+	public async ValueTask UpdateRangeAsync(IEnumerable<OldTodoTask> tasks)
 	{
 		_context.TodoTasks.UpdateRange(tasks);
 		await Task.CompletedTask;

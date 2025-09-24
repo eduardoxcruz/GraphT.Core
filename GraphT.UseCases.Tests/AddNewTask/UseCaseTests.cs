@@ -23,11 +23,11 @@ public class UseCaseTests
         InputDto input = new()
         {
             Name = "Test Task",
-            Status = Status.Created,
+            Status = OldStatus.Created,
             IsFun = true,
             IsProductive = true,
-            Complexity = Complexity.High,
-            Priority = Priority.Urgent
+            Complexity = OldComplexity.High,
+            Priority = OldPriority.Urgent
         };
 
         UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
@@ -36,14 +36,14 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
             t.Name == input.Name && 
             t.IsFun == input.IsFun && 
             t.IsProductive == input.IsProductive && 
             t.Complexity == input.Complexity && 
             t.Priority == input.Priority
         ));
-        await taskLogRepository.Received(2).AddAsync(Arg.Any<TaskLog>());
+        await taskLogRepository.Received(2).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
     }
@@ -73,8 +73,8 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => t.Id == input.Id && t.Name == input.Name));
-        await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => t.Id == input.Id && t.Name == input.Name));
+        await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id == input.Id));
     }
@@ -106,13 +106,13 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
             t.Name == input.Name &&
-            t.DateTimeInfo.StartDateTime == input.StartDateTime &&
-            t.DateTimeInfo.FinishDateTime == input.FinishDateTime &&
-            t.DateTimeInfo.LimitDateTime == input.LimitDateTime
+            t.OldDateTimeInfo.StartDateTime == input.StartDateTime &&
+            t.OldDateTimeInfo.FinishDateTime == input.FinishDateTime &&
+            t.OldDateTimeInfo.LimitDateTime == input.LimitDateTime
         ));
-        await taskLogRepository.Received(1).AddAsync(Arg.Any<TaskLog>());
+        await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
         await unitOfWork.Received(1).SaveChangesAsync();
         await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
     }
@@ -134,7 +134,7 @@ public class UseCaseTests
         await useCase.Handle(input);
 
         // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<TodoTask>(t => 
+        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
             t.Name == "New Task"
         ));
         await unitOfWork.Received(1).SaveChangesAsync();

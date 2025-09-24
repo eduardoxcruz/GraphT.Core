@@ -35,7 +35,7 @@ public class UseCase : IInputPort
 	{
 		if (dto.Id is null) throw new ArgumentException("Task id cannot be null", nameof(dto.Id));
 		
-		TodoTask? task = await _todoTaskRepository.FindByIdAsync(dto.Id.Value);
+		OldTodoTask? task = await _todoTaskRepository.FindByIdAsync(dto.Id.Value);
 		
 		if (task is null) throw new TaskNotFoundException("Task not found", dto.Id.Value);
 
@@ -48,14 +48,14 @@ public class UseCase : IInputPort
 		if (dto.Status is not null)
 		{
 			DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-			TaskLog? lastLog = (await _taskLogRepository.FindTaskLastLog(dto.Id.Value) ?? 
-				new TaskLog(Guid.Empty, dateTimeOffset, Status.Created, TimeSpan.Zero));
+			OldTaskLog? lastLog = (await _taskLogRepository.FindTaskLastLog(dto.Id.Value) ?? 
+				new OldTaskLog(Guid.Empty, dateTimeOffset, OldStatus.Created, TimeSpan.Zero));
 			(string, TimeSpan) timeSpend = TimeSpendCalculatorService.GetTimeSpend(dto.Status.Value, dateTimeOffset, lastLog);
-			task.Status = dto.Status.Value;
+			task.OldStatus = dto.Status.Value;
 			task.SetTimeSpend(timeSpend.Item1);
-			TaskLog taskLog = new(task.Id, dateTimeOffset, task.Status, timeSpend.Item2);
+			OldTaskLog oldTaskLog = new(task.Id, dateTimeOffset, task.OldStatus, timeSpend.Item2);
 			
-			await _taskLogRepository.AddAsync(taskLog);
+			await _taskLogRepository.AddAsync(oldTaskLog);
 		}
 		
 		if (dto.StartDateTime.HasValue) task.SetStartDate(dto.StartDateTime.Value);
@@ -74,11 +74,11 @@ public class InputDto
 {
 	public Guid? Id { get; set; }
 	public string? Name { get; set; }
-	public Status? Status { get; set; }
+	public OldStatus? Status { get; set; }
 	public bool? IsFun { get; set; }
 	public bool? IsProductive { get; set; }
-	public Complexity? Complexity { get; set; }
-	public Priority? Priority { get; set; }
+	public OldComplexity? Complexity { get; set; }
+	public OldPriority? Priority { get; set; }
 	public DateTimeOffset? StartDateTime { get; set; }
 	public DateTimeOffset? FinishDateTime { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }

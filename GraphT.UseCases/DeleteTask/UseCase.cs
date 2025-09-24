@@ -28,7 +28,7 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		TodoTask? task = (await _todoTaskRepository.FindByIdAsync(dto.Id));
+		OldTodoTask? task = (await _todoTaskRepository.FindByIdAsync(dto.Id));
 		
 		if (task is null)
 		{

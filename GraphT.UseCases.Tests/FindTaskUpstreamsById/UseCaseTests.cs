@@ -20,9 +20,9 @@ public class UseCaseTests
 		ITaskUpstreamsRepository taskUpstreamsRepository = Substitute.For<ITaskUpstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		TodoTask taskUpstream1 = new("Test Upstream 1");
-		TodoTask taskUpstream2 = new("Test Upstream 2");
-		var upstreams = new PagedList<TodoTask>([taskUpstream1, taskUpstream2], 2, 1, 10);
+		OldTodoTask taskUpstream1 = new("Test Upstream 1");
+		OldTodoTask taskUpstream2 = new("Test Upstream 2");
+		var upstreams = new PagedList<OldTodoTask>([taskUpstream1, taskUpstream2], 2, 1, 10);
 		
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
@@ -57,7 +57,7 @@ public class UseCaseTests
 		ITaskUpstreamsRepository taskUpstreamsRepository = Substitute.For<ITaskUpstreamsRepository>();
 
 		Guid taskId = Guid.NewGuid();
-		var emptyUpstreams = new PagedList<TodoTask>([], 0, 1, 10);
+		var emptyUpstreams = new PagedList<OldTodoTask>([], 0, 1, 10);
 		
 		PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
@@ -92,7 +92,7 @@ public class UseCaseTests
 		InputDto input = new() { Id = taskId, PagingParams = pagingParams };
 
 		// Create a paged list with the expected paging parameters
-		var upstreams = new PagedList<TodoTask>([], 0, 2, 5);
+		var upstreams = new PagedList<OldTodoTask>([], 0, 2, 5);
 		
 		todoTaskRepository.ContainsAsync(taskId).Returns(true);
 		taskUpstreamsRepository.FindTaskUpstreamsById(taskId).Returns(upstreams);

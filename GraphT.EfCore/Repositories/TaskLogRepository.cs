@@ -13,7 +13,7 @@ public class TaskLogRepository : ITaskLogRepository
 		_context = context;
 	}
 
-	public async ValueTask<TaskLog?> FindTaskLastLog(Guid taskId)
+	public async ValueTask<OldTaskLog?> FindTaskLastLog(Guid taskId)
 	{
 	    return await _context.TaskLogs
 	        .Where(taskLog => taskLog.TaskId.Equals(taskId))
@@ -21,23 +21,23 @@ public class TaskLogRepository : ITaskLogRepository
 	        .FirstOrDefaultAsync(); 
 	}
 
-	public async ValueTask AddAsync(TaskLog taskLog)
+	public async ValueTask AddAsync(OldTaskLog oldTaskLog)
 	{
-		await _context.TaskLogs.AddAsync(taskLog);
+		await _context.TaskLogs.AddAsync(oldTaskLog);
 	}
 
-	public async ValueTask AddRangeAsync(IEnumerable<TaskLog> taskLogs)
+	public async ValueTask AddRangeAsync(IEnumerable<OldTaskLog> taskLogs)
 	{
 		await _context.TaskLogs.AddRangeAsync(taskLogs);
 	}
 
-	public async ValueTask RemoveAsync(TaskLog taskLog)
+	public async ValueTask RemoveAsync(OldTaskLog oldTaskLog)
 	{
-		_context.TaskLogs.Remove(taskLog);
+		_context.TaskLogs.Remove(oldTaskLog);
 		await Task.CompletedTask;
 	}
 
-	public async ValueTask RemoveRangeAsync(IEnumerable<TaskLog> taskLogs)
+	public async ValueTask RemoveRangeAsync(IEnumerable<OldTaskLog> taskLogs)
 	{
 		_context.TaskLogs.RemoveRange(taskLogs);
 		await Task.CompletedTask;

@@ -8,7 +8,7 @@ namespace GraphT.EfCore.Repositories;
 
 public static class StreamsPopulator
 {
-	public static async Task PopulateStreamCountsAsync(TodoTask task, EfDbContext context)
+	public static async Task PopulateStreamCountsAsync(OldTodoTask task, EfDbContext context)
     {
         int upstreamsCount = await context.TaskStreams
             .Where(ts => ts.DownstreamId == task.Id)
@@ -23,9 +23,9 @@ public static class StreamsPopulator
             .Where(tla => tla.TaskId == task.Id)
             .CountAsync();*/
 
-        FieldInfo? upstreamsField = typeof(TodoTask).GetField("_upstreamsCount", 
+        FieldInfo? upstreamsField = typeof(OldTodoTask).GetField("_upstreamsCount", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        FieldInfo? downstreamsField = typeof(TodoTask).GetField("_downstreamsCount", 
+        FieldInfo? downstreamsField = typeof(OldTodoTask).GetField("_downstreamsCount", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         /*FieldInfo? lifeAreasField = typeof(TodoTask).GetField("_lifeAreasCount", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);*/
@@ -35,7 +35,7 @@ public static class StreamsPopulator
         //lifeAreasField?.SetValue(task, (uint)lifeAreasCount);
     }
 
-    public static async Task PopulateStreamCountsAsync(List<TodoTask> tasks, EfDbContext context)
+    public static async Task PopulateStreamCountsAsync(List<OldTodoTask> tasks, EfDbContext context)
     {
         if (!tasks.Any()) return;
 
@@ -60,15 +60,15 @@ public static class StreamsPopulator
             .Select(g => new { TaskId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.TaskId, x => x.Count);*/
 
-        FieldInfo? upstreamsField = typeof(TodoTask).GetField("_upstreamsCount", 
+        FieldInfo? upstreamsField = typeof(OldTodoTask).GetField("_upstreamsCount", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        FieldInfo? downstreamsField = typeof(TodoTask).GetField("_downstreamsCount", 
+        FieldInfo? downstreamsField = typeof(OldTodoTask).GetField("_downstreamsCount", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         // TODO: Implement this
         /*FieldInfo? lifeAreasField = typeof(TodoTask).GetField("_lifeAreasCount", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);*/
         
-        foreach (TodoTask task in tasks)
+        foreach (OldTodoTask task in tasks)
         {
             upstreamsField?.SetValue(task, (uint)(upstreamsCounts.GetValueOrDefault(task.Id, 0)));
             downstreamsField?.SetValue(task, (uint)(downstreamsCounts.GetValueOrDefault(task.Id, 0)));

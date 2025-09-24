@@ -17,9 +17,9 @@ public class TaskUpstreamsRepository : ITaskUpstreamsRepository
 		_context = context;
 	}
 
-	public async ValueTask<PagedList<TodoTask>> FindTaskUpstreamsById(Guid id)
+	public async ValueTask<PagedList<OldTodoTask>> FindTaskUpstreamsById(Guid id)
 	{
-		List<TodoTask> results = await _context.TaskStreams
+		List<OldTodoTask> results = await _context.TaskStreams
 			.Where(td => td.DownstreamId == id)
 			.Select(td => td.Upstream)
 			.AsNoTracking()
@@ -27,26 +27,26 @@ public class TaskUpstreamsRepository : ITaskUpstreamsRepository
 
 		await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
 		
-		return new PagedList<TodoTask>(results, results.Count, 1, results.Count);
+		return new PagedList<OldTodoTask>(results, results.Count, 1, results.Count);
 	}
 	
-	public async ValueTask<PagedList<TodoTask>> FindTasksWithoutUpstreams(PagingParams pagingParams)
+	public async ValueTask<PagedList<OldTodoTask>> FindTasksWithoutUpstreams(PagingParams pagingParams)
 	{
-		IQueryable<TodoTask> query = _context.TodoTasks
+		IQueryable<OldTodoTask> query = _context.TodoTasks
 			.Where(task => !_context.TaskStreams.Any(ts => ts.DownstreamId == task.Id))
-			.OrderByDescending(task => task.DateTimeInfo.CreationDateTime)
+			.OrderByDescending(task => task.OldDateTimeInfo.CreationDateTime)
 			.AsNoTracking();
 
 		int totalCount = await query.CountAsync();
        
-		List<TodoTask> results = await query
+		List<OldTodoTask> results = await query
 			.Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
 			.Take(pagingParams.PageSize)
 			.ToListAsync();
 
 		await StreamsPopulator.PopulateStreamCountsAsync(results, _context);
 		
-		return new PagedList<TodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
+		return new PagedList<OldTodoTask>(results, totalCount, pagingParams.PageNumber, pagingParams.PageSize);
 	}
 
 	public async ValueTask AddUpstreamAsync(Guid taskId, Guid upstreamId)

@@ -38,7 +38,7 @@ public class UseCase : IInputPort
 			id = dto.Id.Value;
 		}
 		
-		TodoTask task = new(dto.Name ?? "New Task", dto.Status, dto.IsFun, dto.IsProductive, dto.Complexity, dto.Priority, id);
+		OldTodoTask task = new(dto.Name ?? "New Task", dto.Status, dto.IsFun, dto.IsProductive, dto.Complexity, dto.Priority, id);
 		
 		if (dto.StartDateTime.HasValue) task.SetStartDate(dto.StartDateTime.Value);
 
@@ -46,15 +46,15 @@ public class UseCase : IInputPort
 		
 		if (dto.LimitDateTime.HasValue) task.SetLimitDate(dto.LimitDateTime.Value);
 		
-		TaskLog createdTaskLog = new(id, DateTimeOffset.UtcNow, Status.Created, TimeSpan.Zero);
+		OldTaskLog createdOldTaskLog = new(id, DateTimeOffset.UtcNow, OldStatus.Created, TimeSpan.Zero);
 		
 		if (dto.Status is not null)
 		{
-			TaskLog taskLog = new(id, DateTimeOffset.UtcNow.AddSeconds(2), dto.Status.Value, TimeSpan.Zero);
-			await _taskLogRepository.AddAsync(taskLog);
+			OldTaskLog oldTaskLog = new(id, DateTimeOffset.UtcNow.AddSeconds(2), dto.Status.Value, TimeSpan.Zero);
+			await _taskLogRepository.AddAsync(oldTaskLog);
 		}
 		
-		await _taskLogRepository.AddAsync(createdTaskLog);
+		await _taskLogRepository.AddAsync(createdOldTaskLog);
 		await _todoTaskRepository.AddAsync(task);
 		await _unitOfWork.SaveChangesAsync();
 		await _outputPort.Handle(new OutputDto(id));
@@ -65,11 +65,11 @@ public class InputDto
 {
 	public Guid? Id { get; set; }
 	public string? Name { get; set; }
-	public Status? Status { get; set; }
+	public OldStatus? Status { get; set; }
 	public bool? IsFun { get; set; }
 	public bool? IsProductive { get; set; }
-	public Complexity? Complexity { get; set; }
-	public Priority? Priority { get; set; }
+	public OldComplexity? Complexity { get; set; }
+	public OldPriority? Priority { get; set; }
 	public DateTimeOffset? StartDateTime { get; set; }
 	public DateTimeOffset? FinishDateTime { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }

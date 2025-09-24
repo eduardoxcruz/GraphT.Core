@@ -22,7 +22,7 @@ public class UseCase : IInputPort
 
 	public async ValueTask Handle(InputDto dto)
 	{
-		PagedList<TodoTask> tasks = await _todoTaskRepository.GetTasksOrderedByCreationDateDescAsync(dto.PagingParams);
+		PagedList<OldTodoTask> tasks = await _todoTaskRepository.GetTasksOrderedByCreationDateDescAsync(dto.PagingParams);
 		
 		await _outputPort.Handle(new OutputDto() { Tasks = tasks });
 	}
@@ -35,6 +35,6 @@ public record struct InputDto()
 
 public record struct OutputDto()
 {
-	public PagedList<TodoTask> Tasks { get; set; }
+	public PagedList<OldTodoTask> Tasks { get; set; }
 }
 

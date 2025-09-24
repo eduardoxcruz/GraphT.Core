@@ -34,17 +34,17 @@ public class UseCaseTests
         List<EnumItemAndLabel> statuses = dto.Items["statuses"];
 
         // Verify that each list has the correct number of elements
-        if (complexities.Count != Enum.GetValues<Complexity>().Length ||
-            priorities.Count != Enum.GetValues<Priority>().Length ||
-            relevances.Count != Enum.GetValues<Relevance>().Length ||
-            statuses.Count != Enum.GetValues<Status>().Length)
+        if (complexities.Count != Enum.GetValues<OldComplexity>().Length ||
+            priorities.Count != Enum.GetValues<OldPriority>().Length ||
+            relevances.Count != Enum.GetValues<OldRelevance>().Length ||
+            statuses.Count != Enum.GetValues<OldStatus>().Length)
             return false;
 
         // Verify that IDs and labels are valid for each enum
-        return ValidateEnumItems<Complexity>(complexities) &&
-               ValidateEnumItems<Priority>(priorities) &&
-               ValidateEnumItems<Relevance>(relevances) &&
-               ValidateEnumItems<Status>(statuses);
+        return ValidateEnumItems<OldComplexity>(complexities) &&
+               ValidateEnumItems<OldPriority>(priorities) &&
+               ValidateEnumItems<OldRelevance>(relevances) &&
+               ValidateEnumItems<OldStatus>(statuses);
     }
 
     private static bool ValidateEnumItems<TEnum>(List<EnumItemAndLabel> items) where TEnum : struct, Enum

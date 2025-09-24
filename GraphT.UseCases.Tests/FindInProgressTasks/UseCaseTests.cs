@@ -18,14 +18,14 @@ public class UseCaseTests
         IOutputPort outputPort = Substitute.For<IOutputPort>();
         ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
 
-        TodoTask task1 = new("Task 1", Status.Doing);
-        TodoTask task2 = new("Task 2", Status.Doing);
-        List<TodoTask> tasks = [task1, task2];
+        OldTodoTask task1 = new("Task 1", OldStatus.Doing);
+        OldTodoTask task2 = new("Task 2", OldStatus.Doing);
+        List<OldTodoTask> tasks = [task1, task2];
         PagingParams pagingParams = new() { PageNumber = 1, PageSize = 10 };
         InputDto input = new() { PagingParams = pagingParams };
 
         todoTaskRepository.FindTasksInProgress(pagingParams)
-            .Returns(new PagedList<TodoTask>(tasks, tasks.Count, pagingParams.PageNumber, pagingParams.PageSize));
+            .Returns(new PagedList<OldTodoTask>(tasks, tasks.Count, pagingParams.PageNumber, pagingParams.PageSize));
 
         UseCase useCase = new(outputPort, todoTaskRepository);
 
@@ -39,7 +39,7 @@ public class UseCaseTests
             dto.Tasks.TotalCount == 2 &&
             dto.Tasks.CurrentPage == 1 &&
             dto.Tasks.PageSize == 10 &&
-            dto.Tasks.All(task => task.Status == Status.Doing)
+            dto.Tasks.All(task => task.OldStatus == OldStatus.Doing)
         ));
     }
 
@@ -54,7 +54,7 @@ public class UseCaseTests
         InputDto input = new() { PagingParams = pagingParams };
 
         todoTaskRepository.FindTasksInProgress(pagingParams)
-            .Returns(new PagedList<TodoTask>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
+            .Returns(new PagedList<OldTodoTask>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
 
         UseCase useCase = new(outputPort, todoTaskRepository);
 
@@ -82,7 +82,7 @@ public class UseCaseTests
         InputDto input = new() { PagingParams = pagingParams };
 
         todoTaskRepository.FindTasksInProgress(pagingParams)
-            .Returns(new PagedList<TodoTask>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
+            .Returns(new PagedList<OldTodoTask>([], 0, pagingParams.PageNumber, pagingParams.PageSize));
 
         UseCase useCase = new(outputPort, todoTaskRepository);
 

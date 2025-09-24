@@ -18,11 +18,11 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TaskLogRepository repository = new(context);
-		TaskLog log = new(Guid.NewGuid(), DateTimeOffset.UtcNow, Status.Created);
+		OldTaskLog log = new(Guid.NewGuid(), DateTimeOffset.UtcNow, OldStatus.Created);
 		
 		await repository.AddAsync(log);
 		await context.SaveChangesAsync();
-		List<TaskLog> results = await context.TaskLogs.ToListAsync();
+		List<OldTaskLog> results = await context.TaskLogs.ToListAsync();
 
 		Assert.NotNull(results);
 		Assert.NotEmpty(results);
@@ -36,16 +36,16 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
 		EfDbContext context = _fixture.CreateContext();
 		TaskLogRepository repository = new(context);
 		Guid taskId = Guid.NewGuid();
-		List<TaskLog> logs =
+		List<OldTaskLog> logs =
 		[
-			new(taskId, DateTimeOffset.UtcNow, Status.Created), 
-			new(taskId, DateTimeOffset.UtcNow, Status.Ready), 
-			new(taskId, DateTimeOffset.UtcNow, Status.Doing)
+			new(taskId, DateTimeOffset.UtcNow, OldStatus.Created), 
+			new(taskId, DateTimeOffset.UtcNow, OldStatus.Ready), 
+			new(taskId, DateTimeOffset.UtcNow, OldStatus.Doing)
 		];
 
 		await repository.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
-		List<TaskLog> results = await context.TaskLogs.ToListAsync();
+		List<OldTaskLog> results = await context.TaskLogs.ToListAsync();
 
 		Assert.NotNull(results);
 		Assert.NotEmpty(results);
@@ -57,13 +57,13 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
 	{
 		EfDbContext context = _fixture.CreateContext();
 		TaskLogRepository repository = new(context);
-		TaskLog log = new(Guid.NewGuid(), DateTimeOffset.UtcNow, Status.Created);
+		OldTaskLog log = new(Guid.NewGuid(), DateTimeOffset.UtcNow, OldStatus.Created);
 
 		await context.TaskLogs.AddAsync(log);
 		await context.SaveChangesAsync();
 		await repository.RemoveAsync(log);
 		await context.SaveChangesAsync();
-		List<TaskLog> results = await context.TaskLogs.ToListAsync();
+		List<OldTaskLog> results = await context.TaskLogs.ToListAsync();
 
 		Assert.Empty(results);
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
@@ -75,18 +75,18 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
 		EfDbContext context = _fixture.CreateContext();
 		TaskLogRepository repository = new(context);
 		Guid taskId = Guid.NewGuid();
-		List<TaskLog> logs =
+		List<OldTaskLog> logs =
 		[
-			new(taskId, DateTimeOffset.UtcNow, Status.Created), 
-			new(taskId, DateTimeOffset.UtcNow, Status.Ready), 
-			new(taskId, DateTimeOffset.UtcNow, Status.Doing)
+			new(taskId, DateTimeOffset.UtcNow, OldStatus.Created), 
+			new(taskId, DateTimeOffset.UtcNow, OldStatus.Ready), 
+			new(taskId, DateTimeOffset.UtcNow, OldStatus.Doing)
 		];
 
 		await context.TaskLogs.AddRangeAsync(logs);
 		await context.SaveChangesAsync();
 		await repository.RemoveRangeAsync(logs);
 		await context.SaveChangesAsync();
-		List<TaskLog> results = await context.TaskLogs.ToListAsync();
+		List<OldTaskLog> results = await context.TaskLogs.ToListAsync();
 
 		Assert.Empty(results);
 		await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
@@ -100,21 +100,21 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
         TaskLogRepository repository = new(context);
         Guid taskId = Guid.NewGuid();
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        List<TaskLog> logs = [
-            new(taskId, now.AddHours(-2), Status.Created),
-            new(taskId, now.AddHours(-1), Status.Doing),
-            new(taskId, now, Status.Paused)
+        List<OldTaskLog> logs = [
+            new(taskId, now.AddHours(-2), OldStatus.Created),
+            new(taskId, now.AddHours(-1), OldStatus.Doing),
+            new(taskId, now, OldStatus.Paused)
         ];
 
         // Act
         await context.TaskLogs.AddRangeAsync(logs);
         await context.SaveChangesAsync();
-        TaskLog? result = await repository.FindTaskLastLog(taskId);
+        OldTaskLog? result = await repository.FindTaskLastLog(taskId);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(now, result.DateTime);
-        Assert.Equal(Status.Paused, result.Status);
+        Assert.Equal(OldStatus.Paused, result.OldStatus);
         await context.Database.ExecuteSqlAsync($"DELETE FROM [TaskLogs]");
     }
 
@@ -127,7 +127,7 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
         Guid taskId = Guid.NewGuid();
 
         // Act
-        TaskLog? result = await repository.FindTaskLastLog(taskId);
+        OldTaskLog? result = await repository.FindTaskLastLog(taskId);
 
         // Assert
         Assert.Null(result);
@@ -143,17 +143,17 @@ public class TaskLogRepositoryTests : IClassFixture<TestDatabaseFixture>
         Guid targetTaskId = Guid.NewGuid();
         Guid otherTaskId = Guid.NewGuid();
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        List<TaskLog> logs = [
-            new(targetTaskId, now, Status.Created),
-            new(otherTaskId, now.AddMinutes(1), Status.Created),
-            new(targetTaskId, now.AddHours(-1), Status.Doing),
-            new(otherTaskId, now.AddHours(-2), Status.Doing)
+        List<OldTaskLog> logs = [
+            new(targetTaskId, now, OldStatus.Created),
+            new(otherTaskId, now.AddMinutes(1), OldStatus.Created),
+            new(targetTaskId, now.AddHours(-1), OldStatus.Doing),
+            new(otherTaskId, now.AddHours(-2), OldStatus.Doing)
         ];
 
         // Act
         await context.TaskLogs.AddRangeAsync(logs);
         await context.SaveChangesAsync();
-        TaskLog? result = await repository.FindTaskLastLog(targetTaskId);
+        OldTaskLog? result = await repository.FindTaskLastLog(targetTaskId);
 
         // Assert
         Assert.NotNull(result);
