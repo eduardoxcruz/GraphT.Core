@@ -1,26 +1,8 @@
-using Azure.Identity;
-
 using GraphT.IoC;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDevelopment())
-{
-	builder.Configuration.AddUserSecrets<Program>();
-}
-
-if (builder.Environment.IsProduction())
-{
-	string? keyVaultUri = builder.Configuration["AzureKeyVault:Uri"];
-	
-	if (!string.IsNullOrEmpty(keyVaultUri))
-	{
-		builder.Configuration.AddAzureKeyVault(
-			new Uri(keyVaultUri),
-			new DefaultAzureCredential()
-		);
-	}
-}
+builder.Configuration.AddUserSecrets<Program>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
