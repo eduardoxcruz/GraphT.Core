@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GraphT.Controllers\GraphT.Controllers.csproj" />
-      <ProjectReference Include="..\GraphT.EfCore\GraphT.EfCore.csproj" />
       <ProjectReference Include="..\GraphT.Presenters\GraphT.Presenters.csproj" />
       <ProjectReference Include="..\GraphT.UseCases\GraphT.UseCases.csproj" />
     </ItemGroup>

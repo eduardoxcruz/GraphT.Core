@@ -1,5 +1,4 @@
 ﻿using GraphT.Controllers;
-using GraphT.EfCore;
 using GraphT.Presenters;
 using GraphT.UseCases;
 
@@ -15,8 +14,7 @@ public static class DependencyContainer
 		services
 			.AddGraphTUseCases()
 			.AddGraphTPresenters()
-			.AddGraphTControllers()
-			.AddGraphTEfCoreRepositories(configuration);
+			.AddGraphTControllers();
 		
 		return services;
 	}
