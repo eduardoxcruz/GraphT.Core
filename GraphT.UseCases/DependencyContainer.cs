@@ -7,6 +7,7 @@ public static class DependencyContainer
 	public static IServiceCollection AddGraphTUseCases(this IServiceCollection services)
 	{
 		services.AddScoped<AddNewTask.IInputPort, AddNewTask.UseCase>();
+		services.AddScoped<DeleteTask.IInputPort, DeleteTask.UseCase>();
 		
 		return services;
 	}
