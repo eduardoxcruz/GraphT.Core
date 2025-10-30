@@ -1,6 +1,6 @@
 using GraphT.Model.Services.Repositories;
-using GraphT.UseCases.DeleteTask;
 using GraphT.Model.Exceptions;
+using GraphT.UseCases.RemoveTask;
 
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -9,16 +9,14 @@ namespace GraphT.UseCases.Tests.DeleteTask;
 
 public class UseCaseTests
 {
-	private readonly ITodoTaskRepository _repository;
-	private readonly IOutputPort _outputPort;
+	private readonly IRemoveTaskPort _removeTaskPort;
 	private readonly UseCase _useCase;
 	private readonly Guid _taskId;
 
 	public UseCaseTests()
 	{
-		_repository = Substitute.For<ITodoTaskRepository>();
-		_outputPort = Substitute.For<IOutputPort>();
-		_useCase = new(_outputPort, _repository);
+		_removeTaskPort = Substitute.For<IRemoveTaskPort>();
+		_useCase = new UseCase(_removeTaskPort);
 		_taskId = Guid.NewGuid();
 	}
 
@@ -32,28 +30,12 @@ public class UseCaseTests
 		};
 
 		// Act
-		await _useCase.Handle(inputDto);
+		await _useCase.HandleAsync(inputDto);
 
 		// Assert
-		await _repository.Received(1).RemoveAsync(_taskId);
+		await _removeTaskPort.Received(1).HandleAsync(_taskId);
 	}
 
-	[Fact]
-	public async Task Handle_ShouldCallOutputPort()
-	{
-		// Arrange
-		InputDto inputDto = new()
-		{
-			Id = _taskId
-		};
-
-		// Act
-		await _useCase.Handle(inputDto);
-
-		// Assert
-		await _outputPort.Received(1).Handle();
-	}
-	
 	[Fact]
 	public async Task Handle_ShouldThrowExternalRepositoryException_WhenRepositoryThrows()
 	{
@@ -62,15 +44,15 @@ public class UseCaseTests
 		{
 			Id = _taskId
 		};
-		Exception exception = new("Repository error");
+		ExternalRepositoryException exception = new("Repository error");
 
 		// Act & Assert
-		_repository.RemoveAsync(_taskId).Throws(exception);
-		ExternalRepositoryException thrownException = await Assert.ThrowsAsync<ExternalRepositoryException>(
-			async () => await _useCase.Handle(inputDto)
-		);
+		_removeTaskPort.HandleAsync(Arg.Any<Guid>()).Throws(exception);
 		
-		Assert.Equal("Error removing task from repository", thrownException.Message);
+		ExternalRepositoryException thrownException = await Assert.ThrowsAsync<ExternalRepositoryException>(
+			async () => await _useCase.HandleAsync(inputDto));
+		
+		Assert.Equal("Error removing task from repository.", thrownException.Message);
 		Assert.Same(exception, thrownException.InnerException);
 	}
 }
