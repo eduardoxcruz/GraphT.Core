@@ -1,64 +1,58 @@
-using GraphT.Model.Entities;
-using GraphT.Model.Exceptions;
 using GraphT.Model.Services.Repositories;
-using GraphT.UseCases.DeleteTask;
+using GraphT.Model.Exceptions;
+using GraphT.UseCases.RemoveTask;
 
 using NSubstitute;
-
-using SeedWork;
+using NSubstitute.ExceptionExtensions;
 
 namespace GraphT.UseCases.Tests.DeleteTask;
 
 public class UseCaseTests
 {
-    [Fact]
-    public async Task Handle_WhenTaskExists_DeletesTaskSuccessfully()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        
-        Guid taskId = Guid.NewGuid();
-        OldTodoTask existingTask = new("Test Task", id: taskId);
-        InputDto input = new() { Id = taskId };
+	private readonly IRemoveTaskPort _removeTaskPort;
+	private readonly UseCase _useCase;
+	private readonly Guid _taskId;
 
-        todoTaskRepository.FindByIdAsync(taskId).Returns(existingTask);
+	public UseCaseTests()
+	{
+		_removeTaskPort = Substitute.For<IRemoveTaskPort>();
+		_useCase = new UseCase(_removeTaskPort);
+		_taskId = Guid.NewGuid();
+	}
 
-        UseCase useCase = new(outputPort, todoTaskRepository, unitOfWork);
+	[Fact]
+	public async Task Handle_ShouldCallRepository_RemoveAsync()
+	{
+		// Arrange
+		InputDto inputDto = new()
+		{
+			Id = _taskId
+		};
 
-        // Act
-        await useCase.Handle(input);
+		// Act
+		await _useCase.HandleAsync(inputDto);
 
-        // Assert
-        await todoTaskRepository.Received(1).RemoveAsync(existingTask);
-        await unitOfWork.Received(1).SaveChangesAsync();
-        await outputPort.Received(1).Handle();
-    }
+		// Assert
+		await _removeTaskPort.Received(1).HandleAsync(_taskId);
+	}
 
-    [Fact]
-    public async Task Handle_WhenTaskDoesNotExist_ThrowsTaskNotFoundException()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-        
-        Guid taskId = Guid.NewGuid();
-        InputDto input = new() { Id = taskId };
+	[Fact]
+	public async Task Handle_ShouldThrowExternalRepositoryException_WhenRepositoryThrows()
+	{
+		// Arrange
+		InputDto inputDto = new()
+		{
+			Id = _taskId
+		};
+		ExternalRepositoryException exception = new("Repository error");
 
-        todoTaskRepository.ContainsAsync(taskId).Returns(false);
-
-        UseCase useCase = new(outputPort, todoTaskRepository, unitOfWork);
-
-        // Act & Assert
-        TaskNotFoundException exception = await Assert.ThrowsAsync<TaskNotFoundException>(
-            async () => await useCase.Handle(input)
-        );
-        
-        Assert.Equal(taskId, exception.Id);
-        await todoTaskRepository.DidNotReceive().RemoveAsync(Arg.Any<OldTodoTask>());
-        await unitOfWork.DidNotReceive().SaveChangesAsync();
-        await outputPort.DidNotReceive().Handle();
-    }
+		// Act & Assert
+		_removeTaskPort.HandleAsync(Arg.Any<Guid>()).Throws(exception);
+		
+		ExternalRepositoryException thrownException = await Assert.ThrowsAsync<ExternalRepositoryException>(
+			async () => await _useCase.HandleAsync(inputDto));
+		
+		Assert.Equal("Error removing task from repository.", thrownException.Message);
+		Assert.Same(exception, thrownException.InnerException);
+	}
 }

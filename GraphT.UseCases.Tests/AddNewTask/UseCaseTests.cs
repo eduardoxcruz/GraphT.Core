@@ -1,9 +1,11 @@
-﻿using GraphT.Model.Entities;
 using GraphT.Model.Services.Repositories;
-using GraphT.Model.ValueObjects;
 using GraphT.UseCases.AddNewTask;
+using GraphT.Model.Aggregates;
+using GraphT.Model.Exceptions;
+using GraphT.Model.ValueObjects;
 
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 using SeedWork;
 
@@ -11,132 +13,98 @@ namespace GraphT.UseCases.Tests.AddNewTask;
 
 public class UseCaseTests
 {
+	private readonly IAddTaskPort _addTaskPort;
+	private readonly UseCase _useCase;
+
+	public UseCaseTests()
+	{
+		_addTaskPort = Substitute.For<IAddTaskPort>();
+		_useCase = new UseCase(_addTaskPort);
+	}
+
 	[Fact]
-    public async Task Handle_WhenIdNotProvided_ShouldCreateNewTask()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
-        ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+	public async Task Handle_ShouldCreateGuid_ForNewTask()
+	{
+		// Arrange
+		InputDto inputDto = new() { Name = "Test Task" };
+		OutputDto outputDto;
+
+		// Act
+		outputDto = await _useCase.HandleAsync(inputDto);
+		
+		// Assert
+		Assert.NotEqual(Guid.Empty, outputDto.Task.Id);
+	}
+	
+	[Fact]
+	public async Task Handle_ShouldCallRepository_AddAsync()
+	{
+		// Arrange
+		InputDto inputDto = new() { Name = "Test Task" };
+		
+		// Act
+		await _useCase.HandleAsync(inputDto);
+		
+		// Assert
+		await _addTaskPort.Received(1).HandleAsync(Arg.Any<TodoTask>());
+	}
+	
+	[Fact]
+	public async Task Handle_ShouldAssignDtoPropertiesToNewTask()
+	{
+		// Arrange
+		const string expectedName = "Test Task";
+		InputDto inputDto = new() { Name = expectedName };
+		
+		// Act
+		OutputDto outputDto = await _useCase.HandleAsync(inputDto);
+		
+		// Assert
+		Assert.Equal(expectedName, outputDto.Task.Name);
+	}
+	
+	[Fact]
+	public async Task Handle_ShouldThrowExternalRepositoryException_WhenRepositoryThrows()
+	{
+		// Arrange
+		InputDto inputDto = new InputDto { Name = "Test Task" };
+		
+		ExternalRepositoryException originalException = new("Original error");
         
-        InputDto input = new()
-        {
-            Name = "Test Task",
-            Status = OldStatus.Created,
-            IsFun = true,
-            IsProductive = true,
-            Complexity = OldComplexity.High,
-            Priority = OldPriority.Urgent
-        };
+		_addTaskPort.HandleAsync(Arg.Any<TodoTask>()).Throws(originalException);
 
-        UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
-
-        // Act
-        await useCase.Handle(input);
-
-        // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
-            t.Name == input.Name && 
-            t.IsFun == input.IsFun && 
-            t.IsProductive == input.IsProductive && 
-            t.Complexity == input.Complexity && 
-            t.Priority == input.Priority
-        ));
-        await taskLogRepository.Received(2).AddAsync(Arg.Any<OldTaskLog>());
-        await unitOfWork.Received(1).SaveChangesAsync();
-        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
-    }
-
-    [Fact]
-    public async Task Handle_WhenIdProvided_AndTaskNotExists_ShouldUseProvidedId()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
-        ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-
-        Guid providedId = Guid.NewGuid();
+		ExternalRepositoryException exception = await Assert.ThrowsAsync<ExternalRepositoryException>(
+			async () => await _useCase.HandleAsync(inputDto));
         
-        todoTaskRepository.ContainsAsync(providedId).Returns(false);
-        
-        InputDto input = new()
-        {
-            Id = providedId,
-            Name = "Test Task"
-        };
+		Assert.Same(originalException, exception);
+	}
 
-        UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
-
-        // Act
-        await useCase.Handle(input);
-
-        // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => t.Id == input.Id && t.Name == input.Name));
-        await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
-        await unitOfWork.Received(1).SaveChangesAsync();
-        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id == input.Id));
-    }
-
-    [Fact]
-    public async Task Handle_WhenDateTimesProvided_ShouldSetAllDates()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
-        ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-
-        DateTimeOffset startDate = DateTimeOffset.UtcNow;
-        DateTimeOffset finishDate = startDate.AddDays(1);
-        DateTimeOffset limitDate = startDate.AddDays(2);
-
-        InputDto input = new()
-        {
-            Name = "Test Task",
-            StartDateTime = startDate,
-            FinishDateTime = finishDate,
-            LimitDateTime = limitDate
-        };
-
-        UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
-
-        // Act
-        await useCase.Handle(input);
-
-        // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
-            t.Name == input.Name &&
-            t.OldDateTimeInfo.StartDateTime == input.StartDateTime &&
-            t.OldDateTimeInfo.FinishDateTime == input.FinishDateTime &&
-            t.OldDateTimeInfo.LimitDateTime == input.LimitDateTime
-        ));
-        await taskLogRepository.Received(1).AddAsync(Arg.Any<OldTaskLog>());
-        await unitOfWork.Received(1).SaveChangesAsync();
-        await outputPort.Received(1).Handle(Arg.Is<OutputDto>(o => o.Id != Guid.Empty));
-    }
-
-    [Fact]
-    public async Task Handle_WhenNameNotProvided_ShouldUseDefaultName()
-    {
-        // Arrange
-        IOutputPort outputPort = Substitute.For<IOutputPort>();
-        ITodoTaskRepository todoTaskRepository = Substitute.For<ITodoTaskRepository>();
-        ITaskLogRepository taskLogRepository = Substitute.For<ITaskLogRepository>();
-        IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
-
-        InputDto input = new();
-
-        UseCase useCase = new(outputPort, todoTaskRepository, taskLogRepository, unitOfWork);
-
-        // Act
-        await useCase.Handle(input);
-
-        // Assert
-        await todoTaskRepository.Received(1).AddAsync(Arg.Is<OldTodoTask>(t => 
-            t.Name == "New Task"
-        ));
-        await unitOfWork.Received(1).SaveChangesAsync();
-    }
+	[Fact]
+	public async Task Handle_ShouldAssignDtoPropertiesToNewTask_IfDtoPropertyIsNotNull()
+	{
+		// Arrange
+		InputDto inputDto = new()
+		{ 
+			Name = "Test Task",
+			IsFun = true,
+			IsProductive = true,
+			Complexity = Complexity.High,
+			Priority = Priority.Critical,
+			Status = Status.Backlog,
+			LimitDateTime = DateTimeOffset.Now.AddDays(1)
+		};
+		OutputDto outputDto;
+		
+		// Act
+		outputDto = await _useCase.HandleAsync(inputDto);
+		
+		// Assert
+		Assert.Equal(inputDto.Name, outputDto.Task.Name);
+		Assert.Equal(inputDto.IsFun.Value, outputDto.Task.IsFun);
+		Assert.Equal(inputDto.IsProductive.Value, outputDto.Task.IsProductive);
+		Assert.Equal(inputDto.Complexity.Value, outputDto.Task.Complexity);
+		Assert.Equal(inputDto.Priority.Value, outputDto.Task.Priority);
+		Assert.Equal(inputDto.Status.Value, outputDto.Task.Status);
+		Assert.Equal(inputDto.LimitDateTime.Value, outputDto.Task.LimitDateTime);
+	}
 }
