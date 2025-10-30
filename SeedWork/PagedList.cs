@@ -12,7 +12,7 @@ public class PagedList<TEntity> : List<TEntity>
 	public PagedList(List<TEntity> items, int count, int pageNumber, int pageSize)
 	{
 		if (pageNumber < 1) pageNumber = 1;
-		if (pageSize < 1) pageSize = PagingParams.MaxPageSize;
+		if (pageSize < 1) pageSize = PagingOptions.MaxPageSize;
 		
 		TotalCount = count;
 		PageSize = pageSize;
@@ -24,7 +24,7 @@ public class PagedList<TEntity> : List<TEntity>
 	public static PagedList<TEntity> ToPagedList(IQueryable<TEntity> source, int pageNumber, int pageSize)
 	{
 		if (pageNumber < 1) pageNumber = 1;
-		if (pageSize < 1) pageSize = PagingParams.MaxPageSize;
+		if (pageSize < 1) pageSize = PagingOptions.MaxPageSize;
 		
 		int count = source.Count();
 		List<TEntity> items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
