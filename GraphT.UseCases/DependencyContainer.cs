@@ -1,13 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
+using SeedWork;
+
 namespace GraphT.UseCases;
 
 public static class DependencyContainer
 {
 	public static IServiceCollection AddGraphTUseCases(this IServiceCollection services)
 	{
-		services.AddScoped<AddNewTask.IInputPort, AddNewTask.UseCase>();
-		services.AddScoped<DeleteTask.IInputPort, DeleteTask.UseCase>();
+		services.AddScoped<IFullPort<AddNewTask.InputDto, AddNewTask.OutputDto>, AddNewTask.UseCase>();
+		services.AddScoped<IPortWithInput<RemoveTask.InputDto>, RemoveTask.UseCase>();
 		
 		return services;
 	}
