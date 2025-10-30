@@ -15,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Domain", "1. Domain", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. App", "2. App", "{15930A33-0370-4461-869E-EB583599BBDC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Infraestructure", "3. Infraestructure", "{E67FCF6D-7DF8-4C4A-A49C-26021998BB49}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeedWork", "SeedWork\SeedWork.csproj", "{C6208794-A4B8-4B92-8D1C-0A0414B68D04}"
 EndProject
 Global
