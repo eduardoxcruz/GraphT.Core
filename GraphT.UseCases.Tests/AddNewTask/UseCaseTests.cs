@@ -7,67 +7,60 @@ using GraphT.Model.ValueObjects;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
+using SeedWork;
+
 namespace GraphT.UseCases.Tests.AddNewTask;
 
 public class UseCaseTests
 {
-	private readonly ITodoTaskRepository _repository;
-	private readonly IOutputPort _outputPort;
+	private readonly IAddTaskPort _addTaskPort;
 	private readonly UseCase _useCase;
 
 	public UseCaseTests()
 	{
-		_repository = Substitute.For<ITodoTaskRepository>();
-		_outputPort = Substitute.For<IOutputPort>();
-		_useCase = new UseCase(_outputPort, _repository);
+		_addTaskPort = Substitute.For<IAddTaskPort>();
+		_useCase = new UseCase(_addTaskPort);
 	}
 
 	[Fact]
-	public async Task Handle_ShouldCreateGuid_ForTaskNewTask()
+	public async Task Handle_ShouldCreateGuid_ForNewTask()
 	{
 		// Arrange
-		InputDto inputDto = new InputDto { Name = "Test Task" };
-		TodoTask capturedTask = null;
-		
-		_repository.AddAsync(Arg.Do<TodoTask>(task => capturedTask = task))
-			.Returns(ValueTask.CompletedTask);
-		
+		InputDto inputDto = new() { Name = "Test Task" };
+		OutputDto outputDto;
+
 		// Act
-		await _useCase.Handle(inputDto);
+		outputDto = await _useCase.HandleAsync(inputDto);
 		
 		// Assert
-		Assert.NotEqual(Guid.Empty, capturedTask.Id);
+		Assert.NotEqual(Guid.Empty, outputDto.Task.Id);
 	}
 	
 	[Fact]
 	public async Task Handle_ShouldCallRepository_AddAsync()
 	{
 		// Arrange
-		InputDto inputDto = new InputDto { Name = "Test Task" };
+		InputDto inputDto = new() { Name = "Test Task" };
 		
 		// Act
-		await _useCase.Handle(inputDto);
+		await _useCase.HandleAsync(inputDto);
 		
 		// Assert
-		await _repository.Received(1).AddAsync(Arg.Any<TodoTask>());
+		await _addTaskPort.Received(1).HandleAsync(Arg.Any<TodoTask>());
 	}
 	
 	[Fact]
 	public async Task Handle_ShouldAssignDtoPropertiesToNewTask()
 	{
 		// Arrange
-		string expectedName = "Test Task";
-		InputDto inputDto = new InputDto { Name = expectedName };
-		TodoTask capturedTask = null;
-		
-		_repository.AddAsync(Arg.Do<TodoTask>(task => capturedTask = task))
-			.Returns(ValueTask.CompletedTask);
+		const string expectedName = "Test Task";
+		InputDto inputDto = new() { Name = expectedName };
 		
 		// Act
-		await _useCase.Handle(inputDto);
+		OutputDto outputDto = await _useCase.HandleAsync(inputDto);
 		
 		// Assert
-		Assert.Equal(expectedName, capturedTask.Name);
+		Assert.Equal(expectedName, outputDto.Task.Name);
 	}
 	
 	[Fact]
@@ -75,18 +68,22 @@ public class UseCaseTests
 	{
 		// Arrange
 		InputDto inputDto = new InputDto { Name = "Test Task" };
-		_repository.AddAsync(Arg.Any<TodoTask>())
-			.Throws(new Exception("Database error"));
 		
-		// Act & Assert
-		await Assert.ThrowsAsync<ExternalRepositoryException>(async () => await _useCase.Handle(inputDto));
+		ExternalRepositoryException originalException = new("Original error");
+        
+		_addTaskPort.HandleAsync(Arg.Any<TodoTask>()).Throws(originalException);
+
+		ExternalRepositoryException exception = await Assert.ThrowsAsync<ExternalRepositoryException>(
+			async () => await _useCase.HandleAsync(inputDto));
+        
+		Assert.Same(originalException, exception);
 	}
 
 	[Fact]
 	public async Task Handle_ShouldAssignDtoPropertiesToNewTask_IfDtoPropertyIsNotNull()
 	{
 		// Arrange
-		InputDto inputDto = new InputDto 
+		InputDto inputDto = new()
 		{ 
 			Name = "Test Task",
 			IsFun = true,
@@ -96,22 +93,18 @@ public class UseCaseTests
 			Status = Status.Backlog,
 			LimitDateTime = DateTimeOffset.Now.AddDays(1)
 		};
-		
-		TodoTask? capturedTask = null;
-		
-		_repository.AddAsync(Arg.Do<TodoTask>(task => capturedTask = task))
-			.Returns(ValueTask.CompletedTask);
+		OutputDto outputDto;
 		
 		// Act
-		await _useCase.Handle(inputDto);
+		outputDto = await _useCase.HandleAsync(inputDto);
 		
 		// Assert
-		Assert.Equal(inputDto.Name, capturedTask.Name);
-		Assert.Equal(inputDto.IsFun.Value, capturedTask.IsFun);
-		Assert.Equal(inputDto.IsProductive.Value, capturedTask.IsProductive);
-		Assert.Equal(inputDto.Complexity.Value, capturedTask.Complexity);
-		Assert.Equal(inputDto.Priority.Value, capturedTask.Priority);
-		Assert.Equal(inputDto.Status.Value, capturedTask.Status);
-		Assert.Equal(inputDto.LimitDateTime.Value, capturedTask.LimitDateTime);
+		Assert.Equal(inputDto.Name, outputDto.Task.Name);
+		Assert.Equal(inputDto.IsFun.Value, outputDto.Task.IsFun);
+		Assert.Equal(inputDto.IsProductive.Value, outputDto.Task.IsProductive);
+		Assert.Equal(inputDto.Complexity.Value, outputDto.Task.Complexity);
+		Assert.Equal(inputDto.Priority.Value, outputDto.Task.Priority);
+		Assert.Equal(inputDto.Status.Value, outputDto.Task.Status);
+		Assert.Equal(inputDto.LimitDateTime.Value, outputDto.Task.LimitDateTime);
 	}
 }

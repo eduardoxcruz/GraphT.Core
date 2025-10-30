@@ -7,22 +7,16 @@ using SeedWork;
 
 namespace GraphT.UseCases.AddNewTask;
 
-public interface IInputPort : IPort<InputDto> { }
-
-public interface IOutputPort : IPort { }
-
-public class UseCase : IInputPort
+public class UseCase : IFullPort<InputDto, OutputDto>
 {
-	private readonly IOutputPort _outputPort;
-	private readonly ITodoTaskRepository _repository;
-
-	public UseCase(IOutputPort outputPort, ITodoTaskRepository repository)
+	private readonly IAddTaskPort _addTaskPort;
+	
+	public UseCase(IAddTaskPort addTaskPort)
 	{
-		_outputPort = outputPort;
-		_repository = repository;
+		_addTaskPort = addTaskPort;
 	}
 
-	public async ValueTask Handle(InputDto dto)
+	public async ValueTask<OutputDto> HandleAsync(InputDto dto)
 	{
 		try
 		{
@@ -73,8 +67,9 @@ public class UseCase : IInputPort
 				newTask.AddLifeAreas([..dto.LifeAreas]);
 			}
 
-			await _repository.AddAsync(newTask);
-			await _outputPort.Handle();
+			await _addTaskPort.HandleAsync(newTask);
+			
+			return new OutputDto { Task = newTask };
 		}
 		catch (Exception ex) when (ex is not ExternalRepositoryException)
 		{
@@ -95,4 +90,9 @@ public record struct InputDto
 	public List<TodoTask>? Parents { get; set; }
 	public List<TodoTask>? Children { get; set; }
 	public List<LifeArea>? LifeAreas { get; set; }
+}
+
+public record struct OutputDto
+{
+	public TodoTask Task { get; set; }
 }
