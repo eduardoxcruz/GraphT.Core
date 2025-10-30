@@ -1,6 +1,16 @@
 ﻿namespace SeedWork;
 
-public interface IDomainPort<TOutput, TInput>
+public interface IFullPort<TIn, TOut>
 {
-	ValueTask<TOutput> Handle(TInput input);
+	ValueTask<TOut> HandleAsync(TIn input);
+}
+
+public interface IPortWithInput<TIn>
+{
+	ValueTask HandleAsync(TIn input);
+}
+
+public interface IPortWithOutput<TOut>
+{
+	ValueTask<TOut> HandleAsync();
 }
