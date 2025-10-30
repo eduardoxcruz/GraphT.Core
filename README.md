@@ -1,5 +1,5 @@
-# GraphT.NET
-GraphT.NET is designed by and for individuals with ADHD or executive function difficulties, with the goal of delivering a flexible, robust, and engaging task management solution.
+# GraphT
+GraphT is designed by and for individuals with ADHD or executive function difficulties, with the goal of delivering a flexible, robust, and engaging task management solution.
 
 ---
 
