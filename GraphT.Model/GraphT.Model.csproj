@@ -11,8 +11,4 @@
       <Folder Include="Factories\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\SeedWork\SeedWork.csproj" />
-    </ItemGroup>
-
 </Project>

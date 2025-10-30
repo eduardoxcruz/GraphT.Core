@@ -1,8 +1,6 @@
 ﻿using GraphT.Model.Aggregates;
 using GraphT.Model.ValueObjects;
 
-using SeedWork;
-
 namespace GraphT.Model.Services.Repositories;
 
 public interface ITodoTaskRepository
