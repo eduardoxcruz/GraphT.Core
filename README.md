@@ -1,57 +1,55 @@
 # GraphT Core
 
-GraphT is designed by and for individuals with ADHD or executive function difficulties, with the goal of delivering a flexible, robust, and engaging task management solution.
+GraphT Core is a project designed for individuals with executive function difficulties or ADHD, providing a flexible, robust, and effective solution for task and project management. The core of the system (GraphT Core) is and will always remain **open-source software**, leaving the final implementation and its customization up to developers, who can adapt it to their needs or integrate it into specific products.
 
 ---
 
-- **[Read how to set up your own environment](/.github/README.tech.md)**
-- **[Leer esto en español](/.github/README.es.md)**
-- **[What's next? See the roadmap and pending features](#whats-next)**
-- **If you have suggestions or want to contribute, feel free to open an issue or pull request!**
+- **[Lee esto en español](/.github/README.es.md)**
+- **[Learn how to contribute to the project. Your collaboration is always welcome! 🎉](/.github/README.tech.md)**
 
----
+## Purpose and Problems It Solves
 
-## Purpose and Real-World Problems Addressed
-Its purpose is to empower users with the structure, adaptability, and motivation necessary to organize their tasks and projects in the way that suits them best.
+GraphT's purpose is to empower individuals with structure, adaptability, and motivation to organize tasks and projects in the way that suits them best.
 
 ### 1. Complex Task and Project Management
-Many real-life projects involve tasks with intricate relationships—dependencies, prerequisites, and parallel flows. Traditional task managers often fail to represent these connections, making it hard to plan, track, and adapt as projects evolve.
-GraphT enables users to model tasks as interconnected graphs, reflecting the true complexity of their workflows.
+The project allows tasks to be modeled as interconnected graphs, capturing the real complexity of task relationships (dependencies, parallel flows, etc.). This sets it apart from traditional task managers, which often fail to represent such dynamic connections effectively.
 
 ### 2. Adaptable Task Fragmentation
-Unlike other frameworks that arbitrarily limit the depth of task fragmentation (e.g., only allowing 3 or 4 levels of subtasks), GraphT empowers users to break down tasks as much—or as little—as they need.
-Whether you prefer a simple list or a deeply nested structure with 10+ levels, the system adapts to your personal way of thinking and working, supporting both minimalists and those who need detailed breakdowns.
-This flexibility is especially valuable for people with ADHD or executive function difficulties, who may benefit from visualizing and organizing their work in a way that matches their unique cognitive style.
+Unlike other tools that limit the depth of task breakdown, GraphT adapts to both minimalistic needs and deeply hierarchical structures, providing effective support for diverse mental approaches.
 
-### 3. Automation and Personal Productivity
-GraphT integrates productivity techniques such as the Pomodoro method, recurring tasks, and gamification.
-These features help users stay focused, build habits, and maintain motivation—addressing common struggles like procrastination, forgetfulness, and difficulty starting or finishing tasks.
+### 3. Productivity and Automation
+GraphT Core includes support for recurring tasks as part of its core functionality, enabling the automation of essential workflows. Other productivity techniques, such as **Pomodoro**, **gamification elements**, and others, are delegated to the final applications built on GraphT, ensuring that each implementation is tailored to the specific needs of the user.
 
-### 4. Multi-Platform Support and Scalability
-The framework is designed to work across different platforms and to scale from individual use complex project management.
-This ensures that users can access and manage their tasks wherever they are, and that the system grows with their needs.
+### 4. Scalable and Multi-Platform Support
+GraphT is designed to grow with the user's needs, facilitating management from individual projects to more complex initiatives. Since GraphT represents our perspective on productivity at its core, its very design allows for final adaptation to various devices and platforms.
 
-### 5. Centralized and Clear Information
-By centralizing task data and providing clear visualization of relationships and progress, GraphT helps users avoid losing context, duplicating effort, or feeling overwhelmed by scattered information.
-This is crucial for anyone who struggles with organization or keeping track of multiple projects at once.
+### 5. Centralized Information
+GraphT offers clear visualizations of relationships and progress, avoiding scattered information and duplicated efforts, helping those who struggle with organization.
 
 ---
 
-## What's next?
+## If You Want to Use GraphT Core
 
-This are some planned and completed features for GraphT. **Completed features** are tracked separately and can be found in the project changelog or issues.:
+If you want to use GraphT Core for your own user-facing application, the functionalities your application should include, in line with GraphT's perspective and core goals, are the following:
+
+- **Graph Visualization**: A clear and visual representation of task relationships and dependencies.
+- **Pomodoro**: Integration of techniques to maintain focus and productivity through effective time blocks.
+- **Gamification**: Motivational elements that encourage engagement and goal achievement.
+
+By doing so, you can provide an experience aligned with GraphT's mission, while respecting the modularity of the Core and its fundamental principles.
+
+---
+
+## What's Next?
+
+Below are the features planned for the future of the Core. Completed features are available in the changelog or project issues:
 
 ### Task Logic and Workflows
 - [x] Add and manage task relationships
 - [x] Complexity and date properties
-- [ ] Automatic progress and status updates
+- [x] Automatic progress and status updates
 - [ ] Detailed handling of task deletion
-- [ ] Task change logging
-- [ ] Support for repetitive tasks
-- [ ] Pomodoro Integration
-- [ ] Gamification support
+- [x] Task change logging
+- [ ] Support for recurring tasks
 
-### Interface and Usability
-- [x] Web support. Detailed features and code [can be found in GraphT Remix.JS repository](https://github.com/eduardoxcruz/GraphT.Remix.Js)
-- [ ] Mobile Multi-Platform Support
-- [ ] Desktop Multi-Platform support
+---
