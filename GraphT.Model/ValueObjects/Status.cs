@@ -1,21 +1,59 @@
-﻿using GraphT.Model.ValueObjects.EnumLabel;
-
 namespace GraphT.Model.ValueObjects;
 
-public enum Status
+public readonly struct Status : IComparable<Status>, IEquatable<Status>
 {
-	[EnumLabel("\u270c Created")]
-	Created = 0,
-	[EnumLabel("\ud83d\udcdd Backlog")]
-	Backlog = 1,
-	[EnumLabel("\ud83d\udc4c Ready To Start")]
-	Ready = 2,
-	[EnumLabel("\u25b6 Currently Doing")]
-	Doing = 3,
-	[EnumLabel("\u23f8 Paused")]
-	Paused = 4,
-	[EnumLabel("\ud83d\uddd1 Dropped")]
-	Dropped = 5,
-	[EnumLabel("\u2705 Completed")]
-	Completed = 6
+	public int Index { get; }
+	public string Name { get; }
+	public string Emoji { get; }
+	
+	public static readonly Status Created = new(0, "Created", "\u270c");
+	public static readonly Status Backlog = new(1, "Backlog", "\ud83d\udcdd");
+	public static readonly Status ReadyToStart = new(2, "Ready To Start", "\ud83d\udc4c");
+	public static readonly Status CurrentlyDoing = new(3, "Currently Doing", "\u25b6");
+	public static readonly Status Paused = new(4, "Paused", "\u23f8");
+	public static readonly Status Dropped = new(5, "Dropped", "\ud83d\uddd1");
+	public static readonly Status Completed = new(6, "Completed", "\u2705");
+
+	public Status()
+	{
+		Index = Created.Index;
+		Name = Created.Name;
+		Emoji = Created.Emoji;
+	}
+
+	private Status(int index, string name, string emoji)
+	{
+		Index = index;
+		Name = name;
+		Emoji = emoji;
+	}
+
+	public int CompareTo(Status other)
+	{
+		return Index.CompareTo(other.Index);
+	}
+
+	public bool Equals(Status other)
+	{
+		return Index == other.Index;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is Status other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return Index;
+	}
+	public static bool operator ==(Status left, Status right)
+	{
+		return left.Equals(right);
+	}
+
+	public static bool operator !=(Status left, Status right)
+	{
+		return !(left == right);
+	}
 }

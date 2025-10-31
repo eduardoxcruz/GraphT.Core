@@ -1,58 +1,73 @@
-# GraphT.NET
+# GraphT Core
 
-GraphT.NET está diseñado por y para personas con TDAH o dificultades en las funciones ejecutivas, con el objetivo de ofrecer una solución de gestión de tareas flexible, robusta y motivadora.
+GraphT Core es un proyecto diseñado para personas con dificultades en la función ejecutiva o con TDAH, 
+proporcionando una solución flexible, robusta y efectiva para la gestión de tareas y proyectos. 
+El corazón del sistema (GraphT Core) es y seguirá siendo **software libre**, dejando la implementación final y 
+su personalización a gusto de los desarrolladores, quienes podrán adaptarlo a sus necesidades o integrarlo en productos 
+específicos.
 
 ---
 
-- **[Lee cómo configurar tu propio entorno](./README.tech.md)**
 - **[Read this in English](../readme.md)**
-- **[¿Qué sigue? Consulta la hoja de ruta y funciones pendientes](#que-sigue)**
-- **Si tienes sugerencias o quieres contribuir, ¡no dudes en abrir un issue o pull request!**
+- **[Lee cómo aportar al proyecto. ¡tu colaboración en el código siempre es bienvenida! 🎉](./README.tech.md)**
 
----
+## Propósito y Problemas que Resuelve
 
-## Propósito y Problemas del Mundo Real
-
-El propósito de GraphT.NET es brindar a los usuarios la estructura, adaptabilidad y motivación necesarias para organizar sus tareas y proyectos de la manera que mejor se adapte a ellos.
+El propósito de GraphT es empoderar a las personas con estructura, adaptabilidad y motivación para organizar tareas y 
+proyectos de la manera que mejor se adapte a ellas.
 
 ### 1. Gestión Compleja de Tareas y Proyectos
-Muchos proyectos reales involucran tareas con relaciones complejas: dependencias, prerrequisitos y flujos paralelos. Los gestores de tareas tradicionales suelen fallar al representar estas conexiones, dificultando la planificación y el seguimiento.  
-GraphT.NET permite modelar las tareas como grafos interconectados, reflejando la verdadera complejidad de los flujos de trabajo.
+El proyecto permite modelar tareas como grafos interconectados, capturando la complejidad real de las relaciones entre 
+tareas (dependencias, flujos paralelos, etc.). Esto lo diferencia de los gestores de tareas tradicionales, que a menudo 
+no logran representar estas conexiones dinámicas.
 
-### 2. Fragmentación Adaptable de Tareas
-A diferencia de otros frameworks que limitan arbitrariamente la profundidad de la fragmentación de tareas (por ejemplo, solo permiten 3 o 4 niveles de subtareas), GraphT.NET permite dividir las tareas tanto como sea necesario.  
-Ya sea que prefieras una lista simple o una estructura profundamente anidada, el sistema se adapta a tu forma de pensar y trabajar, apoyando tanto a minimalistas como a quienes necesitan desgloses detallados.  
-Esta flexibilidad es especialmente valiosa para personas con TDAH o dificultades ejecutivas, que pueden beneficiarse de visualizar y organizar su trabajo de acuerdo a su estilo cognitivo.
+### 2. Fragmentación Adaptable
+A diferencia de otras herramientas que limitan la profundidad de la descomposición de tareas, GraphT se adapta tanto a 
+necesidades minimalistas como a estructuras profundamente jerárquicas, proporcionando apoyo efectivo para mentalidades 
+diversas.
 
-### 3. Automatización y Productividad Personal
-GraphT.NET integra técnicas de productividad como el método Pomodoro, tareas recurrentes y gamificación.  
-Estas funciones ayudan a mantener el enfoque, crear hábitos y sostener la motivación, abordando problemas comunes como la procrastinación, el olvido o la dificultad para iniciar o terminar tareas.
+### 3. Productividad y Automación
+GraphT Core incluye el soporte para tareas recurrentes como parte de su núcleo, permitiendo la automatización de 
+flujos de trabajo clave. Otras técnicas de productividad, como la integración de **Pomodoro**, elementos de 
+**gamificación**, entre otras, son delegadas a las aplicaciones finales desarrolladas a partir de GraphT, 
+asegurando que cada implementación se adapte a las necesidades específicas del usuario.
 
-### 4. Soporte Multiplataforma y Escalabilidad
-El framework está diseñado para funcionar en diferentes plataformas y escalar desde el uso individual simple hasta gestion de proyectos complejos.
-Esto asegura que los usuarios puedan acceder y gestionar sus tareas donde sea que estén, y que el sistema crezca con sus necesidades.
+### 4. Soporte Escalable y Multiplataforma
+GraphT está diseñado para crecer junto con las necesidades del usuario, facilitando la gestión desde proyectos 
+individuales hasta iniciativas más complejas. Ya que GraphT es el núcleo que representa nuestra perspectiva de la 
+productividad, su propia naturaleza permite la adaptación final a distintos dispositivos y plataformas.
 
-### 5. Información Centralizada y Clara
-Al centralizar los datos de las tareas y ofrecer visualización clara de relaciones y progreso, GraphT.NET ayuda a evitar la pérdida de contexto, la duplicidad de esfuerzos o la sensación de estar abrumado por información dispersa.  
-Esto es crucial para quienes tienen dificultades para organizarse o para llevar el control de varios proyectos a la vez.
+### 5. Centralización de Información
+GraphT ofrece visualizaciones claras de relaciones y progreso, evitando la dispersión de información y el esfuerzo 
+duplicado, ayudando a quienes luchan con la organización.
+
+---
+
+## Si deseas usar GraphT Core
+
+Si deseas usar GraphT Core para tu propia aplicacion de usuario final, las funcionalidades que debe incluir tu 
+aplicación son las siguientes, siguiendo la perspectiva y el objetivo principal de GraphT:
+
+- **Visualización por grafos**: La representación clara y visual de las relaciones y dependencias entre tareas.
+- **Pomodoro**: Integración de técnicas para mantener el enfoque y la productividad en bloques de tiempo efectivos.
+- **Gamificación**: Elementos de motivación que fomenten el compromiso y la superación de objetivos.
+
+De esta manera, puedes proporcionar una experiencia alineada con la misión de GraphT, respetando la modularidad del Core 
+y sus principios fundamentales.
 
 ---
 
 ## ¿Qué sigue?
 
-Estas son algunas de las funciones planeadas y completadas para GraphT.NET:
+A continuación, se detallan las características planeadas para el futuro del Core. Las funcionalidades completadas 
+están disponibles en el changelog o en los issues del proyecto:
 
-### Lógica y Flujos de Tareas
-- [x] Añadir y gestionar relaciones entre tareas
+### Lógica de Tareas y Flujos de Trabajo
+- [x] Agregar y gestionar relaciones entre tareas
 - [x] Propiedades de complejidad y fechas
-- [ ] Actualización automática de progreso y estatus
+- [x] Progreso y actualizaciones de estado automáticas
 - [ ] Manejo detallado de eliminación de tareas
-- [ ] Registro de cambios en tareas
+- [x] Registro de cambios en tareas
 - [ ] Soporte para tareas repetitivas
-- [ ] Integración con Pomodoro
-- [ ] Soporte de gamificación
 
-### Interfaz y Usabilidad
-- [x] Soporte web. Las características detalladas y el código [pueden encontrarse en el repositorio GraphT Remix.JS](https://github.com/eduardoxcruz/GraphT.Remix.Js)
-- [ ] Soporte multiplataforma móvil
-- [ ] Soporte multiplataforma de escritorio
+---
