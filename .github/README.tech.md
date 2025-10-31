@@ -1,12 +1,16 @@
 ## Project Structure 🗂️
 
-The solution is organized into several projects and folders, following Domain-Driven Design methodology along with Clean/Hexagonal Architecture. Below is a description of the main function of each folder/project:
+The solution is organized into several projects and folders, following Domain-Driven Design methodology along with 
+Domain-Driven Design & Hexagonal Architecture. Below is a description of the main function of each folder/project:
 
-- **SeedWork** – Base classes, utilities, and components shared among different projects (for example, the base `Entity` class).
+- **SeedWork** – Base classes, utilities, and components shared among different projects (for example, 
+the base `PagedList` class).
 
-- **GraphT.Model** – Contains domain models, entities, value objects, domain services, and exceptions. Defines the core business logic and rules.
+- **GraphT.Model** – Contains domain models, entities, value objects, domain services, and exceptions. Defines the core 
+business logic and rules.
 
-- **GraphT.UseCases** – Implements use cases and application logic. This is where the workflow between models and repositories is orchestrated.
+- **GraphT.UseCases** – Implements use cases and application logic. This is where the workflow between models and 
+repositories is orchestrated.
 
 ---
 
@@ -43,7 +47,8 @@ The solution is organized into several projects and folders, following Domain-Dr
 
 ### Unit Tests
 
-Projects ending with ```.Tests``` are included as unit tests. All projects with unit tests use ```xUnit``` and ```NSubstitute``` for mocks.
+Projects ending with ```.Tests``` are included as unit tests. All projects with unit tests use ```xUnit``` and 
+```NSubstitute``` for mocks.
 
 Some of these projects are:
 
@@ -56,7 +61,8 @@ You can run the unit tests with your favorite IDE or code editor, or with the co
 
 ## Built With 🛠️
 
-* [.NET 8 Hexagonal Architecture Template](https://github.com/eduardoxcruz/HexagonalArchitecture.NET) – .NET 8 template for multi-platform projects following Domain-Driven Desing & Hexagonal Architecture principles.
+* [.NET 8 Hexagonal Architecture Template](https://github.com/eduardoxcruz/HexagonalArchitecture.NET) – .NET 8 template for multi-platform projects following Domain-Driven 
+Desing & Hexagonal Architecture principles.
 * [xUnit](https://xunit.net/) – Unit testing.
 * [nSubstitute](https://nsubstitute.github.io/) – Mocks for unit tests.
 
@@ -64,7 +70,7 @@ You can run the unit tests with your favorite IDE or code editor, or with the co
 
 ## Versioning 📌
 
-We use [SemVer](http://semver.org/) for versioning. For all available versions, see the [tags in this repository](https://github.com/eduardoxcruz/GraphT.NET/tags).
+We use [SemVer](http://semver.org/) for versioning. For all available versions, see the [tags in this repository](https://github.com/eduardoxcruz/GraphT.Core/tags).
 
 ## Contributing 🖇️
 
@@ -75,7 +81,7 @@ Contributions are welcome! Please open issues and submit pull requests for new f
 
 ## Wiki 📖
 
-You can find much more on how to use this project in our [Wiki](https://github.com/eduardoxcruz/GraphT.NET/wiki)
+You can find much more on how to use this project in our [Wiki](https://github.com/eduardoxcruz/GraphT.Core/wiki)
 
 ## License 📄
 
