@@ -16,14 +16,7 @@ public class UseCase : IPortWithInput<InputDto>
 
 	public async ValueTask HandleAsync(InputDto input)
 	{
-		try
-		{
-			await _removeTaskPort.HandleAsync(input.Id);
-		}
-		catch (Exception ex)
-		{
-			throw new ExternalRepositoryException("Error removing task from repository.", ex);
-		}
+		await _removeTaskPort.HandleAsync(input.Id);
 	}
 }
 

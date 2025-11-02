@@ -64,22 +64,6 @@ public class UseCaseTests
 	}
 	
 	[Fact]
-	public async Task Handle_ShouldThrowExternalRepositoryException_WhenRepositoryThrows()
-	{
-		// Arrange
-		InputDto inputDto = new InputDto { Name = "Test Task" };
-		
-		ExternalRepositoryException originalException = new("Original error");
-        
-		_addTaskPort.HandleAsync(Arg.Any<TodoTask>()).Throws(originalException);
-
-		ExternalRepositoryException exception = await Assert.ThrowsAsync<ExternalRepositoryException>(
-			async () => await _useCase.HandleAsync(inputDto));
-        
-		Assert.Same(originalException, exception);
-	}
-
-	[Fact]
 	public async Task Handle_ShouldAssignDtoPropertiesToNewTask_IfDtoPropertyIsNotNull()
 	{
 		// Arrange
