@@ -4,9 +4,10 @@ namespace GraphT.Model.Aggregates;
 
 public class TodoTask
 {
-	private HashSet<TodoTask> _parents;
-	private HashSet<TodoTask> _children;
-	private HashSet<LifeArea> _lifeAreas;
+	private List<TodoTask> _parents;
+	private List<TodoTask> _children;
+	private List<LifeArea> _lifeAreas;
+	private LinkedList<StatusChangelog> _statusChangeLogs;
 	
 	public Guid Id { get; }
 	public string Name { get; set; }
@@ -18,13 +19,14 @@ public class TodoTask
 	public Status Status { get; private set; }
 	public DateTimeOffset? LimitDateTime { get; private set; }
 	public string Punctuality => GetPunctuality();
-	public LinkedList<StatusChangelog> StatusChangeLogs { get; private set; }
+	public double Progress => GetProgress();
 	public TimeSpan ElapsedTime => GetElapsedTime();
 	public string ElapsedTimeFormatted => ElapsedTime.ToElapsedTime();
-	public double Progress => GetProgress();
-	public IReadOnlySet<TodoTask> Parents => _parents;
-	public IReadOnlySet<TodoTask> Children => _children;
-	public IReadOnlySet<LifeArea> LifeAreas => _lifeAreas;
+
+	public IReadOnlyCollection<StatusChangelog> StatusChangeLogs => _statusChangeLogs;
+	public IReadOnlyList<TodoTask> Parents => _parents;
+	public IReadOnlyList<TodoTask> Children => _children;
+	public IReadOnlyList<LifeArea> LifeAreas => _lifeAreas;
 	
 	public TodoTask() : this("New Todo Task") {}
 	
@@ -37,11 +39,43 @@ public class TodoTask
 		Complexity = Complexity.Indefinite;
 		Priority = Priority.Distraction;
 		Status = Status.Created;
-		StatusChangeLogs = new LinkedList<StatusChangelog>();
-		StatusChangeLogs.AddFirst(new StatusChangelog(DateTimeOffset.Now, Status.Created));
+		_statusChangeLogs = [];
+		_statusChangeLogs.AddFirst(new StatusChangelog(DateTimeOffset.Now, Status.Created));
 		_parents = [];
 		_children = [];
 		_lifeAreas = [];
+	}
+
+	public TodoTask(string name, 
+		Status? status = null,
+		DateTimeOffset? limitDateTime = null,
+		LinkedList<StatusChangelog>? statusChangeLogs = null, 
+		List<TodoTask>? parents = null, 
+		List<TodoTask>? children = null, 
+		List<LifeArea>? lifeAreas = null)
+	{
+		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
+		
+		Id = Guid.NewGuid();
+		Name = name;
+		Complexity = Complexity.Indefinite;
+		Priority = Priority.Distraction;
+		Status = status ?? Status.Created;
+		LimitDateTime = limitDateTime;
+		_parents = parents ?? [];
+		_children = children ?? [];
+		_lifeAreas = lifeAreas ?? [];
+
+		switch (statusChangeLogs is null)
+		{
+			case true:
+				_statusChangeLogs = [];
+				_statusChangeLogs.AddFirst(new StatusChangelog(DateTimeOffset.Now, Status.Created));
+				break;
+			case false:
+				_statusChangeLogs = statusChangeLogs;
+				break;
+		}
 	}
 	
 	public void SetStatus(Status status)
@@ -51,7 +85,7 @@ public class TodoTask
 	
 	public void SetStatus(DateTimeOffset dateTime, Status status)
 	{
-		StatusChangeLogs.AddLast(new StatusChangelog(dateTime, status));
+		_statusChangeLogs.AddLast(new StatusChangelog(dateTime, status));
 		
 		Status = status;
 	}
@@ -65,7 +99,7 @@ public class TodoTask
 	{
 		if (LimitDateTime is null) return "\u26a0 No Target";
 
-		StatusChangelog lastLog = StatusChangeLogs.Last!.Value;
+		StatusChangelog lastLog = _statusChangeLogs.Last!.Value;
 
 		bool lastLogIsCompletedOrDropped = Equals(lastLog.Status, Status.Completed) || Equals(lastLog.Status, Status.Dropped);
 
@@ -103,20 +137,30 @@ public class TodoTask
 		return $"\u23f1 {Math.Abs(timeDifference.Days)} day(s) - {Math.Abs(timeDifference.Hours)} hours(s) - {Math.Abs(timeDifference.Minutes)} minute(s) - {Math.Abs(timeDifference.Add(TimeSpan.FromMilliseconds(10)).Seconds)} second(s) To Go!";
 	}
 	
-	public void AddParents(HashSet<TodoTask> parents)
+	public void AddParents(List<TodoTask> parents)
 	{
-		_parents = _parents.UnionBy(parents, t => t.Id).ToHashSet();
+		foreach (TodoTask parent in parents)
+		{
+			if (parent is null) throw new ArgumentNullException(nameof(parents), "Parent cannot be null");
+			
+			if (!_parents.Contains(parent)) _parents.Add(parent);
+		}
 	}
 	
-	public void AddChildren(HashSet<TodoTask> children)
+	public void AddChildren(List<TodoTask> children)
 	{
-		_children = _children.UnionBy(children, t => t.Id).ToHashSet();
+		foreach (TodoTask child in children)
+		{
+			if (child is null) throw new ArgumentNullException(nameof(children), "Child cannot be null");
+			
+			if (!_children.Contains(child)) _children.Add(child);
+		}
 	}
 
 	private TimeSpan GetElapsedTime()
 	{
 		TimeSpan elapsedTime = TimeSpan.Zero;
-		LinkedListNode<StatusChangelog> log = StatusChangeLogs.First!;
+		LinkedListNode<StatusChangelog> log = _statusChangeLogs.First!;
 
 		while (log is not null)
 		{
@@ -149,8 +193,11 @@ public class TodoTask
 		return (completedChildren * 100) / totalChildren;
 	}
 
-	public void AddLifeAreas(HashSet<LifeArea> lifeAreas)
+	public void AddLifeAreas(List<LifeArea> lifeAreas)
 	{
-		_lifeAreas = _lifeAreas.UnionBy(lifeAreas, la => la.Name).ToHashSet();
+		foreach (LifeArea lifeArea in lifeAreas)
+		{
+			if (!_lifeAreas.Contains(lifeArea)) _lifeAreas.Add(lifeArea);
+		}
 	}
 }

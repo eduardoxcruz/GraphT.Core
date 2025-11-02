@@ -342,8 +342,8 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHaveReadonly_LinkedListOfStatusChangelogs()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("StatusChangeLogs"));
-		Assert.True(typeof(TodoTask).GetProperty("StatusChangeLogs").SetMethod.IsPrivate);
-		Assert.True(typeof(TodoTask).GetProperty("StatusChangeLogs").PropertyType == typeof(LinkedList<StatusChangelog>));
+		Assert.False(typeof(TodoTask).GetProperty("StatusChangeLogs").CanWrite);
+		Assert.True(typeof(TodoTask).GetProperty("StatusChangeLogs").PropertyType == typeof(IReadOnlyCollection<StatusChangelog>));
 	}
 
 	[Fact]
@@ -376,7 +376,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleParents()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Parents"));
-		Assert.True(typeof(TodoTask).GetProperty("Parents").PropertyType == typeof(IReadOnlySet<TodoTask>));
+		Assert.True(typeof(TodoTask).GetProperty("Parents").PropertyType == typeof(IReadOnlyList<TodoTask>));
 	}
 
 	[Fact]
@@ -405,7 +405,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleChildren()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Children"));
-		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(IReadOnlySet<TodoTask>));
+		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(IReadOnlyList<TodoTask>));
 	}
 	
 	[Fact]
@@ -508,7 +508,7 @@ public class TodoTaskTests
 	public void Progress_ShouldBe_Calculated_From_CompletedChildren(int maxChildren)
 	{
 		TodoTask task = new();
-		HashSet<TodoTask> children = [];
+		List<TodoTask> children = [];
 
 		for (int i = 1; i <= maxChildren; i++)
 		{
@@ -539,7 +539,7 @@ public class TodoTaskTests
 	public void Progress_ShouldBe99_WhenAllChildrenAreCompletedOrDropped_ButCurrentTaskNotMarkedAsFinishedOrDropped()
 	{
 		TodoTask task = new();
-		HashSet<TodoTask> children = [];
+		List<TodoTask> children = [];
 
 		for (int i = 1; i <= 10; i++)
 		{
@@ -562,7 +562,7 @@ public class TodoTaskTests
 	{
 		TodoTask completed = new();
 		TodoTask dropped = new();
-		HashSet<TodoTask> children = [];
+		List<TodoTask> children = [];
 
 		for (int i = 1; i <= 10; i++)
 		{
@@ -592,7 +592,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleLifeAreas()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("LifeAreas"));
-		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(IReadOnlySet<LifeArea>));
+		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(IReadOnlyList<LifeArea>));
 	}
 	
 	[Fact]
