@@ -13,11 +13,13 @@ public class TodoTask : IEquatable<TodoTask>
 	public string Name { get; set; }
 	public bool IsFun { get; set; }
 	public bool IsProductive { get; set; }
-	public Relevance Relevance => new(IsFun, IsProductive);
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
+	
 	public Status Status { get; private set; }
 	public DateTimeOffset? LimitDateTime { get; private set; }
+	
+	public Relevance Relevance => new(IsFun, IsProductive);
 	public string Punctuality => GetPunctuality();
 	public double Progress => GetProgress();
 	public TimeSpan ElapsedTime => GetElapsedTime();
