@@ -12,6 +12,6 @@ public interface IFindTaskByIdPort : IFullPort<Guid, TodoTask>;
 public interface IAddTaskPort : IPortWithInput<TodoTask>;
 public interface IUpdateTaskPort : IPortWithInput<TodoTask>;
 public interface IRemoveTaskPort : IPortWithInput<Guid>;
-public interface IContainsTaskPort : IFullPort<bool, Guid>;
+public interface IContainsTaskPort : IFullPort<Guid, bool>;
 
 public record struct PagingOptionsWithTaskStatusDto(PagingOptions PagingOptions, Status Status);
