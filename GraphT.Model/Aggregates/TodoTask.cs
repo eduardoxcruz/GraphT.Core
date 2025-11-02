@@ -2,7 +2,7 @@ using GraphT.Model.ValueObjects;
 
 namespace GraphT.Model.Aggregates;
 
-public class TodoTask
+public class TodoTask : IEquatable<TodoTask>
 {
 	private List<TodoTask> _parents;
 	private List<TodoTask> _children;
@@ -199,5 +199,55 @@ public class TodoTask
 		{
 			if (!_lifeAreas.Contains(lifeArea)) _lifeAreas.Add(lifeArea);
 		}
+	}
+
+	public bool Equals(TodoTask? other)
+	{
+		if (other is null)
+		{
+			return false;
+		}
+
+		if (ReferenceEquals(this, other))
+		{
+			return true;
+		}
+
+		return Id.Equals(other.Id);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (obj is null)
+		{
+			return false;
+		}
+
+		if (ReferenceEquals(this, obj))
+		{
+			return true;
+		}
+
+		if (obj.GetType() != GetType())
+		{
+			return false;
+		}
+
+		return Equals((TodoTask)obj);
+	}
+
+	public override int GetHashCode()
+	{
+		return Id.GetHashCode();
+	}
+
+	public static bool operator ==(TodoTask? left, TodoTask? right)
+	{
+		return Equals(left, right);
+	}
+
+	public static bool operator !=(TodoTask? left, TodoTask? right)
+	{
+		return !Equals(left, right);
 	}
 }
