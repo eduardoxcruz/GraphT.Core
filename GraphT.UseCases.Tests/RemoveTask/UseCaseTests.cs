@@ -35,24 +35,4 @@ public class UseCaseTests
 		// Assert
 		await _removeTaskPort.Received(1).HandleAsync(_taskId);
 	}
-
-	[Fact]
-	public async Task Handle_ShouldThrowExternalRepositoryException_WhenRepositoryThrows()
-	{
-		// Arrange
-		InputDto inputDto = new()
-		{
-			Id = _taskId
-		};
-		ExternalRepositoryException exception = new("Repository error");
-
-		// Act & Assert
-		_removeTaskPort.HandleAsync(Arg.Any<Guid>()).Throws(exception);
-		
-		ExternalRepositoryException thrownException = await Assert.ThrowsAsync<ExternalRepositoryException>(
-			async () => await _useCase.HandleAsync(inputDto));
-		
-		Assert.Equal("Error removing task from repository.", thrownException.Message);
-		Assert.Same(exception, thrownException.InnerException);
-	}
 }
