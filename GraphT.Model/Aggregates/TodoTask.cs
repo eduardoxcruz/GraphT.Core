@@ -252,4 +252,19 @@ public class TodoTask : IEquatable<TodoTask>
 	{
 		return !Equals(left, right);
 	}
+
+	public void RemoveParents(List<TodoTask> parents)
+	{
+		_parents.RemoveAll(parents.Contains);
+	}
+
+	public void RemoveChildren(List<TodoTask> children)
+	{
+		_children.RemoveAll(children.Contains);
+	}
+
+	public void RemoveLifeAreas(List<LifeArea> lifeAreas)
+	{
+		_lifeAreas.RemoveAll(lifeAreas.Contains);
+	}
 }
