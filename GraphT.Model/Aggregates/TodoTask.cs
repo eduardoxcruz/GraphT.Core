@@ -80,16 +80,18 @@ public class TodoTask : IEquatable<TodoTask>
 		}
 	}
 	
-	public void SetStatus(Status status)
+	public void SetStatus(Status newStatus)
 	{
-		SetStatus(DateTimeOffset.Now, status);
+		SetStatus(DateTimeOffset.Now, newStatus);
 	}
 	
-	public void SetStatus(DateTimeOffset dateTime, Status status)
+	public void SetStatus(DateTimeOffset dateTime, Status newStatus)
 	{
-		_statusChangeLogs.AddLast(new StatusChangelog(dateTime, status));
+		if (newStatus == this.Status) return;
 		
-		Status = status;
+		_statusChangeLogs.AddLast(new StatusChangelog(dateTime, newStatus));
+		
+		Status = newStatus;
 	}
 	
 	public void SetLimitDateTime(DateTimeOffset dateTime)
