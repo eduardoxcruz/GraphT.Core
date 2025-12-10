@@ -67,6 +67,7 @@ public class UseCaseTests
 	public async Task Handle_ShouldAssignDtoPropertiesToNewTask_IfDtoPropertyIsNotNull()
 	{
 		// Arrange
+		StatusChangeDto statusChangeDto = new() { ChangeDateTime = DateTimeOffset.Now, Status = Status.CurrentlyDoing };
 		InputDto inputDto = new()
 		{ 
 			Name = "Test Task",
@@ -74,7 +75,7 @@ public class UseCaseTests
 			IsProductive = true,
 			Complexity = Complexity.High,
 			Priority = Priority.Critical,
-			Status = Status.Backlog,
+			StatusChange = statusChangeDto,
 			LimitDateTime = DateTimeOffset.Now.AddDays(1)
 		};
 		OutputDto outputDto;
@@ -88,7 +89,7 @@ public class UseCaseTests
 		Assert.Equal(inputDto.IsProductive.Value, outputDto.Task.IsProductive);
 		Assert.Equal(inputDto.Complexity.Value, outputDto.Task.Complexity);
 		Assert.Equal(inputDto.Priority.Value, outputDto.Task.Priority);
-		Assert.Equal(inputDto.Status.Value, outputDto.Task.Status);
+		Assert.Equal(inputDto.StatusChange.Value.Status, outputDto.Task.Status);
 		Assert.Equal(inputDto.LimitDateTime.Value, outputDto.Task.LimitDateTime);
 	}
 }

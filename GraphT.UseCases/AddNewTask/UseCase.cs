@@ -40,9 +40,17 @@ public class UseCase : IFullPort<InputDto, OutputDto>
 			newTask.Priority = dto.Priority.Value;
 		}
 
-		if (dto.Status.HasValue)
+		if (dto.StatusChange.HasValue)
 		{
-			newTask.SetStatus(dto.Status.Value);
+			switch (dto.StatusChange.Value.ChangeDateTime.HasValue)
+			{
+				case true:
+					newTask.SetStatus(dto.StatusChange.Value.ChangeDateTime.Value, dto.StatusChange.Value.Status);
+					break;
+				case false:
+					newTask.SetStatus(dto.StatusChange.Value.Status);
+					break;
+			}
 		}
 
 		if (dto.LimitDateTime.HasValue)
@@ -78,7 +86,7 @@ public record struct InputDto
 	public bool? IsProductive { get; set; }
 	public Complexity? Complexity { get; set; }
 	public Priority? Priority { get; set; }
-	public Status? Status { get; set; }
+	public StatusChangeDto? StatusChange { get; set; }
 	public DateTimeOffset? LimitDateTime { get; set; }
 	public List<TodoTask>? Parents { get; set; }
 	public List<TodoTask>? Children { get; set; }

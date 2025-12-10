@@ -13,11 +13,13 @@ public class TodoTask : IEquatable<TodoTask>
 	public string Name { get; set; }
 	public bool IsFun { get; set; }
 	public bool IsProductive { get; set; }
-	public Relevance Relevance => new(IsFun, IsProductive);
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
+	
 	public Status Status { get; private set; }
 	public DateTimeOffset? LimitDateTime { get; private set; }
+	
+	public Relevance Relevance => new(IsFun, IsProductive);
 	public string Punctuality => GetPunctuality();
 	public double Progress => GetProgress();
 	public TimeSpan ElapsedTime => GetElapsedTime();
@@ -78,16 +80,18 @@ public class TodoTask : IEquatable<TodoTask>
 		}
 	}
 	
-	public void SetStatus(Status status)
+	public void SetStatus(Status newStatus)
 	{
-		SetStatus(DateTimeOffset.Now, status);
+		SetStatus(DateTimeOffset.Now, newStatus);
 	}
 	
-	public void SetStatus(DateTimeOffset dateTime, Status status)
+	public void SetStatus(DateTimeOffset dateTime, Status newStatus)
 	{
-		_statusChangeLogs.AddLast(new StatusChangelog(dateTime, status));
+		if (newStatus == this.Status) return;
 		
-		Status = status;
+		_statusChangeLogs.AddLast(new StatusChangelog(dateTime, newStatus));
+		
+		Status = newStatus;
 	}
 	
 	public void SetLimitDateTime(DateTimeOffset dateTime)
@@ -249,5 +253,20 @@ public class TodoTask : IEquatable<TodoTask>
 	public static bool operator !=(TodoTask? left, TodoTask? right)
 	{
 		return !Equals(left, right);
+	}
+
+	public void RemoveParents(List<TodoTask> parents)
+	{
+		_parents.RemoveAll(parents.Contains);
+	}
+
+	public void RemoveChildren(List<TodoTask> children)
+	{
+		_children.RemoveAll(children.Contains);
+	}
+
+	public void RemoveLifeAreas(List<LifeArea> lifeAreas)
+	{
+		_lifeAreas.RemoveAll(lifeAreas.Contains);
 	}
 }
