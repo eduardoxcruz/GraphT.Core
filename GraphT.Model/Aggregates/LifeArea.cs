@@ -5,7 +5,7 @@ namespace GraphT.Model.Aggregates;
 public class LifeArea : IEntity<Guid>, IEquatable<LifeArea>
 {
 	public Guid Id { get; }
-	public string Name { get; private set; } = string.Empty;
+	public string Name { get; private set; }
 
     private LifeArea() { }
 	
