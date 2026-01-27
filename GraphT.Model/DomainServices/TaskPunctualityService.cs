@@ -29,8 +29,9 @@ public static class TaskPunctualityService
 			}
 		}
 
-		timeDifference = (limitDate.Value - DateTimeOffset.Now);
-		const int marginOfError = 10;
+		DateTimeOffset now = DateTimeOffset.Now;
+		timeDifference = (limitDate.Value - now);
+		const int marginOfError = 30;
 		
 		if (timeDifference.Seconds > 0) timeDifference = timeDifference.Add(TimeSpan.FromMilliseconds(marginOfError));
 		
