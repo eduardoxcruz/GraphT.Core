@@ -9,7 +9,7 @@ public class LifeArea : IEntity<Guid>, IEquatable<LifeArea>
 
     private LifeArea() { }
 	
-    private LifeArea(string name)
+    public LifeArea(string name)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Life area name cannot be empty.", nameof(name));
 
