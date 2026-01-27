@@ -1,15 +1,19 @@
+using GraphT.Model.Enums;
+
 namespace GraphT.Model.ValueObjects;
 
-public struct StatusChangelog
+public record StatusChangelog
 {
-	public DateTimeOffset CreationDateTime { get; }
-	public DateTimeOffset ChangeDateTime { get; }
-	public Status Status { get; }
+	public DateTimeOffset CreatedAt { get; }
+	public DateTimeOffset ChangeEstablishedAt { get; }
+	public TaskState NewState { get; }
 
-	public StatusChangelog(DateTimeOffset changeDateTime, Status status)
+	private StatusChangelog() { }
+	
+	public StatusChangelog(DateTimeOffset changeEstablishedAt, TaskState newState)
 	{
-		CreationDateTime = DateTimeOffset.Now;
-		ChangeDateTime = changeDateTime;
-		Status = status;
+		CreatedAt = DateTimeOffset.Now;
+		ChangeEstablishedAt = changeEstablishedAt;
+		NewState = newState;
 	}
 }
