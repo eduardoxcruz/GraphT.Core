@@ -9,7 +9,7 @@ public static class TaskProgressService
 	{
 		int totalChildren = taskChildren.Count;
 		
-		if (taskStatus is TaskState.Finished) return 100;
+		if (taskStatus is TaskState.Finished or TaskState.Discarded) return 100;
 
 		if (totalChildren == 0) return 0;
 		
