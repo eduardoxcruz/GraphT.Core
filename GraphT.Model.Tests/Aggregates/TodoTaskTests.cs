@@ -112,8 +112,6 @@ public class TodoTaskTests
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("LimitDateTime"));
 	}
-
-	
 	
 	[Fact]
 	public void TodoTask_ShouldHaveReadonly_ListOfStatusChangelogs()
@@ -179,6 +177,17 @@ public class TodoTaskTests
 	}
 
 	[Fact]
+	public void AddParents_ShouldNotAddParent_WhenItIsAlreadyParent()
+	{
+		TodoTask parent = new("Parent");
+		TodoTask task = new();
+		task.AddParents([ parent ]);
+		task.AddParents([ parent ]);
+		
+		Assert.Single(task.Parents);
+	}
+
+	[Fact]
 	public void TodoTask_ShouldHave_MultipleChildren()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Children"));
@@ -205,6 +214,17 @@ public class TodoTaskTests
 		Assert.Contains(child1, task.Children);
 		Assert.Contains(child2, task.Children);
 		Assert.Contains(child3, task.Children);
+	}
+	
+	[Fact]
+	public void AddChildren_ShouldNotAddChildren_WhenItIsAlreadyChildren()
+	{
+		TodoTask children = new();
+		TodoTask task = new();
+		task.AddChildren([ children ]);
+		task.AddChildren([ children ]);
+		
+		Assert.Single(task.Children);
 	}
 	
 	[Fact]
@@ -280,5 +300,16 @@ public class TodoTaskTests
 		Assert.True(task.LifeAreas.Count != 0);
 		Assert.Contains(la1, task.LifeAreas);
 		Assert.Contains(la2, task.LifeAreas);
+	}
+	
+	[Fact]
+	public void AddLifeAreas_ShouldNotAddLifeArea_WhenItIsAlreadyLifeArea()
+	{
+		LifeArea lifeArea = new("Life Area");
+		TodoTask task = new();
+		task.AddLifeAreas([ lifeArea ]);
+		task.AddLifeAreas([ lifeArea ]);
+		
+		Assert.Single(task.LifeAreas);
 	}
 }

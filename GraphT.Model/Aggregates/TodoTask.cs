@@ -138,32 +138,29 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		return DomainResult.Success();
 	}
 	
-	public void AddParents(List<TodoTask> parents)
+	public DomainResult AddParents(List<TodoTask> parents)
 	{
-		foreach (TodoTask parent in parents)
-		{
-			if (parent is null) throw new ArgumentNullException(nameof(parents), "Parent cannot be null");
-			
-			if (!_parents.Contains(parent)) _parents.Add(parent);
-		}
+		if (parents.Contains(this)) return DomainResult.Failure("Parent cannot be a child of itself.");
+		
+		_parents.AddRange(parents.Except(_parents));
+		
+		return DomainResult.Success();
 	}
 	
-	public void AddChildren(List<TodoTask> children)
+	public DomainResult AddChildren(List<TodoTask> children)
 	{
-		foreach (TodoTask child in children)
-		{
-			if (child is null) throw new ArgumentNullException(nameof(children), "Child cannot be null");
-			
-			if (!_children.Contains(child)) _children.Add(child);
-		}
+		if (children.Contains(this)) return DomainResult.Failure("Parent cannot be a child of itself.");
+		
+		_children.AddRange(children.Except(_children));
+		
+		return DomainResult.Success();
 	}
 
-	public void AddLifeAreas(List<LifeArea> lifeAreas)
+	public DomainResult AddLifeAreas(List<LifeArea> lifeAreas)
 	{
-		foreach (LifeArea lifeArea in lifeAreas)
-		{
-			if (!_lifeAreas.Contains(lifeArea)) _lifeAreas.Add(lifeArea);
-		}
+		_lifeAreas.AddRange(lifeAreas.Except(_lifeAreas));
+		
+		return DomainResult.Success();
 	}
 	
 	public void RemoveParents(List<TodoTask> parents)
