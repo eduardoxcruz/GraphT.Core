@@ -137,9 +137,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		}
 
 		Status = newStatus;
-		StatusChangelog newLog = new(dateTime.Value, newStatus); 
-		_statusChangeLogs.Add(newLog);
-		AddDomainEvent(new StatusChangelogCreatedDomainEvent(newLog));
+		AddStatusChangelog(new StatusChangelog(dateTime.Value, newStatus));
 		
 		return DomainResult.Success();
 	}
@@ -182,6 +180,12 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public void RemoveLifeAreas(List<LifeArea> lifeAreas)
 	{
 		_lifeAreas.RemoveAll(lifeAreas.Contains);
+	}
+
+	private void AddStatusChangelog(StatusChangelog newLog)
+	{
+		_statusChangeLogs.Add(newLog);
+		AddDomainEvent(new StatusChangelogCreatedDomainEvent(newLog));
 	}
 	
 	public void AddDomainEvent(IDomainEvent domainEvent)
