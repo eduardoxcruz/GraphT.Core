@@ -14,8 +14,9 @@ public interface ITaskHasOnlyThisParentPort : IFullPort<TaskHasOnlyThisParentDto
 public interface IAddParentByIdPort : IPortWithInput<AddParentDto>;
 public interface IGetTaskByIdPort : IFullPort<Guid, TodoTask?>;
 public interface IGetChildrenByIdPort : IFullPort<Guid, List<TodoTask>>;
-public interface IUpdateTaskPriorityPort : IPortWithInput<Priority>;
+public interface IUpdateTaskPriorityPort : IPortWithInput<IUpdateTaskPriorityDto>;
 
+public record struct IUpdateTaskPriorityDto(Guid TaskId, Priority PriorityValue);
 public record struct AddParentDto(Guid TaskId, Guid ParentId);
 public record struct TaskHasOnlyThisParentDto(Guid TaskId, Guid ParentId);
 public record struct UpdateTaskStatusDto(Guid TaskId, TaskState TaskStatus);
