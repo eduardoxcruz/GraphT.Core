@@ -13,7 +13,14 @@ public class UpdateParentStatusService : IUpdateParentStatusPort
 	private readonly IGetChildrenStatusesByIdPort _getHighestStatusFromChildrenByIdPort;
 	private readonly IUpdateTaskStatusPort _updateTaskStatusPort;
 	private readonly IGetParentsByIdPort _getParentsByIdPort;
-	
+
+	public UpdateParentStatusService(IGetChildrenStatusesByIdPort getHighestStatusFromChildrenByIdPort, IUpdateTaskStatusPort updateTaskStatusPort, IGetParentsByIdPort getParentsByIdPort)
+	{
+		_getHighestStatusFromChildrenByIdPort = getHighestStatusFromChildrenByIdPort;
+		_updateTaskStatusPort = updateTaskStatusPort;
+		_getParentsByIdPort = getParentsByIdPort;
+	}
+
 	public async ValueTask HandleAsync(List<TodoTask> input)
 	{
 		foreach (TodoTask parent in input)
