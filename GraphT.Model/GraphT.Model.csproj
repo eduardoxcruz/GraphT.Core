@@ -7,11 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Entities\" />
-      <Folder Include="Factories\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\SeedWork\SeedWork.csproj" />
     </ItemGroup>
 

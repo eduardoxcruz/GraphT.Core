@@ -4,7 +4,7 @@ public class TaskNotFoundException : Exception
 {
 	public Guid Id { get; }
 	
-	public TaskNotFoundException(Guid id)
+	public TaskNotFoundException(Guid id) : base($"Task with ID '{id}' was not found.")
 	{
 		Id = id;
 	}
@@ -14,8 +14,7 @@ public class TaskNotFoundException : Exception
 		Id = id;
 	}
 
-	public TaskNotFoundException(string message, Exception inner, Guid id)
-		: base(message, inner)
+	public TaskNotFoundException(string message, Exception inner, Guid id) : base(message, inner)
 	{
 		Id = id;
 	}
