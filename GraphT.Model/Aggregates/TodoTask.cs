@@ -1,3 +1,4 @@
+using GraphT.Model.DomainEvents;
 using GraphT.Model.DomainServices;
 using GraphT.Model.Enums;
 using GraphT.Model.ValueObjects;
@@ -8,6 +9,9 @@ namespace GraphT.Model.Aggregates;
 
 public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 {
+	private readonly List<IDomainEvent> _domainEvents;
+	public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+	
 	public Guid Id { get; }
 	public string Name { get; private set; }
 	public bool IsFun { get; private set; }
@@ -71,6 +75,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		_parents = parents ?? [];
 		_children = children ?? [];
 		_lifeAreas = lifeAreas ?? [];
+		_domainEvents = [];
 		
 		switch (statusChangeLogs is null)
 		{
@@ -132,8 +137,9 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		}
 
 		Status = newStatus;
-		
-		_statusChangeLogs.Add(new StatusChangelog(dateTime.Value, newStatus));
+		StatusChangelog newLog = new(dateTime.Value, newStatus); 
+		_statusChangeLogs.Add(newLog);
+		AddDomainEvent(new StatusChangelogCreatedDomainEvent(newLog));
 		
 		return DomainResult.Success();
 	}
@@ -176,6 +182,21 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public void RemoveLifeAreas(List<LifeArea> lifeAreas)
 	{
 		_lifeAreas.RemoveAll(lifeAreas.Contains);
+	}
+	
+	public void AddDomainEvent(IDomainEvent domainEvent)
+	{
+		_domainEvents.Add(domainEvent);
+	}
+
+	public void RemoveDomainEvent(IDomainEvent domainEvent)
+	{
+		_domainEvents.Remove(domainEvent);
+	}
+	
+	public void ClearDomainEvents()
+	{
+		_domainEvents.Clear();
 	}
 	
 	public bool Equals(TodoTask? other)
