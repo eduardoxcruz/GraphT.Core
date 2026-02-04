@@ -178,22 +178,6 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		_lifeAreas.RemoveAll(lifeAreas.Contains);
 	}
 	
-	public TodoTask Split()
-	{
-		TodoTask newTask = new(
-			$"{Name} (2)",
-			IsFun,
-			IsProductive,
-			Complexity,
-			Priority,
-			lifeAreas: _lifeAreas);
-
-		AddChildren([ newTask ]);
-		newTask.AddParents([ this ]);
-		
-		return newTask;
-	}
-
 	public bool Equals(TodoTask? other)
 	{
 		if (other is null)
