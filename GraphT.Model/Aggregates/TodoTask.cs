@@ -43,9 +43,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	private List<StatusChangelog> _statusChangeLogs;
 	public IReadOnlyList<StatusChangelog> StatusChangeLogs => _statusChangeLogs;
 
-	public TodoTask() : this("New Task") {}
-	
-	public TodoTask(string name, 
+	public TodoTask(string name = "New Task", 
 		bool? isFun = null, 
 		bool? isProductive = null, 
 		Complexity? complexity = null, 
