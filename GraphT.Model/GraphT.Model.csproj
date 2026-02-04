@@ -10,8 +10,4 @@
       <ProjectReference Include="..\SeedWork\SeedWork.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="DomainEvents\" />
-    </ItemGroup>
-
 </Project>
