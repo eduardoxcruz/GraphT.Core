@@ -14,6 +14,7 @@ public interface IRemoveParentById : IPortWithInput<RemoveParentDto>;
 public interface IGetChildrenByIdPortPort : IFullPort<Guid, List<TodoTask>>;
 public interface IGetOnlyChildrenIdsPort : IFullPort<Guid, List<Guid>>;
 
+public interface IAddTaskPort : IPortWithInput<TodoTask>;
 public interface ITaskExistPort : IFullPort<Guid, bool>;
 public interface IDeleteTaskByIdPort : IPortWithInput<Guid>;
 public interface IGetTaskByIdPort : IFullPort<Guid, TodoTask?>;
