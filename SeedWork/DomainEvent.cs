@@ -6,7 +6,7 @@ public interface IDomainEvent
 	Guid EventId { get; }
 }
 
-public abstract class DomainEvent
+public abstract class DomainEvent : IDomainEvent
 {
 	public DateTime OccurredOn { get; }
 	public Guid EventId { get; }
