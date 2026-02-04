@@ -88,7 +88,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		}
 	}
 	
-	public void SetValues(string? name = null, 
+	public void Update(string? name = null, 
 		bool? isFun = null, 
 		bool? isProductive = null, 
 		Complexity? complexity = null, 

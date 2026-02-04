@@ -62,13 +62,13 @@ public class TodoTaskTests
 		TodoTask todo = new();
 		Assert.True(todo.Relevance is Relevance.Superficial);
 		
-		todo.SetValues(isFun: true, isProductive: false);
+		todo.Update(isFun: true, isProductive: false);
 		Assert.True(todo.Relevance is Relevance.Entertaining);
 
-		todo.SetValues(isFun: false, isProductive: true);
+		todo.Update(isFun: false, isProductive: true);
 		Assert.True(todo.Relevance is Relevance.Necessary);
 		
-		todo.SetValues(isFun: true, isProductive: true);
+		todo.Update(isFun: true, isProductive: true);
 		Assert.True(todo.Relevance is Relevance.Purposeful);
 	}
 	
