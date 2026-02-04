@@ -6,9 +6,9 @@ using SeedWork;
 
 namespace GraphT.Model.DomainServices;
 
-public interface IUpdateParentStatusPort : IPortWithInput<List<TodoTask>>;
+public interface IUpdateParentStatusService : IPortWithInput<List<TodoTask>>;
 
-public class UpdateParentStatusService : IUpdateParentStatusPort
+public class UpdateParentStatusService : IUpdateParentStatusService
 {
 	private readonly IGetChildrenStatusesByIdPort _getHighestStatusFromChildrenByIdPort;
 	private readonly IUpdateTaskStatusPort _updateTaskStatusPort;
