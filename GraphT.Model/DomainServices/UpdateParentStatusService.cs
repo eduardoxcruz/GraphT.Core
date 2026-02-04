@@ -41,6 +41,8 @@ public class UpdateParentStatusService : IUpdateParentStatusPort
 					TaskState.ReadyToStart : 
 					TaskState.Paused;
 		}
+		
+		parent.SetStatus(newTaskState);
 
 		await _updateTaskStatusPort.HandleAsync(new UpdateTaskStatusDto(parent.Id, newTaskState));
 	}
