@@ -1,5 +1,5 @@
 using GraphT.Model.Aggregates;
-using GraphT.Model.DomainServices;
+using GraphT.Model.Services;
 using GraphT.Model.Enums;
 
 namespace GraphT.Model.Tests.DomainServices;
