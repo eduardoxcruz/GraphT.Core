@@ -1,7 +1,7 @@
 using GraphT.Model.Enums;
 using GraphT.Model.ValueObjects;
 
-namespace GraphT.Model.DomainServices;
+namespace GraphT.Model.Services;
 
 public static class TaskPunctualityService
 {

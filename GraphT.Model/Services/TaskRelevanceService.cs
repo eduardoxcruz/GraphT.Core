@@ -1,6 +1,6 @@
 using GraphT.Model.Enums;
 
-namespace GraphT.Model.DomainServices;
+namespace GraphT.Model.Services;
 
 public static class TaskRelevanceService
 {

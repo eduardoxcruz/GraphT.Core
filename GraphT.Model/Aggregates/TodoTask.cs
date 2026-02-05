@@ -1,6 +1,6 @@
 using GraphT.Model.DomainEvents;
-using GraphT.Model.DomainServices;
 using GraphT.Model.Enums;
+using GraphT.Model.Services;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
