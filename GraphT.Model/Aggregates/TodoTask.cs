@@ -26,6 +26,10 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public DateTimeOffset? LimitDateTime { get; private set; }
 	public DateTimeOffset? CurrentWorkSessionStartedAt { get; private set; }
 	public TimeSpan ElapsedTime { get; private set; }
+	
+	public bool IsRecurring { get; private set; }
+	public RecurrencePattern? RecurrencePattern { get; private set; }
+	public DateTimeOffset? LastRecurrenceReset { get; private set; }
 
 	public Relevance Relevance => TaskRelevanceService.Calculate(IsFun, IsProductive);
 	public int Progress => TaskProgressService.Calculate(_children, Status);
@@ -55,7 +59,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		List<TodoTask>? parents = null, 
 		List<TodoTask>? children = null, 
 		List<LifeArea>? lifeAreas = null, 
-		List<StatusChangelog>? statusChangeLogs = null)
+		List<StatusChangelog>? statusChangeLogs = null,
+		RecurrencePattern? recurrencePattern = null)
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
 		
@@ -84,6 +89,11 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 				_statusChangeLogs = statusChangeLogs;
 				break;
 		}
+		
+		if (recurrencePattern != null)
+		{
+			SetRecurrence(recurrencePattern, limitDateTime ?? DateTimeOffset.Now);
+		}
 	}
 	
 	public void Update(string? name = null, 
@@ -93,7 +103,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		Priority? priority = null, 
 		DateTimeOffset? startDate = null, 
 		DateTimeOffset? finishDate = null, 
-		DateTimeOffset? limitDateTime = null)
+		DateTimeOffset? limitDateTime = null,
+		RecurrencePattern? recurrencePattern = null)
 	{
 		if (name is not null) Name = name;
 		
@@ -110,6 +121,61 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		if (finishDate is not null) FinishDate = finishDate.Value;
 		
 		if (limitDateTime is not null) LimitDateTime = limitDateTime.Value;
+		
+		if (recurrencePattern is not null)
+		{
+			SetRecurrence(recurrencePattern, limitDateTime ?? LimitDateTime ?? DateTimeOffset.Now);
+		}
+	}
+	
+	public DomainResult SetRecurrence(RecurrencePattern? pattern, DateTimeOffset? baseLimitDate = null)
+	{
+		if (pattern == null) return DomainResult.Failure("Recurrence pattern cannot be null");
+
+		RecurrencePattern = pattern;
+		IsRecurring = true;
+        
+		// Calcular la fecha límite basada en la fecha actual o la proporcionada
+		var referenceDate = baseLimitDate ?? DateTimeOffset.Now;
+		LimitDateTime = pattern.Value.CalculateNextLimitDate(referenceDate);
+        
+		return DomainResult.Success();
+	}
+
+	public DomainResult RemoveRecurrence()
+	{
+		IsRecurring = false;
+		RecurrencePattern = null;
+		LastRecurrenceReset = null;
+        
+		return DomainResult.Success();
+	}
+	
+	// Nuevo método para verificar si la tarea necesita reiniciarse
+	public bool ShouldReset(DateTimeOffset currentDate)
+	{
+		if (!IsRecurring || RecurrencePattern == null || LimitDateTime == null)
+			return false;
+
+		return currentDate > LimitDateTime.Value;
+	}
+
+	// Nuevo método para reiniciar la tarea
+	public DomainResult ResetRecurringTask(DateTimeOffset currentDate)
+	{
+		if (!IsRecurring || RecurrencePattern == null) return DomainResult.Failure("Task is not recurring");
+
+		if (!ShouldReset(currentDate)) return DomainResult.Failure("Task does not need to be reset yet");
+
+		// Reiniciar estado
+		SetStatus(TaskState.ReadyToStart);
+		StartDate = null;
+		FinishDate = null;
+		LastRecurrenceReset = currentDate;
+		// Calcular nueva fecha límite
+		LimitDateTime = RecurrencePattern.Value.CalculateNextLimitDate(LimitDateTime!.Value);
+        
+		return DomainResult.Success();
 	}
 	
 	public DomainResult SetStatus(TaskState newStatus, DateTimeOffset? dateTime = null)

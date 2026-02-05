@@ -12,6 +12,10 @@ public interface IGetTaskByIdPort : IFullPort<Guid, TodoTask?>;
 
 public interface IUpdateTaskPriorityPort : IPortWithInput<UpdateTaskPriorityDto>;
 public interface IUpdateTaskStatusPort : IPortWithInput<UpdateTaskStatusDto>;
+public interface IUpdateTaskBasicInfo : IPortWithInput<TodoTask>;
+public interface IUpdateTaskDateTimes : IPortWithInput<TodoTask>;
+
+public interface IFindRecurringTasks : IPortWithOutput<List<TodoTask>>;
 
 public record struct UpdateTaskPriorityDto(Guid TaskId, Priority PriorityValue);
 public record struct UpdateTaskStatusDto(Guid TaskId, TaskState TaskStatus);
