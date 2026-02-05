@@ -1,5 +1,5 @@
-using GraphT.Model.DomainEvents;
 using GraphT.Model.Enums;
+using GraphT.Model.Events;
 using GraphT.Model.Services;
 using GraphT.Model.ValueObjects;
 

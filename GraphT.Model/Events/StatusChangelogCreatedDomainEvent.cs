@@ -2,7 +2,7 @@ using GraphT.Model.ValueObjects;
 
 using SeedWork;
 
-namespace GraphT.Model.DomainEvents;
+namespace GraphT.Model.Events;
 
 public class StatusChangelogCreatedDomainEvent : DomainEvent
 {
