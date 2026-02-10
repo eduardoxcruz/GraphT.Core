@@ -149,14 +149,12 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		if (limitDateTime is not null) LimitDateTime = limitDateTime.Value;
 	}
 	
-	public DomainResult SetRecurrence(RecurrencePattern? pattern, DateTimeOffset? baseLimitDate = null)
+	public DomainResult SetRecurrence(RecurrencePattern pattern, DateTimeOffset? baseLimitDate = null)
 	{
-		if (pattern == null) return DomainResult.Failure("Recurrence pattern cannot be null");
-
 		RecurrencePattern = pattern;
 		IsRecurring = true;
 		DateTimeOffset referenceDate = baseLimitDate ?? DateTimeOffset.Now;
-		LimitDateTime = pattern.Value.CalculateNextLimitDate(referenceDate);
+		LimitDateTime = pattern.CalculateNextLimitDate(referenceDate);
         
 		return DomainResult.Success();
 	}
