@@ -5,6 +5,6 @@ using SeedWork;
 namespace GraphT.Model.Repositories;
 
 public interface IFindLifeAreaIdsByTaskIdPort : IFullPort<Guid, List<Guid>>;
-public interface IAddLifeAreasByTaskIdPort : IPortWithInput<AddLifeAreasByTaskIdDto>;
+public interface ILinkLifeAreasToTaskIdPort : IPortWithInput<LinkLifeAreasToTaskIdDto>;
 
-public record struct AddLifeAreasByTaskIdDto(Guid TaskId, List<Guid> LifeAreaIds);
+public record struct LinkLifeAreasToTaskIdDto(Guid TaskId, List<Guid> LifeAreaIds);
