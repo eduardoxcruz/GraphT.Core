@@ -9,10 +9,10 @@ namespace GraphT.Model.Aggregates;
 
 public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 {
-	private readonly List<IDomainEvent> _domainEvents;
-	public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+	private List<IDomainEvent> _domainEvents;
+	public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents;
 	
-	public Guid Id { get; }
+	public Guid Id { get; private set; }
 	public string Name { get; private set; }
 	public bool IsFun { get; private set; }
 	public bool IsProductive { get; private set; }
@@ -20,7 +20,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public Priority Priority { get; private set; }
 	public TaskState Status { get; private set; }
 	
-	public DateTimeOffset CreatedAt { get; }
+	public DateTimeOffset CreatedAt { get; private set; }
 	public DateTimeOffset? StartDate { get; private set; }
 	public DateTimeOffset? FinishDate { get; private set; }
 	public DateTimeOffset? LimitDateTime { get; private set; }
@@ -47,80 +47,89 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	private List<StatusChangelog> _statusChangeLogs;
 	public IReadOnlyList<StatusChangelog> StatusChangeLogs => _statusChangeLogs;
 
-	public TodoTask(string name = "New Task", 
-		bool? isFun = null, 
-		bool? isProductive = null, 
-		Complexity? complexity = null, 
-		Priority? priority = null, 
-		DateTimeOffset? startDate = null, 
-		DateTimeOffset? finishDate = null, 
+	private TodoTask() { }
+
+	public static TodoTask Create(string name = "New Task",
+		bool? isFun = null,
+		bool? isProductive = null,
+		Complexity? complexity = null,
+		Priority? priority = null,
+		DateTimeOffset? startDate = null,
+		DateTimeOffset? finishDate = null,
 		DateTimeOffset? limitDateTime = null,
-		List<TodoTask>? parents = null, 
-		List<TodoTask>? children = null, 
+		List<TodoTask>? parents = null,
+		List<TodoTask>? children = null,
 		List<LifeArea>? lifeAreas = null)
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
-		
+
 		DateTimeOffset now =  DateTimeOffset.Now;
-		Id = Guid.NewGuid();
-		CreatedAt = now;
-		Name = name;
-		IsFun = isFun ?? false;
-		IsProductive = isProductive ?? false;
-		Complexity = complexity ?? Complexity.Undefined;
-		Priority = priority ?? Priority.Distraction;
-		StartDate = startDate;
-		FinishDate = finishDate;
-		LimitDateTime = limitDateTime;
-		_parents = parents ?? [];
-		_children = children ?? [];
-		_lifeAreas = lifeAreas ?? [];
-		_domainEvents = [];
-		_statusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ];
+		
+		TodoTask task =  new() { Id = Guid.NewGuid(), 
+			CreatedAt = now, 
+			Name = name, 
+			IsFun = isFun ?? false, 
+			IsProductive = isProductive ?? false, 
+			Complexity = complexity ?? Complexity.Undefined, 
+			Priority = priority ?? Priority.Distraction, 
+			StartDate = startDate, 
+			FinishDate = finishDate, 
+			LimitDateTime = limitDateTime, 
+			_parents = parents ?? [], 
+			_children = children ?? [], 
+			_lifeAreas = lifeAreas ?? [], 
+			_domainEvents = [], 
+			_statusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ]
+		};
+
+		return task;
 	}
 
-	public TodoTask(Guid id, 
-		string name, 
-		bool isFun, 
-		bool isProductive, 
-		Complexity complexity, 
-		Priority priority, 
-		TaskState status, 
-		DateTimeOffset createdAt, 
-		DateTimeOffset? startDate, 
-		DateTimeOffset? finishDate, 
-		DateTimeOffset? limitDateTime, 
-		DateTimeOffset? currentWorkSessionStartedAt, 
-		TimeSpan elapsedTime, 
-		bool isRecurring, 
-		RecurrencePattern? recurrencePattern, 
+	public static TodoTask Rehydrate(Guid id,
+		string name,
+		bool isFun,
+		bool isProductive,
+		Complexity complexity,
+		Priority priority,
+		TaskState status,
+		DateTimeOffset createdAt,
+		DateTimeOffset? startDate,
+		DateTimeOffset? finishDate,
+		DateTimeOffset? limitDateTime,
+		DateTimeOffset? currentWorkSessionStartedAt,
+		TimeSpan elapsedTime,
+		bool isRecurring,
+		RecurrencePattern? recurrencePattern,
 		DateTimeOffset? lastRecurrenceReset,
-		List<TodoTask> parents, 
-		List<TodoTask> children, 
-		List<LifeArea> lifeAreas, 
+		List<TodoTask> parents,
+		List<TodoTask> children,
+		List<LifeArea> lifeAreas,
 		List<StatusChangelog> statusChangeLogs)
 	{
-		_domainEvents = [];
-		_parents = parents;
-		_children = children;
-		_lifeAreas = lifeAreas;
-		_statusChangeLogs = statusChangeLogs;
-		Id = id;
-		Name = name;
-		IsFun = isFun;
-		IsProductive = isProductive;
-		Complexity = complexity;
-		Priority = priority;
-		Status = status;
-		CreatedAt = createdAt;
-		StartDate = startDate;
-		FinishDate = finishDate;
-		LimitDateTime = limitDateTime;
-		CurrentWorkSessionStartedAt = currentWorkSessionStartedAt;
-		ElapsedTime = elapsedTime;
-		IsRecurring = isRecurring;
-		RecurrencePattern = recurrencePattern;
-		LastRecurrenceReset = lastRecurrenceReset;
+		TodoTask task =  new() { _domainEvents = [], 
+			_parents = parents, 
+			_children = children, 
+			_lifeAreas = lifeAreas, 
+			_statusChangeLogs = statusChangeLogs, 
+			Id = id, 
+			Name = name, 
+			IsFun = isFun , 
+			IsProductive = isProductive, 
+			Complexity = complexity, 
+			Priority = priority, 
+			Status = status, 
+			CreatedAt = createdAt, 
+			StartDate = startDate, 
+			FinishDate = finishDate, 
+			LimitDateTime = limitDateTime, 
+			CurrentWorkSessionStartedAt = currentWorkSessionStartedAt, 
+			ElapsedTime = elapsedTime, 
+			IsRecurring = isRecurring, 
+			RecurrencePattern = recurrencePattern, 
+			LastRecurrenceReset = lastRecurrenceReset
+		};
+
+		return task;
 	}
 
 	public void Update(string? name = null, 

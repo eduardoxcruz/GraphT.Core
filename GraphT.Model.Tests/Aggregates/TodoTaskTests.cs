@@ -13,7 +13,7 @@ public class TodoTaskTests
 	{
 		string name = new('A', 10000);
 
-		TodoTask todo = new(name);
+		TodoTask todo = TodoTask.Create(name);
 
 		Assert.NotNull(todo);
 		Assert.Equal(name, todo.Name);
@@ -24,7 +24,7 @@ public class TodoTaskTests
 	{
 		string name = string.Empty;
 
-		ArgumentException exception = Assert.Throws<ArgumentException>(() => new TodoTask(name));
+		ArgumentException exception = Assert.Throws<ArgumentException>(() => TodoTask.Create(name));
 		Assert.Equal("Name cannot be empty", exception.Message);
 	}
 	
@@ -33,7 +33,7 @@ public class TodoTaskTests
 	{
 		string name = "   ";
 
-		ArgumentException exception = Assert.Throws<ArgumentException>(() => new TodoTask(name));
+		ArgumentException exception = Assert.Throws<ArgumentException>(() => TodoTask.Create(name));
 		Assert.Equal("Name cannot be empty", exception.Message);
 	}
 
@@ -42,8 +42,8 @@ public class TodoTaskTests
 	{
 		string name = "Test";
     
-		TodoTask todo1 = new(name);
-		TodoTask todo2 = new(name);
+		TodoTask todo1 = TodoTask.Create(name);
+		TodoTask todo2 = TodoTask.Create(name);
 		
 		Assert.NotEqual(todo1, todo2);
 	}
@@ -51,7 +51,7 @@ public class TodoTaskTests
 	[Fact]
 	public void TodoTaskRelevance_ShouldBeSuperficial_WhenCreated()
 	{
-		TodoTask todo = new();
+		TodoTask todo = TodoTask.Create();
 		
 		Assert.Equal(Relevance.Superficial, todo.Relevance);
 	}
@@ -59,7 +59,7 @@ public class TodoTaskTests
 	[Fact]
 	public void Relevance_ShouldUpdate_WhenIsFunOrIsProductiveChanges()
 	{
-		TodoTask todo = new();
+		TodoTask todo = TodoTask.Create();
 		Assert.True(todo.Relevance is Relevance.Superficial);
 		
 		todo.Update(isFun: true, isProductive: false);
@@ -75,7 +75,7 @@ public class TodoTaskTests
 	[Fact]
 	public void TodoTask_ShouldHave_ComplexityUndefined_WhenCreated()
 	{
-		TodoTask item = new();
+		TodoTask item = TodoTask.Create();
 		
 		Assert.Equal(Complexity.Undefined, item.Complexity);
 	}
@@ -83,7 +83,7 @@ public class TodoTaskTests
 	[Fact]
 	public void TodoTask_ShouldHave_PriorityDistraction_WhenCreated()
 	{
-		TodoTask item = new();
+		TodoTask item = TodoTask.Create();
 		
 		Assert.Equal(Priority.Distraction, item.Priority);
 	}
@@ -91,7 +91,7 @@ public class TodoTaskTests
 	[Fact]
 	public void TodoTask_ShouldHave_StatusCreated_WhenCreated()
 	{
-		TodoTask item = new();
+		TodoTask item = TodoTask.Create();
 		
 		Assert.Equal(TaskState.Created, item.Status);
 	}
@@ -99,7 +99,7 @@ public class TodoTaskTests
 	[Fact]
 	public void Status_OnlyChangedVia_SetStatus()
 	{
-		TodoTask todo = new();
+		TodoTask todo = TodoTask.Create();
 		TaskState expected = TaskState.Backlog;
 		
 		todo.SetStatus(expected);
@@ -124,7 +124,7 @@ public class TodoTaskTests
 	[Fact]
 	public void TodoTask_ShouldAddStatusCreated_ToStatusChangelogWhenCreated()
 	{
-		TodoTask todo = new();
+		TodoTask todo = TodoTask.Create();
 		TaskState expectedStatus = TaskState.Created;
 		StatusChangelog log = todo.StatusChangeLogs.First();
 		
@@ -136,7 +136,7 @@ public class TodoTaskTests
 	[Fact]
 	public void ChangeStatus_ShouldAddStatusChangelog()
 	{
-		TodoTask todo = new();
+		TodoTask todo = TodoTask.Create();
 		TaskState expectedStatus = TaskState.Backlog;
 		
 		todo.SetStatus(expectedStatus);
@@ -163,10 +163,10 @@ public class TodoTaskTests
 	[Fact]
 	public void Parents_OnlyAddedVia_AddParents()
 	{
-		TodoTask parent1 = new("Parent 1");
-		TodoTask parent2 = new("Parent 2");
-		TodoTask parent3 = new("Parent 3");
-		TodoTask task = new();
+		TodoTask parent1 = TodoTask.Create("Parent 1");
+		TodoTask parent2 = TodoTask.Create("Parent 2");
+		TodoTask parent3 = TodoTask.Create("Parent 3");
+		TodoTask task = TodoTask.Create();
 
 		task.AddParents([ parent1, parent2, parent3 ]);
 		
@@ -179,8 +179,8 @@ public class TodoTaskTests
 	[Fact]
 	public void AddParents_ShouldNotAddParent_WhenItIsAlreadyParent()
 	{
-		TodoTask parent = new("Parent");
-		TodoTask task = new();
+		TodoTask parent = TodoTask.Create("Parent");
+		TodoTask task = TodoTask.Create();
 		task.AddParents([ parent ]);
 		task.AddParents([ parent ]);
 		
@@ -203,10 +203,10 @@ public class TodoTaskTests
 	[Fact]
 	public void Children_OnlyAddedVia_AddChildren()
 	{
-		TodoTask child1 = new("Parent 1");
-		TodoTask child2 = new("Parent 2");
-		TodoTask child3 = new("Parent 3");
-		TodoTask task = new();
+		TodoTask child1 = TodoTask.Create("Parent 1");
+		TodoTask child2 = TodoTask.Create("Parent 2");
+		TodoTask child3 = TodoTask.Create("Parent 3");
+		TodoTask task = TodoTask.Create();
 
 		task.AddChildren([ child1, child2, child3 ]);
 		
@@ -219,8 +219,8 @@ public class TodoTaskTests
 	[Fact]
 	public void AddChildren_ShouldNotAddChildren_WhenItIsAlreadyChildren()
 	{
-		TodoTask children = new();
-		TodoTask task = new();
+		TodoTask children = TodoTask.Create();
+		TodoTask task = TodoTask.Create();
 		task.AddChildren([ children ]);
 		task.AddChildren([ children ]);
 		
@@ -236,7 +236,7 @@ public class TodoTaskTests
 	[Fact]
 	public void ElapsedTime_ShouldBe_Calculated_FromSum_DoingStates_TillNextState()
 	{
-		TodoTask task = new();
+		TodoTask task = TodoTask.Create();
 		DateTimeOffset now = DateTimeOffset.Now;
 		DateTimeOffset dateTimeLog1 = now.AddSeconds(5);
 		DateTimeOffset dateTimeLog2 = dateTimeLog1.AddSeconds(10);
@@ -293,7 +293,7 @@ public class TodoTaskTests
 	{
 		LifeArea la1 = new("Life Area 1");
 		LifeArea la2 = new("Life Area 2");
-		TodoTask task = new();
+		TodoTask task = TodoTask.Create();
 		
 		task.AddLifeAreas([ la1, la2 ]);
 		
@@ -306,7 +306,7 @@ public class TodoTaskTests
 	public void AddLifeAreas_ShouldNotAddLifeArea_WhenItIsAlreadyLifeArea()
 	{
 		LifeArea lifeArea = new("Life Area");
-		TodoTask task = new();
+		TodoTask task = TodoTask.Create();
 		task.AddLifeAreas([ lifeArea ]);
 		task.AddLifeAreas([ lifeArea ]);
 		

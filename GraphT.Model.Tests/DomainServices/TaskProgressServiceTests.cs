@@ -19,7 +19,7 @@ public class TaskProgressServiceTests
 
 		for (int i = 1; i <= maxChildren; i++)
 		{
-			TodoTask child = new($"Child {i}");
+			TodoTask child = TodoTask.Create($"Child {i}");
 
 			if (i < maxChildren)
 			{
@@ -47,7 +47,7 @@ public class TaskProgressServiceTests
 
 		for (int i = 1; i <= 10; i++)
 		{
-			TodoTask child = new($"Child {i}");
+			TodoTask child = TodoTask.Create($"Child {i}");
 			
 			Random random = new();
 
@@ -66,7 +66,7 @@ public class TaskProgressServiceTests
 
 		for (int i = 1; i <= 10; i++)
 		{
-			TodoTask child = new($"Child {i}");
+			TodoTask child = TodoTask.Create($"Child {i}");
 			child.SetStatus(TaskState.ReadyToStart, DateTimeOffset.Now);
 			children.Add(child);
 		}
