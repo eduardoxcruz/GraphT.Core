@@ -291,8 +291,8 @@ public class TodoTaskTests
 	[Fact]
 	public void LifeAreas_OnlyAddedVia_AddLifeArea()
 	{
-		LifeArea la1 = new("Life Area 1");
-		LifeArea la2 = new("Life Area 2");
+		LifeArea la1 = LifeArea.Create("Life Area 1");
+		LifeArea la2 = LifeArea.Create("Life Area 2");
 		TodoTask task = TodoTask.Create();
 		
 		task.AddLifeAreas([ la1, la2 ]);
@@ -305,7 +305,7 @@ public class TodoTaskTests
 	[Fact]
 	public void AddLifeAreas_ShouldNotAddLifeArea_WhenItIsAlreadyLifeArea()
 	{
-		LifeArea lifeArea = new("Life Area");
+		LifeArea lifeArea = LifeArea.Create("Life Area");
 		TodoTask task = TodoTask.Create();
 		task.AddLifeAreas([ lifeArea ]);
 		task.AddLifeAreas([ lifeArea ]);

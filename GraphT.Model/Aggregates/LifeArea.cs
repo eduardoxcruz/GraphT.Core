@@ -4,17 +4,21 @@ namespace GraphT.Model.Aggregates;
 
 public class LifeArea : IEntity<Guid>, IEquatable<LifeArea>
 {
-	public Guid Id { get; }
+	public Guid Id { get; private set; }
 	public string Name { get; private set; }
 
     private LifeArea() { }
 	
-    public LifeArea(string name)
+    public static LifeArea Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Life area name cannot be empty.", nameof(name));
+	    return string.IsNullOrWhiteSpace(name) ? 
+		    throw new ArgumentException("Life area name cannot be empty.", nameof(name)) : 
+		    new LifeArea { Id = Guid.NewGuid(), Name = name };
+    }
 
-        Id = Guid.NewGuid();
-        Name = name;
+    public static LifeArea Rehydrate(Guid id, string name)
+    {
+	    return new LifeArea { Id = id, Name = name };
     }
 
     public bool Equals(LifeArea? other)
