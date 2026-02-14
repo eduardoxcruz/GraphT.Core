@@ -8,7 +8,7 @@ namespace GraphT.Model.Repositories;
 public interface IAddTaskPort : IPortWithInput<TodoTask>;
 public interface ITaskExistPort : IFullPort<Guid, bool>;
 public interface IDeleteTaskByIdPort : IPortWithInput<Guid>;
-public interface IGetTaskByIdPort : IFullPort<Guid, TodoTask?>;
+public interface IFindTaskByIdPort : IFullPort<Guid, TodoTask?>;
 
 public interface IUpdateTaskPriorityPort : IPortWithInput<UpdateTaskPriorityDto>;
 public interface IUpdateTaskStatusPort : IPortWithInput<UpdateTaskStatusDto>;
