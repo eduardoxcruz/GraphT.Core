@@ -274,7 +274,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		AddDomainEvent(new StatusChangelogCreatedDomainEvent(newLog));
 	}
 	
-	public void AddDomainEvent(IDomainEvent domainEvent)
+	private void AddDomainEvent(IDomainEvent domainEvent)
 	{
 		_domainEvents.Add(domainEvent);
 	}
