@@ -4,7 +4,7 @@ using SeedWork;
 
 namespace GraphT.Model.Repositories;
 
-public interface IGetParentsCountPort : IFullPort<Guid, int>;
+public interface IGetParentsCountByChildIdPort : IFullPort<Guid, int>;
 public interface ITaskHasOnlyThisParentPort : IFullPort<TaskHasOnlyThisParentDto, bool>;
 public interface IAddParentByIdPort : IPortWithInput<AddParentDto>;
 public interface IGetParentsByIdPort : IFullPort<Guid, List<TodoTask>>;
