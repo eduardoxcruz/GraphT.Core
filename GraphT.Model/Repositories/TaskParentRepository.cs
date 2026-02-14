@@ -6,7 +6,7 @@ namespace GraphT.Model.Repositories;
 
 public interface IGetParentsCountByChildIdPort : IFullPort<Guid, int>;
 public interface IChildHasSingleParentWithIdPort : IFullPort<TaskHasOnlyThisParentDto, bool>;
-public interface ILinkParentIdToChildId : IPortWithInput<LinkParentIdToChildIdDto>;
+public interface ILinkParentIdToChildIdPort : IPortWithInput<LinkParentIdToChildIdDto>;
 public interface IGetParentsByIdPort : IFullPort<Guid, List<TodoTask>>;
 public interface IRemoveParentById : IPortWithInput<RemoveParentDto>;
 
