@@ -19,6 +19,10 @@ public interface IUpdateTaskBasicInfo : IPortWithInput<TodoTask>;
 
 public interface IUpdateTaskDateTimes : IPortWithInput<TodoTask>;
 
-public record struct FindTaskByIdIncludesDto(Guid TaskId, bool IncludeParents = false, bool IncludeChildren = false, bool IncludeLifeAreas = false);
+public record struct FindTaskByIdIncludesDto(Guid TaskId, 
+	bool IncludeParents = false, 
+	bool IncludeChildren = false, 
+	bool IncludeLifeAreas = false,
+	bool IncludeStatusLogs = false);
 public record struct UpdateTaskPriorityDto(Guid TaskId, Priority PriorityValue);
 public record struct UpdateTaskStatusDto(Guid TaskId, TaskState TaskStatus);
