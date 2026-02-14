@@ -8,7 +8,7 @@ namespace GraphT.Model.Repositories;
 public interface IAddTaskPort : IPortWithInput<TodoTask>;
 public interface ITaskExistPort : IFullPort<Guid, bool>;
 public interface IDeleteTaskByIdPort : IPortWithInput<Guid>;
-public interface IFindTaskByIdPort : IFullPort<Guid, TodoTask?>;
+public interface IFindTaskByIdPort : IFullPort<FindTaskByIdIncludesDto, TodoTask?>;
 public interface IFindRecurringTasksPort : IPortWithOutput<List<TodoTask>>;
 
 public interface IUpdateTaskPriorityPort : IPortWithInput<UpdateTaskPriorityDto>;
@@ -19,5 +19,6 @@ public interface IUpdateTaskBasicInfo : IPortWithInput<TodoTask>;
 
 public interface IUpdateTaskDateTimes : IPortWithInput<TodoTask>;
 
+public record struct FindTaskByIdIncludesDto(Guid TaskId, bool IncludeParents = false, bool IncludeChildren = false, bool IncludeLifeAreas = false);
 public record struct UpdateTaskPriorityDto(Guid TaskId, Priority PriorityValue);
 public record struct UpdateTaskStatusDto(Guid TaskId, TaskState TaskStatus);
