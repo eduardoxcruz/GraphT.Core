@@ -4,5 +4,5 @@ using SeedWork;
 
 namespace GraphT.Model.Repositories;
 
-public interface IFindTaskChildrenPort : IFullPort<Guid, List<TodoTask>>;
-public interface IGetOnlyChildrenIdsPort : IFullPort<Guid, List<Guid>>;
+public interface IFindChildrenByParentIdPort : IFullPort<Guid, List<TodoTask>>;
+public interface IFindChildIdsByParentIdPort : IFullPort<Guid, List<Guid>>;
