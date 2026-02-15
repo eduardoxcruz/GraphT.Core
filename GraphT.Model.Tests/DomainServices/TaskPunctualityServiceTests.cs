@@ -78,7 +78,7 @@ public class TaskPunctualityServiceTests
 	[InlineData(1, 1, 0, 0)]
 	[InlineData(1, 0, 1, 0)]
 	[InlineData(1, 0, 0, 1)]
-	public void Punctuality_ReturnsDaysToGoWhenCurrentDateIsBeforeLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
+	public void Punctuality_ReturnsDaysToGoWhenCurrentDateIsBeforeLimitDate(double daysDifference, double hoursDifference, double minutesDifference, double secondsDifference)
 	{
 		DateTimeOffset limitDateTime = DateTimeOffset.Now
 			.AddDays(daysDifference)

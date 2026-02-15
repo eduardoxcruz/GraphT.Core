@@ -62,13 +62,16 @@ public class TodoTaskTests
 		TodoTask todo = TodoTask.Create();
 		Assert.True(todo.Relevance is Relevance.Superficial);
 		
-		todo.Update(isFun: true, isProductive: false);
+		todo.IsFun = true;
+		todo.IsProductive = false;
 		Assert.True(todo.Relevance is Relevance.Entertaining);
 
-		todo.Update(isFun: false, isProductive: true);
+		todo.IsFun = false;
+		todo.IsProductive = true;
 		Assert.True(todo.Relevance is Relevance.Necessary);
 		
-		todo.Update(isFun: true, isProductive: true);
+		todo.IsFun = true;
+		todo.IsProductive = true;
 		Assert.True(todo.Relevance is Relevance.Purposeful);
 	}
 	
@@ -151,7 +154,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleParents()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Parents"));
-		Assert.True(typeof(TodoTask).GetProperty("Parents").PropertyType == typeof(IReadOnlyList<TodoTask>));
+		Assert.True(typeof(TodoTask).GetProperty("Parents").PropertyType == typeof(IReadOnlyList<Guid>));
 	}
 
 	[Fact]
@@ -168,12 +171,15 @@ public class TodoTaskTests
 		TodoTask parent3 = TodoTask.Create("Parent 3");
 		TodoTask task = TodoTask.Create();
 
-		task.AddParents([ parent1, parent2, parent3 ]);
+		task.AddParent(parent1.Id);
+		task.AddParent(parent2.Id);
+		task.AddParent(parent3.Id);
 		
 		Assert.True(task.Parents.Count != 0);
-		Assert.Contains(parent1, task.Parents);
-		Assert.Contains(parent2, task.Parents);
-		Assert.Contains(parent3, task.Parents);
+		Assert.Contains(parent1.Id, task.Parents);
+		Assert.Contains(parent2.Id, task.Parents);
+		Assert.Contains(parent3.Id, task.Parents);
+		Assert.Equal(3, task.DomainEvents.Count);
 	}
 
 	[Fact]
@@ -181,17 +187,18 @@ public class TodoTaskTests
 	{
 		TodoTask parent = TodoTask.Create("Parent");
 		TodoTask task = TodoTask.Create();
-		task.AddParents([ parent ]);
-		task.AddParents([ parent ]);
+		task.AddParent(parent.Id);
+		task.AddParent(parent.Id);
 		
 		Assert.Single(task.Parents);
+		Assert.Single(task.DomainEvents);
 	}
 
 	[Fact]
 	public void TodoTask_ShouldHave_MultipleChildren()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Children"));
-		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(IReadOnlyList<TodoTask>));
+		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(IReadOnlyList<Guid>));
 	}
 	
 	[Fact]
@@ -208,12 +215,15 @@ public class TodoTaskTests
 		TodoTask child3 = TodoTask.Create("Parent 3");
 		TodoTask task = TodoTask.Create();
 
-		task.AddChildren([ child1, child2, child3 ]);
+		task.AddChild(child1.Id);
+		task.AddChild(child2.Id);
+		task.AddChild(child3.Id);
 		
 		Assert.True(task.Children.Count != 0);
-		Assert.Contains(child1, task.Children);
-		Assert.Contains(child2, task.Children);
-		Assert.Contains(child3, task.Children);
+		Assert.Contains(child1.Id, task.Children);
+		Assert.Contains(child2.Id, task.Children);
+		Assert.Contains(child3.Id, task.Children);
+		Assert.Equal(3, task.DomainEvents.Count);
 	}
 	
 	[Fact]
@@ -221,10 +231,11 @@ public class TodoTaskTests
 	{
 		TodoTask children = TodoTask.Create();
 		TodoTask task = TodoTask.Create();
-		task.AddChildren([ children ]);
-		task.AddChildren([ children ]);
+		task.AddChild(children.Id);
+		task.AddChild(children.Id);
 		
 		Assert.Single(task.Children);
+		Assert.Single(task.DomainEvents);
 	}
 	
 	[Fact]
@@ -279,7 +290,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleLifeAreas()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("LifeAreas"));
-		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(IReadOnlyList<LifeArea>));
+		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(IReadOnlyList<Guid>));
 	}
 	
 	[Fact]
@@ -295,11 +306,13 @@ public class TodoTaskTests
 		LifeArea la2 = LifeArea.Create("Life Area 2");
 		TodoTask task = TodoTask.Create();
 		
-		task.AddLifeAreas([ la1, la2 ]);
+		task.AddLifeArea(la1.Id);
+		task.AddLifeArea(la2.Id);
 		
 		Assert.True(task.LifeAreas.Count != 0);
-		Assert.Contains(la1, task.LifeAreas);
-		Assert.Contains(la2, task.LifeAreas);
+		Assert.Contains(la1.Id, task.LifeAreas);
+		Assert.Contains(la2.Id, task.LifeAreas);
+		Assert.Equal(2, task.DomainEvents.Count);
 	}
 	
 	[Fact]
@@ -307,9 +320,10 @@ public class TodoTaskTests
 	{
 		LifeArea lifeArea = LifeArea.Create("Life Area");
 		TodoTask task = TodoTask.Create();
-		task.AddLifeAreas([ lifeArea ]);
-		task.AddLifeAreas([ lifeArea ]);
+		task.AddLifeArea(lifeArea.Id);
+		task.AddLifeArea(lifeArea.Id);
 		
 		Assert.Single(task.LifeAreas);
+		Assert.Single(task.DomainEvents);
 	}
 }

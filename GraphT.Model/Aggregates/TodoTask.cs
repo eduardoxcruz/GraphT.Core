@@ -14,16 +14,17 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	
 	public Guid Id { get; private set; }
 	public string Name { get; private set; }
-	public bool IsFun { get; private set; }
-	public bool IsProductive { get; private set; }
-	public Complexity Complexity { get; private set; }
-	public Priority Priority { get; private set; }
+	public bool IsFun { get; set; }
+	public bool IsProductive { get; set; }
+	public Complexity Complexity { get; set; }
+	public Priority Priority { get; set; }
 	public TaskState Status { get; private set; }
+	public int Progress { get; set; }
 	
 	public DateTimeOffset CreatedAt { get; private set; }
-	public DateTimeOffset? StartDate { get; private set; }
-	public DateTimeOffset? FinishDate { get; private set; }
-	public DateTimeOffset? LimitDateTime { get; private set; }
+	public DateTimeOffset? StartDate { get; set; }
+	public DateTimeOffset? FinishDate { get; set; }
+	public DateTimeOffset? LimitDateTime { get; set; }
 	public DateTimeOffset? CurrentWorkSessionStartedAt { get; private set; }
 	public TimeSpan ElapsedTime { get; private set; }
 	
@@ -32,17 +33,16 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public DateTimeOffset? LastRecurrenceReset { get; private set; }
 
 	public Relevance Relevance => TaskRelevanceService.Calculate(IsFun, IsProductive);
-	public int Progress => TaskProgressService.Calculate(_children, Status);
 	public Punctuality Punctuality => TaskPunctualityService.Calculate(LimitDateTime, FinishDate);
 	
-	private List<TodoTask> _parents;
-	public IReadOnlyList<TodoTask> Parents => _parents;
+	private List<Guid> _parents;
+	public IReadOnlyList<Guid> Parents => _parents;
 	
-	private List<TodoTask> _children;
-	public IReadOnlyList<TodoTask> Children => _children;
+	private List<Guid> _children;
+	public IReadOnlyList<Guid> Children => _children;
 	
-	private List<LifeArea> _lifeAreas;
-	public IReadOnlyList<LifeArea> LifeAreas => _lifeAreas;
+	private List<Guid> _lifeAreas;
+	public IReadOnlyList<Guid> LifeAreas => _lifeAreas;
 	
 	private List<StatusChangelog> _statusChangeLogs;
 	public IReadOnlyList<StatusChangelog> StatusChangeLogs => _statusChangeLogs;
@@ -57,9 +57,9 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		DateTimeOffset? startDate = null,
 		DateTimeOffset? finishDate = null,
 		DateTimeOffset? limitDateTime = null,
-		List<TodoTask>? parents = null,
-		List<TodoTask>? children = null,
-		List<LifeArea>? lifeAreas = null)
+		List<Guid>? parents = null,
+		List<Guid>? children = null,
+		List<Guid>? lifeAreas = null)
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
 
@@ -101,9 +101,9 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		bool isRecurring,
 		RecurrencePattern? recurrencePattern,
 		DateTimeOffset? lastRecurrenceReset,
-		List<TodoTask> parents,
-		List<TodoTask> children,
-		List<LifeArea> lifeAreas,
+		List<Guid> parents,
+		List<Guid> children,
+		List<Guid> lifeAreas,
 		List<StatusChangelog> statusChangeLogs)
 	{
 		TodoTask task =  new() { _domainEvents = [], 
@@ -131,32 +131,6 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 
 		return task;
 	}
-
-	public void Update(string? name = null, 
-		bool? isFun = null, 
-		bool? isProductive = null, 
-		Complexity? complexity = null, 
-		Priority? priority = null, 
-		DateTimeOffset? startDate = null, 
-		DateTimeOffset? finishDate = null, 
-		DateTimeOffset? limitDateTime = null)
-	{
-		if (name is not null) Name = name;
-		
-		if (isFun is not null) IsFun = isFun.Value;
-		
-		if (isProductive is not null) IsProductive = isProductive.Value;
-		
-		if (complexity is not null) Complexity = complexity.Value;
-		
-		if (priority is not null) Priority = priority.Value;
-		
-		if (startDate is not null) StartDate = startDate.Value;
-		
-		if (finishDate is not null) FinishDate = finishDate.Value;
-		
-		if (limitDateTime is not null) LimitDateTime = limitDateTime.Value;
-	}
 	
 	public DomainResult SetRecurrence(RecurrencePattern pattern, DateTimeOffset? baseLimitDate = null)
 	{
@@ -168,13 +142,11 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		return DomainResult.Success();
 	}
 
-	public DomainResult RemoveRecurrence()
+	public void RemoveRecurrence()
 	{
 		IsRecurring = false;
 		RecurrencePattern = null;
 		LastRecurrenceReset = null;
-        
-		return DomainResult.Success();
 	}
 	
 	public bool ShouldReset(DateTimeOffset currentDate)
@@ -200,9 +172,9 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		return DomainResult.Success();
 	}
 	
-	public DomainResult SetStatus(TaskState newStatus, DateTimeOffset? dateTime = null)
+	public void SetStatus(TaskState newStatus, DateTimeOffset? dateTime = null)
 	{
-		if (newStatus == Status) return DomainResult.Failure("Task already have this state.");
+		if (newStatus == Status) return;
 		
 		dateTime ??= DateTimeOffset.Now;
 
@@ -224,57 +196,67 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 
 		Status = newStatus;
 		AddStatusChangelog(new StatusChangelog(dateTime.Value, newStatus));
+	}
+
+	public void AddParent(Guid parentId)
+	{
+		if (parentId == Id) return;
 		
-		return DomainResult.Success();
+		if (_parents.Contains(parentId)) return;
+		
+		_parents.Add(parentId);
+		AddDomainEvent(new ParentAddedDomainEvent(parentId));
+	}
+
+	public void AddChild(Guid childId)
+	{
+		if (childId == Id) return;
+		
+		if (_children.Contains(childId)) return;
+		
+		_children.Add(childId);
+		AddDomainEvent(new ChildAddedDomainEvent(childId));
+	}
+
+	public void AddLifeArea(Guid lifeAreaId)
+	{
+		if (_lifeAreas.Contains(lifeAreaId)) return;
+		
+		_lifeAreas.Add(lifeAreaId);
+		AddDomainEvent(new LifeAreaAddedDomainEvent(lifeAreaId));
+	}
+
+	public void RemoveParent(Guid parentId)
+	{
+		if (!_parents.Contains(parentId)) return;
+		
+		_parents.Remove(parentId);
+		AddDomainEvent(new ParentRemovedDomainEvent(parentId));
+	}
+
+	public void RemoveChild(Guid childId)
+	{
+		if (!_children.Contains(childId));
+		
+		_children.Remove(childId);
+		AddDomainEvent(new ChildRemovedDomainEvent(childId));
+	}
+
+	public void RemoveLifeArea(Guid lifeAreaId)
+	{
+		if (!_lifeAreas.Contains(lifeAreaId)) return;
+		
+		_lifeAreas.Remove(lifeAreaId);
+		AddDomainEvent(new LifeAreaRemovedDomainEvent(lifeAreaId));
 	}
 	
-	public DomainResult AddParents(List<TodoTask> parents)
-	{
-		if (parents.Contains(this)) return DomainResult.Failure("Parent cannot be a child of itself.");
-		
-		_parents.AddRange(parents.Except(_parents));
-		
-		return DomainResult.Success();
-	}
-	
-	public DomainResult AddChildren(List<TodoTask> children)
-	{
-		if (children.Contains(this)) return DomainResult.Failure("Parent cannot be a child of itself.");
-		
-		_children.AddRange(children.Except(_children));
-		
-		return DomainResult.Success();
-	}
-
-	public DomainResult AddLifeAreas(List<LifeArea> lifeAreas)
-	{
-		_lifeAreas.AddRange(lifeAreas.Except(_lifeAreas));
-		
-		return DomainResult.Success();
-	}
-	
-	public void RemoveParents(List<TodoTask> parents)
-	{
-		_parents.RemoveAll(parents.Contains);
-	}
-
-	public void RemoveChildren(List<TodoTask> children)
-	{
-		_children.RemoveAll(children.Contains);
-	}
-
-	public void RemoveLifeAreas(List<LifeArea> lifeAreas)
-	{
-		_lifeAreas.RemoveAll(lifeAreas.Contains);
-	}
-
 	private void AddStatusChangelog(StatusChangelog newLog)
 	{
 		_statusChangeLogs.Add(newLog);
 		AddDomainEvent(new StatusChangelogCreatedDomainEvent(newLog));
 	}
 	
-	private void AddDomainEvent(IDomainEvent domainEvent)
+	public void AddDomainEvent(IDomainEvent domainEvent)
 	{
 		_domainEvents.Add(domainEvent);
 	}
