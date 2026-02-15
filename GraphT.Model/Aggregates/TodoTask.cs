@@ -56,7 +56,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		DateTimeOffset? finishDate = null,
 		DateTimeOffset? limitDateTime = null,
 		RecurrencePattern? recurrencePattern = null,
-		List<LifeArea>? lifeAreas = null,
+		List<Guid>? lifeAreas = null,
 		List<TodoTask>? children = null,
 		List<TodoTask>? parents = null,
 		ParentLinkingStrategy? priorityLinkingStrategy = null, 
@@ -106,7 +106,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			task.SetChildren(children);
 		}
 		
-		if (lifeAreas is not null) foreach (LifeArea lifeArea in lifeAreas) task.AddLifeArea(lifeArea.Id);
+		if (lifeAreas is not null) foreach (Guid lifeArea in lifeAreas) task.AddLifeArea(lifeArea);
 
 		return task;
 	}
