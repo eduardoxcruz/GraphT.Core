@@ -106,7 +106,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			task.SetChildren(children);
 		}
 		
-		if (lifeAreas is not null) foreach (Guid lifeArea in lifeAreas) task.AddLifeArea(lifeArea);
+		if (lifeAreas is not null) task.SetLifeAreas(lifeAreas);
 
 		return task;
 	}
@@ -241,10 +241,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		
 		if (lifeAreasLinkingStrategy is ParentLinkingStrategy.InheritLifeAreas)
 		{
-			foreach (Guid lifeAreaId in newParents.SelectMany(parent => parent.LifeAreas))
-			{
-				AddLifeArea(lifeAreaId);
-			}
+			SetLifeAreas(_lifeAreas.Union(newParents.SelectMany(parent => parent.LifeAreas)).ToList());
 		}
 		
 		_parents = newParents.Select(p => p.Id).ToList();
@@ -258,21 +255,12 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		
 		_children = newChildren.Select(c => c.Id).ToList();
 	}
-	
-	public void AddLifeArea(Guid lifeAreaId)
-	{
-		if (_lifeAreas.Contains(lifeAreaId)) return;
-		
-		_lifeAreas.Add(lifeAreaId);
-		AddDomainEvent(new LifeAreaAddedDomainEvent(lifeAreaId));
-	}
 
-	public void RemoveLifeArea(Guid lifeAreaId)
+	public void SetLifeAreas(List<Guid> lifeAreas)
 	{
-		if (!_lifeAreas.Contains(lifeAreaId)) return;
+		List<Guid> newLifeAreas = lifeAreas.Distinct().ToList();
 		
-		_lifeAreas.Remove(lifeAreaId);
-		AddDomainEvent(new LifeAreaRemovedDomainEvent(lifeAreaId));
+		_lifeAreas = newLifeAreas;
 	}
 	
 	private void AddStatusChangelog(StatusChangelog newLog)
