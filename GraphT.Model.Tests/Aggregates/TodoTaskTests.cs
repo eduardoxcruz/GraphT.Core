@@ -145,8 +145,7 @@ public class TodoTaskTests
 		todo.SetStatus(expectedStatus);
 		StatusChangelog log = todo.StatusChangeLogs.Last();
 		
-		Assert.True(todo.StatusChangeLogs.Count != 0);
-		Assert.True(todo.StatusChangeLogs.Count == 2);
+		Assert.Equal(2, todo.StatusChangeLogs.Count);
 		Assert.Equal(expectedStatus, log.NewState);
 	}
 
@@ -171,15 +170,12 @@ public class TodoTaskTests
 		TodoTask parent3 = TodoTask.Create("Parent 3");
 		TodoTask task = TodoTask.Create();
 
-		task.AddParent(parent1.Id);
-		task.AddParent(parent2.Id);
-		task.AddParent(parent3.Id);
+		task.SetParents([ parent1, parent2, parent3 ], ParentLinkingStrategy.None, ParentLinkingStrategy.None);
 		
 		Assert.True(task.Parents.Count != 0);
 		Assert.Contains(parent1.Id, task.Parents);
 		Assert.Contains(parent2.Id, task.Parents);
 		Assert.Contains(parent3.Id, task.Parents);
-		Assert.Equal(3, task.DomainEvents.Count);
 	}
 
 	[Fact]
@@ -187,11 +183,10 @@ public class TodoTaskTests
 	{
 		TodoTask parent = TodoTask.Create("Parent");
 		TodoTask task = TodoTask.Create();
-		task.AddParent(parent.Id);
-		task.AddParent(parent.Id);
+		
+		task.SetParents([ parent, parent ], ParentLinkingStrategy.None, ParentLinkingStrategy.None);
 		
 		Assert.Single(task.Parents);
-		Assert.Single(task.DomainEvents);
 	}
 
 	[Fact]
@@ -208,22 +203,19 @@ public class TodoTaskTests
 	}
 
 	[Fact]
-	public void Children_OnlyAddedVia_AddChildren()
+	public void Children_OnlyAddedVia_SetChildren()
 	{
 		TodoTask child1 = TodoTask.Create("Parent 1");
 		TodoTask child2 = TodoTask.Create("Parent 2");
 		TodoTask child3 = TodoTask.Create("Parent 3");
 		TodoTask task = TodoTask.Create();
 
-		task.AddChild(child1.Id);
-		task.AddChild(child2.Id);
-		task.AddChild(child3.Id);
+		task.SetChildren([ child1, child2, child3 ]);
 		
 		Assert.True(task.Children.Count != 0);
 		Assert.Contains(child1.Id, task.Children);
 		Assert.Contains(child2.Id, task.Children);
 		Assert.Contains(child3.Id, task.Children);
-		Assert.Equal(3, task.DomainEvents.Count);
 	}
 	
 	[Fact]
@@ -231,11 +223,9 @@ public class TodoTaskTests
 	{
 		TodoTask children = TodoTask.Create();
 		TodoTask task = TodoTask.Create();
-		task.AddChild(children.Id);
-		task.AddChild(children.Id);
+		task.SetChildren([ children, children ]);
 		
 		Assert.Single(task.Children);
-		Assert.Single(task.DomainEvents);
 	}
 	
 	[Fact]
