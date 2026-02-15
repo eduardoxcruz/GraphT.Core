@@ -154,6 +154,14 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		return task;
 	}
 
+	public void SetName(string newName)
+	{
+		if (string.IsNullOrWhiteSpace(newName)) 
+			throw new ArgumentException("Task new name cannot be empty");
+		
+		Name = newName;
+	}
+	
 	public void SetRecurrence(RecurrencePattern pattern, DateTimeOffset? baseLimitDate = null)
 	{
 		RecurrenceInfo.RecurrencePattern = pattern;
