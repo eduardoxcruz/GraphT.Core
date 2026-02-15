@@ -14,8 +14,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	
 	public Guid Id { get; private init; }
 	public string Name { get; private set; }
-	public bool IsFun { get; private set; }
-	public bool IsProductive { get; private set; }
+	public bool IsFun { get; set; }
+	public bool IsProductive { get; set; }
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
 	public TaskState Status { get; private set; }
@@ -76,15 +76,16 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			IsProductive = isProductive ?? false, 
 			Complexity = complexity ?? Complexity.Undefined, 
 			Priority = priority ?? Priority.Distraction, 
+			Status = TaskState.Created,
 			StartDate = startDate, 
 			FinishDate = finishDate, 
 			LimitDateTime = limitDateTime, 
 			RecurrenceInfo = new RecurrenceInfo(false, null, null),
-			_domainEvents = [],
-			_statusChangeLogs = [],
 			_parents = new List<Guid>(parentsToAdd),
 			_children = new List<Guid>(childrenToAdd),
-			_lifeAreas = []
+			_lifeAreas = [],
+			_domainEvents = [],
+			_statusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ]
 		};
 		
 		if (status is not null) task.SetStatus(status.Value);
@@ -222,32 +223,32 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		ParentLinkingStrategy priorityLinkingStrategy, 
 		ParentLinkingStrategy lifeAreasLinkingStrategy)
 	{
+		List<TodoTask> newParents = parents.Distinct().Where(parent => parent.Id != Id).ToList();
+		
 		if (priorityLinkingStrategy is ParentLinkingStrategy.InheritHighestPriority)
 		{
-			Priority newPriority = parents.Max(parent => parent.Priority);
+			Priority newPriority = newParents.Max(parent => parent.Priority);
 			Priority = newPriority;
 		}
-
-		if (lifeAreasLinkingStrategy is not ParentLinkingStrategy.InheritLifeAreas)
+		
+		if (lifeAreasLinkingStrategy is ParentLinkingStrategy.InheritLifeAreas)
 		{
-			return;
+			foreach (Guid lifeAreaId in newParents.SelectMany(parent => parent.LifeAreas))
+			{
+				AddLifeArea(lifeAreaId);
+			}
 		}
 		
-		List<TodoTask> newParents = parents.Where(parent => parent.Id != Id).ToList();
-
-		foreach (Guid lifeAreaId in newParents.SelectMany(parent => parent.LifeAreas))
-		{
-			AddLifeArea(lifeAreaId);
-		}
-		
-		_parents = parents.Select(p => p.Id).ToList();
+		_parents = newParents.Select(p => p.Id).ToList();
 	}
 
 	public void SetChildren(List<TodoTask> children)
 	{
-		Progress = TaskProgressService.Calculate(children, Status);
+		List<TodoTask> newChildren = children.Distinct().Where(child => child.Id != Id).ToList();
 		
-		_children = children.Select(c => c.Id).ToList();
+		Progress = TaskProgressService.Calculate(newChildren, Status);
+		
+		_children = newChildren.Select(c => c.Id).ToList();
 	}
 	
 	public void AddLifeArea(Guid lifeAreaId)
