@@ -12,10 +12,10 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	private List<IDomainEvent> _domainEvents;
 	public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents;
 	
-	public Guid Id { get; private set; }
+	public Guid Id { get; private init; }
 	public string Name { get; private set; }
-	public bool IsFun { get; set; }
-	public bool IsProductive { get; set; }
+	public bool IsFun { get; private set; }
+	public bool IsProductive { get; private set; }
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
 	public TaskState Status { get; private set; }
@@ -27,11 +27,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public DateTimeOffset? LimitDateTime { get; set; }
 	public DateTimeOffset? CurrentWorkSessionStartedAt { get; private set; }
 	public TimeSpan ElapsedTime { get; private set; }
+	public RecurrenceInfo RecurrenceInfo { get; private set; }
 	
-	public bool IsRecurring { get; private set; }
-	public RecurrencePattern? RecurrencePattern { get; private set; }
-	public DateTimeOffset? LastRecurrenceReset { get; private set; }
-
 	public Relevance Relevance => TaskRelevanceService.Calculate(IsFun, IsProductive);
 	public Punctuality Punctuality => TaskPunctualityService.Calculate(LimitDateTime, FinishDate);
 	
@@ -54,16 +51,23 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		bool? isProductive = null,
 		Complexity? complexity = null,
 		Priority? priority = null,
+		TaskState? status = null,
 		DateTimeOffset? startDate = null,
 		DateTimeOffset? finishDate = null,
 		DateTimeOffset? limitDateTime = null,
-		List<Guid>? parents = null,
-		List<Guid>? children = null,
-		List<Guid>? lifeAreas = null)
+		RecurrencePattern? recurrencePattern = null,
+		List<LifeArea>? lifeAreas = null,
+		List<TodoTask>? children = null,
+		List<TodoTask>? parents = null,
+		ParentLinkingStrategy? priorityLinkingStrategy = null, 
+		ParentLinkingStrategy? lifeAreasLinkingStrategy = null)
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
 
 		DateTimeOffset now =  DateTimeOffset.Now;
+		
+		int parentsToAdd = parents?.Count ?? 0;
+		int childrenToAdd = children?.Count ?? 0;
 		
 		TodoTask task =  new() { Id = Guid.NewGuid(), 
 			CreatedAt = now, 
@@ -75,12 +79,33 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			StartDate = startDate, 
 			FinishDate = finishDate, 
 			LimitDateTime = limitDateTime, 
-			_parents = parents ?? [], 
-			_children = children ?? [], 
-			_lifeAreas = lifeAreas ?? [], 
-			_domainEvents = [], 
-			_statusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ]
+			RecurrenceInfo = new RecurrenceInfo(false, null, null),
+			_domainEvents = [],
+			_statusChangeLogs = [],
+			_parents = new List<Guid>(parentsToAdd),
+			_children = new List<Guid>(childrenToAdd),
+			_lifeAreas = []
 		};
+		
+		if (status is not null) task.SetStatus(status.Value);
+		
+		if (recurrencePattern is not null) task.SetRecurrence(recurrencePattern.Value, task.LimitDateTime);
+
+		if (parents is not null)
+		{
+			if (priorityLinkingStrategy is null) throw new ArgumentException("Priority linking strategy must be set when parents are set");
+			
+			if (lifeAreasLinkingStrategy is null) throw new ArgumentException("Life areas linking strategy must be set when parents are set");
+			
+			task.SetParents(parents, priorityLinkingStrategy.Value, lifeAreasLinkingStrategy.Value);
+		}
+		
+		if (children is not null)
+		{
+			task.SetChildren(children);
+		}
+		
+		if (lifeAreas is not null) foreach (LifeArea lifeArea in lifeAreas) task.AddLifeArea(lifeArea.Id);
 
 		return task;
 	}
@@ -98,9 +123,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		DateTimeOffset? limitDateTime,
 		DateTimeOffset? currentWorkSessionStartedAt,
 		TimeSpan elapsedTime,
-		bool isRecurring,
-		RecurrencePattern? recurrencePattern,
-		DateTimeOffset? lastRecurrenceReset,
+		RecurrenceInfo recurrenceInfo,
 		List<Guid> parents,
 		List<Guid> children,
 		List<Guid> lifeAreas,
@@ -124,34 +147,30 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			LimitDateTime = limitDateTime, 
 			CurrentWorkSessionStartedAt = currentWorkSessionStartedAt, 
 			ElapsedTime = elapsedTime, 
-			IsRecurring = isRecurring, 
-			RecurrencePattern = recurrencePattern, 
-			LastRecurrenceReset = lastRecurrenceReset
+			RecurrenceInfo = recurrenceInfo
 		};
 
 		return task;
 	}
-	
-	public DomainResult SetRecurrence(RecurrencePattern pattern, DateTimeOffset? baseLimitDate = null)
+
+	public void SetRecurrence(RecurrencePattern pattern, DateTimeOffset? baseLimitDate = null)
 	{
-		RecurrencePattern = pattern;
-		IsRecurring = true;
+		RecurrenceInfo.RecurrencePattern = pattern;
+		RecurrenceInfo.IsRecurring = true;
 		DateTimeOffset referenceDate = baseLimitDate ?? DateTimeOffset.Now;
 		LimitDateTime = pattern.CalculateNextLimitDate(referenceDate);
-        
-		return DomainResult.Success();
 	}
 
 	public void RemoveRecurrence()
 	{
-		IsRecurring = false;
-		RecurrencePattern = null;
-		LastRecurrenceReset = null;
+		RecurrenceInfo.IsRecurring = false;
+		RecurrenceInfo.RecurrencePattern = null;
+		RecurrenceInfo.LastRecurrenceReset = null;
 	}
 	
 	public bool ShouldReset(DateTimeOffset currentDate)
 	{
-		if (!IsRecurring || RecurrencePattern == null || LimitDateTime == null)
+		if (!RecurrenceInfo.IsRecurring || RecurrenceInfo.RecurrencePattern == null || LimitDateTime == null)
 			return false;
 
 		return currentDate > LimitDateTime.Value;
@@ -159,15 +178,16 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 
 	public DomainResult ResetRecurringTask(DateTimeOffset currentDate)
 	{
-		if (!IsRecurring || RecurrencePattern == null) return DomainResult.Failure("Task is not recurring");
+		if (!RecurrenceInfo.IsRecurring || RecurrenceInfo.RecurrencePattern == null) 
+			return DomainResult.Failure("Task is not recurring");
 
 		if (!ShouldReset(currentDate)) return DomainResult.Failure("Task does not need to be reset yet");
 
 		SetStatus(TaskState.ReadyToStart);
 		StartDate = null;
 		FinishDate = null;
-		LastRecurrenceReset = currentDate;
-		LimitDateTime = RecurrencePattern.Value.CalculateNextLimitDate(LimitDateTime!.Value);
+		RecurrenceInfo.LastRecurrenceReset = currentDate;
+		LimitDateTime = RecurrenceInfo.RecurrencePattern.Value.CalculateNextLimitDate(LimitDateTime!.Value);
         
 		return DomainResult.Success();
 	}
@@ -198,48 +218,44 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		AddStatusChangelog(new StatusChangelog(dateTime.Value, newStatus));
 	}
 
-	public void AddParent(Guid parentId)
+	public void SetParents(List<TodoTask> parents, 
+		ParentLinkingStrategy priorityLinkingStrategy, 
+		ParentLinkingStrategy lifeAreasLinkingStrategy)
 	{
-		if (parentId == Id) return;
+		if (priorityLinkingStrategy is ParentLinkingStrategy.InheritHighestPriority)
+		{
+			Priority newPriority = parents.Max(parent => parent.Priority);
+			Priority = newPriority;
+		}
+
+		if (lifeAreasLinkingStrategy is not ParentLinkingStrategy.InheritLifeAreas)
+		{
+			return;
+		}
 		
-		if (_parents.Contains(parentId)) return;
+		List<TodoTask> newParents = parents.Where(parent => parent.Id != Id).ToList();
+
+		foreach (Guid lifeAreaId in newParents.SelectMany(parent => parent.LifeAreas))
+		{
+			AddLifeArea(lifeAreaId);
+		}
 		
-		_parents.Add(parentId);
-		AddDomainEvent(new ParentAddedDomainEvent(parentId));
+		_parents = parents.Select(p => p.Id).ToList();
 	}
 
-	public void AddChild(Guid childId)
+	public void SetChildren(List<TodoTask> children)
 	{
-		if (childId == Id) return;
+		Progress = TaskProgressService.Calculate(children, Status);
 		
-		if (_children.Contains(childId)) return;
-		
-		_children.Add(childId);
-		AddDomainEvent(new ChildAddedDomainEvent(childId));
+		_children = children.Select(c => c.Id).ToList();
 	}
-
+	
 	public void AddLifeArea(Guid lifeAreaId)
 	{
 		if (_lifeAreas.Contains(lifeAreaId)) return;
 		
 		_lifeAreas.Add(lifeAreaId);
 		AddDomainEvent(new LifeAreaAddedDomainEvent(lifeAreaId));
-	}
-
-	public void RemoveParent(Guid parentId)
-	{
-		if (!_parents.Contains(parentId)) return;
-		
-		_parents.Remove(parentId);
-		AddDomainEvent(new ParentRemovedDomainEvent(parentId));
-	}
-
-	public void RemoveChild(Guid childId)
-	{
-		if (!_children.Contains(childId));
-		
-		_children.Remove(childId);
-		AddDomainEvent(new ChildRemovedDomainEvent(childId));
 	}
 
 	public void RemoveLifeArea(Guid lifeAreaId)
