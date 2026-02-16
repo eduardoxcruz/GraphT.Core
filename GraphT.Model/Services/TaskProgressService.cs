@@ -7,9 +7,9 @@ public static class TaskProgressService
 {
 	public static int Calculate(List<TodoTask> taskChildren, TaskState taskStatus)
 	{
-		int totalChildren = taskChildren.Count;
-		
 		if (taskStatus is TaskState.Finished or TaskState.Discarded) return 100;
+		
+		int totalChildren = taskChildren.Count;
 
 		if (totalChildren == 0) return 0;
 		
