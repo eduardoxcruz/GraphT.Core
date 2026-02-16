@@ -9,9 +9,6 @@ namespace GraphT.Model.Aggregates;
 
 public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 {
-	private List<IDomainEvent> _domainEvents;
-	public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents;
-	
 	public Guid Id { get; private init; }
 	public string Name { get; private set; }
 	public bool IsFun { get; set; }
@@ -19,12 +16,12 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public Complexity Complexity { get; set; }
 	public Priority Priority { get; set; }
 	public TaskState Status { get; private set; }
-	public int Progress { get; set; }
+	public int Progress { get; private set; }
 	
 	public DateTimeOffset CreatedAt { get; private set; }
-	public DateTimeOffset? StartDate { get; set; }
-	public DateTimeOffset? FinishDate { get; set; }
-	public DateTimeOffset? LimitDateTime { get; set; }
+	public DateTimeOffset? StartDate { get; private set; }
+	public DateTimeOffset? FinishDate { get; private set; }
+	public DateTimeOffset? LimitDateTime { get; private set; }
 	public DateTimeOffset? CurrentWorkSessionStartedAt { get; private set; }
 	public TimeSpan ElapsedTime { get; private set; }
 	public RecurrenceInfo RecurrenceInfo { get; private set; }
@@ -32,17 +29,11 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public Relevance Relevance => TaskRelevanceService.Calculate(IsFun, IsProductive);
 	public Punctuality Punctuality => TaskPunctualityService.Calculate(LimitDateTime, FinishDate);
 	
-	private List<Guid> _parents;
-	public IReadOnlyList<Guid> Parents => _parents;
-	
-	private List<Guid> _children;
-	public IReadOnlyList<Guid> Children => _children;
-	
-	private List<Guid> _lifeAreas;
-	public IReadOnlyList<Guid> LifeAreas => _lifeAreas;
-	
-	private List<StatusChangelog> _statusChangeLogs;
-	public IReadOnlyList<StatusChangelog> StatusChangeLogs => _statusChangeLogs;
+	public List<Guid> Parents { get; private set; }
+	public List<Guid> Children { get; private set; }
+	public List<Guid> LifeAreas { get; private set; }
+	public List<StatusChangelog> StatusChangeLogs { get; private set; }
+	public List<IDomainEvent> DomainEvents { get; private set; }
 
 	private TodoTask() { }
 
@@ -51,23 +42,13 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		bool? isProductive = null,
 		Complexity? complexity = null,
 		Priority? priority = null,
-		TaskState? status = null,
 		DateTimeOffset? startDate = null,
 		DateTimeOffset? finishDate = null,
-		DateTimeOffset? limitDateTime = null,
-		RecurrencePattern? recurrencePattern = null,
-		List<Guid>? lifeAreas = null,
-		List<TodoTask>? children = null,
-		List<TodoTask>? parents = null,
-		ParentLinkingStrategy? priorityLinkingStrategy = null, 
-		ParentLinkingStrategy? lifeAreasLinkingStrategy = null)
+		DateTimeOffset? limitDateTime = null)
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
 
 		DateTimeOffset now =  DateTimeOffset.Now;
-		
-		int parentsToAdd = parents?.Count ?? 0;
-		int childrenToAdd = children?.Count ?? 0;
 		
 		TodoTask task =  new() { Id = Guid.NewGuid(), 
 			CreatedAt = now, 
@@ -81,33 +62,13 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			FinishDate = finishDate, 
 			LimitDateTime = limitDateTime, 
 			RecurrenceInfo = new RecurrenceInfo(false, null, null),
-			_parents = new List<Guid>(parentsToAdd),
-			_children = new List<Guid>(childrenToAdd),
-			_lifeAreas = [],
-			_domainEvents = [],
-			_statusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ]
+			Parents = [],
+			Children = [],
+			LifeAreas = [],
+			DomainEvents = [],
+			StatusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ]
 		};
 		
-		if (status is not null) task.SetStatus(status.Value);
-		
-		if (recurrencePattern is not null) task.SetRecurrence(recurrencePattern.Value, task.LimitDateTime);
-
-		if (parents is not null)
-		{
-			if (priorityLinkingStrategy is null) throw new ArgumentException("Priority linking strategy must be set when parents are set");
-			
-			if (lifeAreasLinkingStrategy is null) throw new ArgumentException("Life areas linking strategy must be set when parents are set");
-			
-			task.SetParents(parents, priorityLinkingStrategy.Value, lifeAreasLinkingStrategy.Value);
-		}
-		
-		if (children is not null)
-		{
-			task.SetChildren(children);
-		}
-		
-		if (lifeAreas is not null) task.SetLifeAreas(lifeAreas);
-
 		return task;
 	}
 
@@ -124,17 +85,18 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		DateTimeOffset? limitDateTime,
 		DateTimeOffset? currentWorkSessionStartedAt,
 		TimeSpan elapsedTime,
+		int progress,
 		RecurrenceInfo recurrenceInfo,
 		List<Guid> parents,
 		List<Guid> children,
 		List<Guid> lifeAreas,
 		List<StatusChangelog> statusChangeLogs)
 	{
-		TodoTask task =  new() { _domainEvents = [], 
-			_parents = parents, 
-			_children = children, 
-			_lifeAreas = lifeAreas, 
-			_statusChangeLogs = statusChangeLogs, 
+		TodoTask task =  new() { DomainEvents = [], 
+			Parents = parents, 
+			Children = children, 
+			LifeAreas = lifeAreas, 
+			StatusChangeLogs = statusChangeLogs, 
 			Id = id, 
 			Name = name, 
 			IsFun = isFun , 
@@ -148,7 +110,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			LimitDateTime = limitDateTime, 
 			CurrentWorkSessionStartedAt = currentWorkSessionStartedAt, 
 			ElapsedTime = elapsedTime, 
-			RecurrenceInfo = recurrenceInfo
+			RecurrenceInfo = recurrenceInfo,
+			Progress = progress
 		};
 
 		return task;
@@ -162,14 +125,56 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		Name = newName;
 	}
 	
+	public void SetStatus(TaskState newStatus, DateTimeOffset? dateTime = null)
+	{
+		if (newStatus == Status) return;
+		
+		dateTime ??= DateTimeOffset.Now;
+
+		if (Status == TaskState.Doing && newStatus != TaskState.Doing)
+		{
+			ElapsedTime += (dateTime.Value) - CurrentWorkSessionStartedAt!.Value;
+			CurrentWorkSessionStartedAt = null;
+		}
+		
+		switch (newStatus)
+		{
+			case TaskState.Doing:
+				CurrentWorkSessionStartedAt = dateTime;
+				break;
+			case TaskState.Discarded or TaskState.Finished:
+				FinishDate = dateTime;
+				Progress = 100;
+				break;
+		}
+
+		Status = newStatus;
+		AddStatusChangelog(new StatusChangelog(dateTime.Value, newStatus));
+	}
+	
+	public void RefreshStatusAndProgress(List<TodoTask> children, 
+		bool automaticStatusUpdate, 
+		bool? shouldFinishIfPossible = null)
+	{
+		Progress = TaskProgressService.Calculate(children, Status);
+		
+		if (automaticStatusUpdate)
+		{
+			if (shouldFinishIfPossible is null) 
+				throw new ArgumentException("Automatic status update requires shouldFinishIfPossible to be set");
+			
+			SetStatus(TaskStatusCalculatorService.Calculate(children, shouldFinishIfPossible.Value));
+		}
+	}
+	
 	public void SetRecurrence(RecurrencePattern pattern, DateTimeOffset? baseLimitDate = null)
 	{
 		RecurrenceInfo.RecurrencePattern = pattern;
 		RecurrenceInfo.IsRecurring = true;
 		DateTimeOffset referenceDate = baseLimitDate ?? DateTimeOffset.Now;
-		LimitDateTime = pattern.CalculateNextLimitDate(referenceDate);
+		SetLimitDateTime(pattern.CalculateNextLimitDate(referenceDate));
 	}
-
+	
 	public void RemoveRecurrence()
 	{
 		RecurrenceInfo.IsRecurring = false;
@@ -193,95 +198,121 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		if (!ShouldReset(currentDate)) return DomainResult.Failure("Task does not need to be reset yet");
 
 		SetStatus(TaskState.ReadyToStart);
-		StartDate = null;
-		FinishDate = null;
+		ResetStartDateTime();
+		ResetFinishDateTime();
+		SetLimitDateTime(RecurrenceInfo.RecurrencePattern.Value.CalculateNextLimitDate(LimitDateTime!.Value));
 		RecurrenceInfo.LastRecurrenceReset = currentDate;
-		LimitDateTime = RecurrenceInfo.RecurrencePattern.Value.CalculateNextLimitDate(LimitDateTime!.Value);
         
 		return DomainResult.Success();
 	}
 	
-	public void SetStatus(TaskState newStatus, DateTimeOffset? dateTime = null)
+	public void SetStartDateTime(DateTimeOffset dateTime)
 	{
-		if (newStatus == Status) return;
-		
-		dateTime ??= DateTimeOffset.Now;
-
-		if (Status == TaskState.Doing && newStatus != TaskState.Doing)
-		{
-			ElapsedTime += (dateTime.Value) - CurrentWorkSessionStartedAt!.Value;
-			CurrentWorkSessionStartedAt = null;
-		}
-		
-		switch (newStatus)
-		{
-			case TaskState.Doing:
-				CurrentWorkSessionStartedAt = dateTime;
-				break;
-			case TaskState.Discarded or TaskState.Finished:
-				FinishDate = dateTime;
-				break;
-		}
-
-		Status = newStatus;
-		AddStatusChangelog(new StatusChangelog(dateTime.Value, newStatus));
+		StartDate = dateTime;
 	}
 
-	public void SetParents(List<TodoTask> parents, 
-		ParentLinkingStrategy priorityLinkingStrategy, 
-		ParentLinkingStrategy lifeAreasLinkingStrategy)
+	public void ResetStartDateTime()
 	{
-		List<TodoTask> newParents = parents.Distinct().Where(parent => parent.Id != Id).ToList();
-		
-		if (priorityLinkingStrategy is ParentLinkingStrategy.InheritHighestPriority)
-		{
-			Priority newPriority = newParents.Max(parent => parent.Priority);
-			Priority = newPriority;
-		}
-		
-		if (lifeAreasLinkingStrategy is ParentLinkingStrategy.InheritLifeAreas)
-		{
-			SetLifeAreas(_lifeAreas.Union(newParents.SelectMany(parent => parent.LifeAreas)).ToList());
-		}
-		
-		_parents = newParents.Select(p => p.Id).ToList();
+		StartDate = null;
 	}
 
-	public void SetChildren(List<TodoTask> children)
+	public void SetFinishDateTime(DateTimeOffset dateTime)
 	{
-		List<TodoTask> newChildren = children.Distinct().Where(child => child.Id != Id).ToList();
-		
-		Progress = TaskProgressService.Calculate(newChildren, Status);
-		
-		_children = newChildren.Select(c => c.Id).ToList();
+		FinishDate = dateTime;
 	}
 
-	public void SetLifeAreas(List<Guid> lifeAreas)
+	public void ResetFinishDateTime()
 	{
-		List<Guid> newLifeAreas = lifeAreas.Distinct().ToList();
+		FinishDate = null;
+	}
+
+	public void SetLimitDateTime(DateTimeOffset dateTime)
+	{
+		LimitDateTime = dateTime;
+	}
+
+	public void ResetLimitDateTime()
+	{
+		LimitDateTime = null;
+	}
+
+	public void AddParent(TodoTask parent, bool inheritHighestPriority, bool inheritLifeAreas)
+	{
+		if (Parents.Contains(parent.Id)) return;
 		
-		_lifeAreas = newLifeAreas;
+		if (inheritHighestPriority) Priority = parent.Priority > Priority ? parent.Priority : Priority;
+
+		if (inheritLifeAreas)
+		{
+			foreach (Guid lifeAreaId in parent.LifeAreas)
+			{
+				AddLifeArea(lifeAreaId);
+			}
+		}
+		
+		Parents.Add(parent.Id);
+		AddDomainEvent(new ParentAddedDomainEvent(parent.Id));
+	}
+
+	public void RemoveParent(Guid parentId)
+	{
+		if (!Parents.Contains(parentId)) return;
+		
+		Parents.Remove(parentId);
+		AddDomainEvent(new ParentRemovedDomainEvent(parentId));
+	}
+
+	public void AddChild(Guid childId)
+	{
+		if (Children.Contains(childId)) return;
+		
+		Children.Add(childId);
+		AddDomainEvent(new ChildAddedDomainEvent(childId));
+	}
+
+	public void RemoveChild(Guid childId)
+	{
+		if (!Children.Contains(childId)) return;
+		
+		Children.Remove(childId);
+		AddDomainEvent(new ChildedRemovedDomainEvent(childId));
+	}
+
+	public void AddLifeArea(Guid lifeAreaId)
+	{
+		if (LifeAreas.Contains(lifeAreaId)) return;
+		
+		LifeAreas.Add(lifeAreaId);
+		AddDomainEvent(new LifeAreaAddedDomainEvent(lifeAreaId));
+	}
+
+	public void RemoveLifeArea(Guid lifeAreaId)
+	{
+		if (!LifeAreas.Contains(lifeAreaId)) return;
+		
+		LifeAreas.Remove(lifeAreaId);
+		AddDomainEvent(new LifeAreaRemovedDomainEvent(lifeAreaId));
 	}
 	
 	private void AddStatusChangelog(StatusChangelog newLog)
 	{
-		_statusChangeLogs.Add(newLog);
+		StatusChangeLogs.Add(newLog);
 		AddDomainEvent(new StatusChangelogCreatedDomainEvent(newLog));
 	}
 	
 	public void AddDomainEvent(IDomainEvent domainEvent)
 	{
-		_domainEvents.Add(domainEvent);
+		DomainEvents.Add(domainEvent);
 	}
 
 	public void RemoveDomainEvent(IDomainEvent domainEvent)
 	{
-		_domainEvents.Remove(domainEvent);
+		DomainEvents.Remove(domainEvent);
 	}
 	
 	public void ClearDomainEvents()
 	{
-		_domainEvents.Clear();
+		DomainEvents.Clear();
 	}
 	
 	public bool Equals(TodoTask? other)

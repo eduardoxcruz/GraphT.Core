@@ -117,11 +117,16 @@ public class TodoTaskTests
 	}
 	
 	[Fact]
-	public void TodoTask_ShouldHaveReadonly_ListOfStatusChangelogs()
+	public void TodoTask_ShouldHave_ListOfStatusChangelogs()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("StatusChangeLogs"));
+		Assert.True(typeof(TodoTask).GetProperty("StatusChangeLogs").PropertyType == typeof(List<StatusChangelog>));
+	}
+	
+	[Fact]
+	public void StatusChangelogs_ShouldBeReadOnly()
+	{
 		Assert.False(typeof(TodoTask).GetProperty("StatusChangeLogs").CanWrite);
-		Assert.True(typeof(TodoTask).GetProperty("StatusChangeLogs").PropertyType == typeof(IReadOnlyList<StatusChangelog>));
 	}
 
 	[Fact]
@@ -153,7 +158,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleParents()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Parents"));
-		Assert.True(typeof(TodoTask).GetProperty("Parents").PropertyType == typeof(IReadOnlyList<Guid>));
+		Assert.True(typeof(TodoTask).GetProperty("Parents").PropertyType == typeof(List<Guid>));
 	}
 
 	[Fact]
@@ -170,7 +175,9 @@ public class TodoTaskTests
 		TodoTask parent3 = TodoTask.Create("Parent 3");
 		TodoTask task = TodoTask.Create();
 
-		task.SetParents([ parent1, parent2, parent3 ], ParentLinkingStrategy.None, ParentLinkingStrategy.None);
+		task.AddParent(parent1, false, false);
+		task.AddParent(parent2, false, false);
+		task.AddParent(parent3, false, false);
 		
 		Assert.True(task.Parents.Count != 0);
 		Assert.Contains(parent1.Id, task.Parents);
@@ -184,7 +191,8 @@ public class TodoTaskTests
 		TodoTask parent = TodoTask.Create("Parent");
 		TodoTask task = TodoTask.Create();
 		
-		task.SetParents([ parent, parent ], ParentLinkingStrategy.None, ParentLinkingStrategy.None);
+		task.AddParent(parent, false, false);
+		task.AddParent(parent, false,false);
 		
 		Assert.Single(task.Parents);
 	}
@@ -193,7 +201,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleChildren()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("Children"));
-		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(IReadOnlyList<Guid>));
+		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(List<Guid>));
 	}
 	
 	[Fact]
@@ -210,7 +218,9 @@ public class TodoTaskTests
 		TodoTask child3 = TodoTask.Create("Parent 3");
 		TodoTask task = TodoTask.Create();
 
-		task.SetChildren([ child1, child2, child3 ]);
+		task.AddChild(child1.Id);
+		task.AddChild(child2.Id);
+		task.AddChild(child3.Id);
 		
 		Assert.True(task.Children.Count != 0);
 		Assert.Contains(child1.Id, task.Children);
@@ -223,7 +233,9 @@ public class TodoTaskTests
 	{
 		TodoTask children = TodoTask.Create();
 		TodoTask task = TodoTask.Create();
-		task.SetChildren([ children, children ]);
+		
+		task.AddChild(children.Id);
+		task.AddChild(children.Id);
 		
 		Assert.Single(task.Children);
 	}
@@ -280,7 +292,7 @@ public class TodoTaskTests
 	public void TodoTask_ShouldHave_MultipleLifeAreas()
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("LifeAreas"));
-		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(IReadOnlyList<Guid>));
+		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(List<Guid>));
 	}
 	
 	[Fact]
