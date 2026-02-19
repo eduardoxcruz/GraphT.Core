@@ -143,7 +143,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 				CurrentWorkSessionStartedAt = dateTime;
 				break;
 			case TaskState.Discarded or TaskState.Finished:
-				FinishDate = dateTime;
+				FinishDate ??= dateTime;
 				Progress = 100;
 				break;
 		}
