@@ -18,7 +18,7 @@ public class TaskPunctualityServiceTests
 	[InlineData(-1, 0, 0, -1)]
 	public void Punctuality_ReturnsEarlyDaysWhenFinishedBeforeLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
 	{
-		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		DateTimeOffset limitDateTime = DateTimeOffset.UtcNow;
 		DateTimeOffset finishDateTime = limitDateTime
 			.AddDays(daysDifference)
 			.AddHours(hoursDifference)
@@ -40,7 +40,7 @@ public class TaskPunctualityServiceTests
 	[InlineData(0, 0, 0, 0)]
 	public void Punctuality_ReturnsOnTimeWhenFinishedOnLimitDateOrWithin24Hours(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
 	{
-		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		DateTimeOffset limitDateTime = DateTimeOffset.UtcNow;
 		DateTimeOffset finishDateTime =
 			limitDateTime
 				.AddDays(daysDifference)
@@ -58,7 +58,7 @@ public class TaskPunctualityServiceTests
 	[InlineData(1, 0, 0, 0)]
 	public void Punctuality_ReturnsLateDaysWhenFinishedAfterLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
 	{
-		DateTimeOffset limitDateTime = DateTimeOffset.Now;
+		DateTimeOffset limitDateTime = DateTimeOffset.UtcNow;
 		DateTimeOffset finishDateTime =
 			limitDateTime
 				.AddDays(daysDifference)
@@ -80,7 +80,7 @@ public class TaskPunctualityServiceTests
 	[InlineData(1, 0, 0, 1)]
 	public void Punctuality_ReturnsDaysToGoWhenCurrentDateIsBeforeLimitDate(double daysDifference, double hoursDifference, double minutesDifference, double secondsDifference)
 	{
-		DateTimeOffset limitDateTime = DateTimeOffset.Now
+		DateTimeOffset limitDateTime = DateTimeOffset.UtcNow
 			.AddDays(daysDifference)
 			.AddHours(hoursDifference)
 			.AddMinutes(minutesDifference)
@@ -102,7 +102,7 @@ public class TaskPunctualityServiceTests
 	public void Punctuality_ReturnsFinishTodayWhenLimitDateIsTodayOrWithin24Hours(double daysDifference,
 		double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
 	{
-		DateTimeOffset limitDateTime = DateTimeOffset.Now.AddDays(daysDifference)
+		DateTimeOffset limitDateTime = DateTimeOffset.UtcNow.AddDays(daysDifference)
 			.AddHours(hoursDifference)
 			.AddMinutes(minutesDifference)
 			.AddSeconds(secondsDifference);
@@ -117,7 +117,7 @@ public class TaskPunctualityServiceTests
 	[InlineData(-1, 0, 0, 0)]
 	public void Punctuality_ReturnsDaysLateWhenCurrentDateIsAfterLimitDate(double daysDifference, double hoursDifference, double minutesDifference = 0, double secondsDifference = 0)
 	{
-		DateTimeOffset limitDateTime = DateTimeOffset.Now
+		DateTimeOffset limitDateTime = DateTimeOffset.UtcNow
 			.AddDays(daysDifference)
 			.AddHours(hoursDifference)
 			.AddMinutes(minutesDifference)

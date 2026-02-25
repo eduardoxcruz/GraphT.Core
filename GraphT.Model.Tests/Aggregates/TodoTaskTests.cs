@@ -250,7 +250,7 @@ public class TodoTaskTests
 	public void ElapsedTime_ShouldBe_Calculated_FromSum_DoingStates_TillNextState()
 	{
 		TodoTask task = TodoTask.Create();
-		DateTimeOffset now = DateTimeOffset.Now;
+		DateTimeOffset now = DateTimeOffset.UtcNow;
 		DateTimeOffset dateTimeLog1 = now.AddSeconds(5);
 		DateTimeOffset dateTimeLog2 = dateTimeLog1.AddSeconds(10);
 		DateTimeOffset currentlyDoingLog1 = dateTimeLog2.AddSeconds(10);

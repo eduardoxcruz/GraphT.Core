@@ -48,7 +48,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
 
-		DateTimeOffset now =  DateTimeOffset.Now;
+		DateTimeOffset now =  DateTimeOffset.UtcNow;
 		
 		TodoTask task =  new() { Id = Guid.NewGuid(), 
 			CreatedAt = now, 
@@ -129,7 +129,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	{
 		if (newStatus == Status) return;
 		
-		dateTime ??= DateTimeOffset.Now;
+		dateTime ??= DateTimeOffset.UtcNow;
 
 		if (Status == TaskState.Doing && newStatus != TaskState.Doing)
 		{
@@ -141,6 +141,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		{
 			case TaskState.Doing:
 				CurrentWorkSessionStartedAt = dateTime;
+				StartDate ??= dateTime;
 				break;
 			case TaskState.Discarded or TaskState.Finished:
 				FinishDate ??= dateTime;
@@ -171,7 +172,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	{
 		RecurrenceInfo.RecurrencePattern = pattern;
 		RecurrenceInfo.IsRecurring = true;
-		DateTimeOffset referenceDate = baseLimitDate ?? DateTimeOffset.Now;
+		DateTimeOffset referenceDate = baseLimitDate ?? DateTimeOffset.UtcNow;
 		SetLimitDateTime(pattern.CalculateNextLimitDate(referenceDate));
 	}
 	

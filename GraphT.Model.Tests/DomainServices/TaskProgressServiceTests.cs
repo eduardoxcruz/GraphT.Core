@@ -67,7 +67,7 @@ public class TaskProgressServiceTests
 		for (int i = 1; i <= 10; i++)
 		{
 			TodoTask child = TodoTask.Create($"Child {i}");
-			child.SetStatus(TaskState.ReadyToStart, DateTimeOffset.Now);
+			child.SetStatus(TaskState.ReadyToStart, DateTimeOffset.UtcNow);
 			children.Add(child);
 		}
 		

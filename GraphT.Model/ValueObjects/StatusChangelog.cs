@@ -12,7 +12,7 @@ public record StatusChangelog
 	
 	public StatusChangelog(DateTimeOffset changeEstablishedAt, TaskState newState)
 	{
-		CreatedAt = DateTimeOffset.Now;
+		CreatedAt = DateTimeOffset.UtcNow;
 		ChangeEstablishedAt = changeEstablishedAt;
 		NewState = newState;
 	}

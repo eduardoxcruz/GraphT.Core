@@ -29,7 +29,7 @@ public static class TaskPunctualityService
 			}
 		}
 
-		DateTimeOffset now = DateTimeOffset.Now;
+		DateTimeOffset now = DateTimeOffset.UtcNow;
 		timeDifference = (limitDate.Value - now);
 		const int marginOfError = 30;
 		
