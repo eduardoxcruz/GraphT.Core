@@ -198,13 +198,21 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 
 		if (!ShouldReset(currentDate)) return DomainResult.Failure("Task does not need to be reset yet");
 
-		SetStatus(TaskState.ReadyToStart);
-		ResetStartDateTime();
-		ResetFinishDateTime();
-		SetLimitDateTime(RecurrenceInfo.RecurrencePattern.Value.CalculateNextLimitDate(LimitDateTime!.Value));
+		ResetTask(RecurrenceInfo.RecurrencePattern!.Value.CalculateNextLimitDate(LimitDateTime!.Value));
 		RecurrenceInfo.LastRecurrenceReset = currentDate;
         
 		return DomainResult.Success();
+	}
+
+	public void ResetTask(DateTimeOffset? newLimitDateTime = null)
+	{
+		SetStatus(TaskState.ReadyToStart);
+		ResetStartDateTime();
+		ResetFinishDateTime();
+		
+		if (newLimitDateTime is not null) SetLimitDateTime(newLimitDateTime.Value);
+		
+		ResetLimitDateTime();
 	}
 	
 	public void SetStartDateTime(DateTimeOffset dateTime)
