@@ -248,6 +248,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public void AddParent(TodoTask parent, bool inheritHighestPriority, bool inheritLifeAreas)
 	{
 		if (Parents.Contains(parent.Id)) return;
+
+		if (Children.Contains(parent.Id)) return;
 		
 		if (inheritHighestPriority) Priority = parent.Priority > Priority ? parent.Priority : Priority;
 
@@ -274,6 +276,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public void AddChild(Guid childId)
 	{
 		if (Children.Contains(childId)) return;
+		
+		if (Parents.Contains(childId)) return;
 		
 		Children.Add(childId);
 		AddDomainEvent(new ChildAddedDomainEvent(childId));
