@@ -66,8 +66,10 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			Children = [],
 			LifeAreas = [],
 			DomainEvents = [],
-			StatusChangeLogs = [ new StatusChangelog(now, TaskState.Created) ]
+			StatusChangeLogs = []
 		};
+		
+		task.SetStatus(TaskState.Created, now);
 		
 		return task;
 	}
