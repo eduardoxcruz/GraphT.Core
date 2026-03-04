@@ -129,8 +129,6 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	
 	public void SetStatus(TaskState newStatus, DateTimeOffset? dateTime = null)
 	{
-		if (newStatus == Status) return;
-		
 		dateTime ??= DateTimeOffset.UtcNow;
 
 		if (Status == TaskState.Doing && newStatus != TaskState.Doing)
