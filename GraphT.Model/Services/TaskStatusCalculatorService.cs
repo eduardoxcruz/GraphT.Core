@@ -9,8 +9,8 @@ public static class TaskStatusCalculatorService
 	{
 		int childrenCreatedCount = children.Count(child => child.Status == TaskState.Created);
 		int childrenBacklogCount = children.Count(child => child.Status == TaskState.Backlog);
-		int childrenDiscardedCount = children.Count(child => child.Status >= TaskState.Discarded);
-		int childrenFinishedCount = children.Count(child => child.Status >= TaskState.Finished);
+		int childrenDiscardedCount = children.Count(child => child.Status == TaskState.Discarded);
+		int childrenFinishedCount = children.Count(child => child.Status == TaskState.Finished);
 
 		bool childrenPending = 
 			(childrenCreatedCount + childrenBacklogCount + childrenFinishedCount + childrenDiscardedCount) != children.Count;
