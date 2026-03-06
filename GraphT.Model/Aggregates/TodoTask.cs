@@ -144,6 +144,7 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 				StartDate ??= dateTime;
 				break;
 			case TaskState.Discarded or TaskState.Finished:
+				StartDate ??= dateTime;
 				FinishDate ??= dateTime;
 				Progress = 100;
 				break;
