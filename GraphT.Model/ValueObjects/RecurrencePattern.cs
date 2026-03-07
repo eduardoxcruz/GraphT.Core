@@ -5,12 +5,12 @@ namespace GraphT.Model.ValueObjects;
 public struct RecurrencePattern
 {
 	public RecurrenceType Type { get; init; }
-	public int Interval { get; init; } // Cada X unidades
-	public RecurrenceUnit? Unit { get; init; } // Para repeticiones específicas
-	public DayOfWeek[]? DaysOfWeek { get; init; } // Para repeticiones semanales
-	public int? DayOfMonth { get; init; } // Para repeticiones mensuales (1-31)
-	public WeekOccurrence? WeekOccurrence { get; init; } // Primera, segunda, tercera, cuarta semana
-	public DayOfWeek? DayOfWeekInMonth { get; init; } // Para "primer lunes del mes"
+	public int Interval { get; init; }
+	public RecurrenceUnit? Unit { get; init; }
+	public DayOfWeek[]? DaysOfWeek { get; init; }
+	public int? DayOfMonth { get; init; }
+	public WeekOccurrence? WeekOccurrence { get; init; }
+	public DayOfWeek? DayOfWeekInMonth { get; init; }
 
 	public RecurrencePattern(
 		RecurrenceType type,
@@ -72,7 +72,6 @@ public struct RecurrencePattern
 		}
 	}
 
-	// Calcula la próxima fecha límite basada en una fecha de referencia
 	public DateTimeOffset CalculateNextLimitDate(DateTimeOffset referenceDate)
 	{
 		switch (Type)
@@ -118,7 +117,6 @@ public struct RecurrencePattern
 		DayOfWeek[] sortedDays = DaysOfWeek!.OrderBy(d => d).ToArray();
 		DayOfWeek currentDayOfWeek = referenceDate.DayOfWeek;
 
-		// Buscar el próximo día de la semana
 		foreach (DayOfWeek day in sortedDays)
 		{
 			if (day <= currentDayOfWeek)
@@ -130,7 +128,6 @@ public struct RecurrencePattern
 			return referenceDate.AddDays(daysToAdd);
 		}
 
-		// Si no hay ningún día posterior esta semana, ir a la próxima semana
 		int daysUntilNextWeek = 7 - (int)currentDayOfWeek + (int)sortedDays[0];
 		return referenceDate.AddDays(daysUntilNextWeek);
 	}
@@ -163,11 +160,9 @@ public struct RecurrencePattern
 			referenceDate.Second,
 			referenceDate.Offset);
 
-		// Encontrar el primer día de la semana especificado
 		int daysUntilTargetDay = ((int)DayOfWeekInMonth! - (int)firstDayOfMonth.DayOfWeek + 7) % 7;
 		DateTimeOffset firstOccurrence = firstDayOfMonth.AddDays(daysUntilTargetDay);
 
-		// Agregar las semanas necesarias según WeekOccurrence
 		int weeksToAdd;
 		switch (WeekOccurrence)
 		{
