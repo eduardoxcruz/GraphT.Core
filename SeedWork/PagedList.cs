@@ -9,15 +9,15 @@ public class PagedList<TEntity> : List<TEntity>
 	public bool HasPrevious => CurrentPage > 1;
 	public bool HasNext => CurrentPage < TotalPages;
 
-	public PagedList(List<TEntity> items, int count, int pageNumber, int pageSize)
+	public PagedList(List<TEntity> items, int totalCount, int pageNumber, int pageSize)
 	{
 		if (pageNumber < 1) pageNumber = 1;
 		if (pageSize < 1) pageSize = PagingOptions.MaxPageSize;
 		
-		TotalCount = count;
+		TotalCount = totalCount;
 		PageSize = pageSize;
 		CurrentPage = pageNumber;
-		TotalPages = count != 0 ? (int)Math.Ceiling(count / (double)pageSize) : 1;
+		TotalPages = totalCount != 0 ? (int)Math.Ceiling(totalCount / (double)pageSize) : 1;
 		AddRange(items);
 	}
 
