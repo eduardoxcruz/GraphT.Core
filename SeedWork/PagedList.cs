@@ -1,7 +1,8 @@
 ﻿namespace SeedWork;
 
-public class PagedList<TEntity> : List<TEntity>
+public class PagedList<TEntity>
 {
+	public List<TEntity> Items { get; private set; }
 	public int CurrentPage { get; private set; }
 	public int TotalPages { get; private set; }
 	public int PageSize { get; private set; }
@@ -18,16 +19,6 @@ public class PagedList<TEntity> : List<TEntity>
 		PageSize = pageSize;
 		CurrentPage = pageNumber;
 		TotalPages = totalCount != 0 ? (int)Math.Ceiling(totalCount / (double)pageSize) : 1;
-		AddRange(items);
-	}
-
-	public static PagedList<TEntity> ToPagedList(IQueryable<TEntity> source, int pageNumber, int pageSize)
-	{
-		if (pageNumber < 1) pageNumber = 1;
-		if (pageSize < 1) pageSize = PagingOptions.MaxPageSize;
-		
-		int count = source.Count();
-		List<TEntity> items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-		return new PagedList<TEntity>(items, count, pageNumber, pageSize);
+		Items = new List<TEntity>(items);
 	}
 }
