@@ -4,6 +4,7 @@ using GraphT.Model.Services;
 using GraphT.Model.ValueObjects;
 
 using SeedWork;
+using SeedWork.Domain;
 
 namespace GraphT.Model.Aggregates;
 
@@ -195,9 +196,9 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public DomainResult ResetRecurringTask(DateTimeOffset currentDate)
 	{
 		if (!RecurrenceInfo.IsRecurring || RecurrenceInfo.RecurrencePattern == null) 
-			return DomainResult.Failure("Task is not recurring");
+			return DomainResult.Failure(DomainErrors.TaskIsNotRecurring);
 
-		if (!ShouldReset(currentDate)) return DomainResult.Failure("Task does not need to be reset yet");
+		if (!ShouldReset(currentDate)) return DomainResult.Failure(DomainErrors.RecurringTaskDoesNotNeedReset);
 
 		ResetTask(RecurrenceInfo.RecurrencePattern!.Value.CalculateNextLimitDate(LimitDateTime!.Value));
 		RecurrenceInfo.LastRecurrenceReset = currentDate;
