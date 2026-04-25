@@ -1,0 +1,19 @@
+using Core.Model.Enums;
+
+namespace Core.Model.ValueObjects;
+
+public record StatusChangelog
+{
+	public DateTimeOffset CreatedAt { get; }
+	public DateTimeOffset ChangeEstablishedAt { get; }
+	public TaskState NewState { get; }
+
+	private StatusChangelog() { }
+	
+	public StatusChangelog(DateTimeOffset changeEstablishedAt, TaskState newState)
+	{
+		CreatedAt = DateTimeOffset.UtcNow;
+		ChangeEstablishedAt = changeEstablishedAt;
+		NewState = newState;
+	}
+}
