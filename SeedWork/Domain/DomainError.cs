@@ -1,3 +1,3 @@
 namespace SeedWork.Domain;
 
-public record DomainError(DomainErrorType Type, string Description, string? Value = null);
+public record DomainError(int Type, string Description, string? Value = null);

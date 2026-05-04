@@ -195,9 +195,9 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public DomainResult ResetRecurringTask(DateTimeOffset currentDate)
 	{
 		if (!RecurrenceInfo.IsRecurring || RecurrenceInfo.RecurrencePattern == null) 
-			return DomainResult.Failure(DomainErrors.TaskIsNotRecurring);
+			return DomainResult.Failure(CoreDomainErrors.TaskIsNotRecurring);
 
-		if (!ShouldReset(currentDate)) return DomainResult.Failure(DomainErrors.RecurringTaskDoesNotNeedReset);
+		if (!ShouldReset(currentDate)) return DomainResult.Failure(CoreDomainErrors.RecurringTaskDoesNotNeedReset);
 
 		ResetTask(RecurrenceInfo.RecurrencePattern!.Value.CalculateNextLimitDate(LimitDateTime!.Value));
 		RecurrenceInfo.LastRecurrenceReset = currentDate;
