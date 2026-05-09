@@ -1,4 +1,4 @@
-using SeedWork.Domain;
+using SeedWork;
 
 namespace Core.Model.Enums;
 

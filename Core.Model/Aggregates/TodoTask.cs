@@ -3,7 +3,6 @@ using Core.Model.Events;
 using Core.Model.Services;
 using Core.Model.ValueObjects;
 using SeedWork;
-using SeedWork.Domain;
 
 namespace Core.Model.Aggregates;
 

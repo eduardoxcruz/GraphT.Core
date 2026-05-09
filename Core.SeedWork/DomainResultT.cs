@@ -1,4 +1,4 @@
-namespace SeedWork.Domain;
+namespace SeedWork;
 
 public class DomainResult
 {
