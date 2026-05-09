@@ -18,15 +18,15 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	public int Progress { get; private set; }
 	
 	public DateTimeOffset CreatedAt { get; private set; }
-	public DateTimeOffset? StartDate { get; private set; }
-	public DateTimeOffset? FinishDate { get; private set; }
+	public DateTimeOffset? StartDateTime { get; private set; }
+	public DateTimeOffset? FinishDateTime { get; private set; }
 	public DateTimeOffset? LimitDateTime { get; private set; }
 	public DateTimeOffset? CurrentWorkSessionStartedAt { get; private set; }
 	public TimeSpan ElapsedTime { get; private set; }
 	public RecurrenceInfo RecurrenceInfo { get; private set; }
 	
 	public Relevance Relevance => TaskRelevanceService.Calculate(IsFun, IsProductive);
-	public Punctuality Punctuality => TaskPunctualityService.Calculate(LimitDateTime, FinishDate);
+	public Punctuality Punctuality => TaskPunctualityService.Calculate(LimitDateTime, FinishDateTime);
 	
 	public List<Guid> Parents { get; private set; }
 	public List<Guid> Children { get; private set; }
@@ -41,8 +41,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		bool? isProductive = null,
 		Complexity? complexity = null,
 		Priority? priority = null,
-		DateTimeOffset? startDate = null,
-		DateTimeOffset? finishDate = null,
+		DateTimeOffset? startDateTime = null,
+		DateTimeOffset? finishDateTime = null,
 		DateTimeOffset? limitDateTime = null)
 	{
 		if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
@@ -57,8 +57,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			Complexity = complexity ?? Complexity.Undefined, 
 			Priority = priority ?? Priority.Distraction, 
 			Status = TaskState.Created,
-			StartDate = startDate, 
-			FinishDate = finishDate, 
+			StartDateTime = startDateTime, 
+			FinishDateTime = finishDateTime, 
 			LimitDateTime = limitDateTime, 
 			RecurrenceInfo = new RecurrenceInfo(false, null, null),
 			Parents = [],
@@ -82,8 +82,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		TaskState status,
 		int progress,
 		DateTimeOffset createdAt,
-		DateTimeOffset? startDate,
-		DateTimeOffset? finishDate,
+		DateTimeOffset? startDateTime,
+		DateTimeOffset? finishDateTime,
 		DateTimeOffset? limitDateTime,
 		DateTimeOffset? currentWorkSessionStartedAt,
 		TimeSpan elapsedTime,
@@ -106,8 +106,8 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 			Priority = priority, 
 			Status = status, 
 			CreatedAt = createdAt, 
-			StartDate = startDate, 
-			FinishDate = finishDate, 
+			StartDateTime = startDateTime, 
+			FinishDateTime = finishDateTime, 
 			LimitDateTime = limitDateTime, 
 			CurrentWorkSessionStartedAt = currentWorkSessionStartedAt, 
 			ElapsedTime = elapsedTime, 
@@ -140,11 +140,11 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 		{
 			case TaskState.Doing:
 				CurrentWorkSessionStartedAt = dateTime;
-				StartDate ??= dateTime;
+				StartDateTime ??= dateTime;
 				break;
 			case TaskState.Discarded or TaskState.Finished:
-				StartDate ??= dateTime;
-				FinishDate ??= dateTime;
+				StartDateTime ??= dateTime;
+				FinishDateTime ??= dateTime;
 				Progress = 100;
 				break;
 		}
@@ -217,22 +217,22 @@ public class TodoTask : IEntity<Guid>, IEquatable<TodoTask>
 	
 	public void SetStartDateTime(DateTimeOffset dateTime)
 	{
-		StartDate = dateTime;
+		StartDateTime = dateTime;
 	}
 
 	public void ResetStartDateTime()
 	{
-		StartDate = null;
+		StartDateTime = null;
 	}
 
 	public void SetFinishDateTime(DateTimeOffset dateTime)
 	{
-		FinishDate = dateTime;
+		FinishDateTime = dateTime;
 	}
 
 	public void ResetFinishDateTime()
 	{
-		FinishDate = null;
+		FinishDateTime = null;
 	}
 
 	public void SetLimitDateTime(DateTimeOffset dateTime)
