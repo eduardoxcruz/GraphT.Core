@@ -1,4 +1,4 @@
-namespace SeedWork;
+namespace Core.SeedWork;
 
 public interface IEntity<TId> where TId : notnull
 {

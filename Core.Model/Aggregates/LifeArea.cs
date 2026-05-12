@@ -1,4 +1,4 @@
-using SeedWork;
+using Core.SeedWork;
 
 namespace Core.Model.Aggregates;
 

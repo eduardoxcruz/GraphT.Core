@@ -115,44 +115,6 @@ public class TodoTaskTests
 	{
 		Assert.NotNull(typeof(TodoTask).GetProperty("LimitDateTime"));
 	}
-	
-	[Fact]
-	public void TodoTask_ShouldHave_ListOfStatusChangelogs()
-	{
-		Assert.NotNull(typeof(TodoTask).GetProperty("StatusChangeLogs"));
-		Assert.True(typeof(TodoTask).GetProperty("StatusChangeLogs").PropertyType == typeof(List<StatusChangelog>));
-	}
-	
-	[Fact]
-	public void StatusChangelogs_ShouldBeReadOnly()
-	{
-		Assert.False(typeof(TodoTask).GetProperty("StatusChangeLogs").CanWrite);
-	}
-
-	[Fact]
-	public void TodoTask_ShouldAddStatusCreated_ToStatusChangelogWhenCreated()
-	{
-		TodoTask todo = TodoTask.Create();
-		TaskState expectedStatus = TaskState.Created;
-		StatusChangelog log = todo.StatusChangeLogs.First();
-		
-		Assert.True(todo.StatusChangeLogs.Count != 0);
-		Assert.True(todo.StatusChangeLogs.Count == 1);
-		Assert.Equal(expectedStatus, log.NewState);
-	}
-	
-	[Fact]
-	public void ChangeStatus_ShouldAddStatusChangelog()
-	{
-		TodoTask todo = TodoTask.Create();
-		TaskState expectedStatus = TaskState.Backlog;
-		
-		todo.SetStatus(expectedStatus);
-		StatusChangelog log = todo.StatusChangeLogs.Last();
-		
-		Assert.Equal(2, todo.StatusChangeLogs.Count);
-		Assert.Equal(expectedStatus, log.NewState);
-	}
 
 	[Fact]
 	public void TodoTask_ShouldHave_MultipleParents()
@@ -314,7 +276,6 @@ public class TodoTaskTests
 		Assert.True(task.LifeAreas.Count != 0);
 		Assert.Contains(la1.Id, task.LifeAreas);
 		Assert.Contains(la2.Id, task.LifeAreas);
-		Assert.Equal(2, task.DomainEvents.Count);
 	}
 	
 	[Fact]
@@ -326,6 +287,5 @@ public class TodoTaskTests
 		task.AddLifeArea(lifeArea.Id);
 		
 		Assert.Single(task.LifeAreas);
-		Assert.Single(task.DomainEvents);
 	}
 }
