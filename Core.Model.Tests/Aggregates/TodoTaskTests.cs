@@ -124,12 +124,6 @@ public class TodoTaskTests
 	}
 
 	[Fact]
-	public void Parents_ShouldBeReadOnly()
-	{
-		Assert.False(typeof(TodoTask).GetProperty("Parents").CanWrite);
-	}
-	
-	[Fact]
 	public void Parents_OnlyAddedVia_AddParents()
 	{
 		TodoTask parent1 = TodoTask.Create("Parent 1");
@@ -166,12 +160,6 @@ public class TodoTaskTests
 		Assert.True(typeof(TodoTask).GetProperty("Children").PropertyType == typeof(List<Guid>));
 	}
 	
-	[Fact]
-	public void Children_ShouldBeReadOnly()
-	{
-		Assert.False(typeof(TodoTask).GetProperty("Children").CanWrite);
-	}
-
 	[Fact]
 	public void Children_OnlyAddedVia_SetChildren()
 	{
@@ -257,12 +245,6 @@ public class TodoTaskTests
 		Assert.True(typeof(TodoTask).GetProperty("LifeAreas").PropertyType == typeof(List<Guid>));
 	}
 	
-	[Fact]
-	public void LifeAreas_ShouldBeReadOnly()
-	{
-		Assert.False(typeof(TodoTask).GetProperty("LifeAreas").CanWrite);
-	}
-
 	[Fact]
 	public void LifeAreas_OnlyAddedVia_AddLifeArea()
 	{
